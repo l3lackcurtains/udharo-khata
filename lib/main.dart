@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:simple_khata/pages/home.dart';
 
 void main() => runApp(MyApp());
 
@@ -8,9 +9,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+          primarySwatch: Colors.blue, primaryColor: Colors.deepPurple),
+      home: MyHomePage(title: 'Khata'),
     );
   }
 }
@@ -24,40 +24,47 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  int _selectedIndex = 0;
+  final _widgetOptions = [
+    Home(),
+    Text('Index 2: Business'),
+    Text('Index 2: School'),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-
-        title: Text(widget.title),
+        title: Text('Khata App',
+            style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 26)),
+        elevation: 0.0,
+        backgroundColor: Color(0xFFFFFF),
       ),
       body: Center(
-        
-        child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-          ],
-        ),
+        child: _widgetOptions.elementAt(_selectedIndex),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), 
+      bottomNavigationBar: BottomNavigationBar(
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+              icon: Icon(Icons.home), title: Text('Dashboard')),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.business), title: Text('Transactions')),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.school), title: Text('Profile')),
+        ],
+        currentIndex: _selectedIndex,
+        fixedColor: Colors.deepPurple,
+        onTap: _onItemTapped,
+      ),
     );
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 }
