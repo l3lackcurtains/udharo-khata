@@ -9,15 +9,16 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-          primarySwatch: Colors.blue, primaryColor: Colors.deepPurple),
-      home: MyHomePage(title: 'Khata'),
+          primarySwatch: Colors.blue,
+          primaryColor: Colors.deepPurple,
+          fontFamily: 'Quicksand'),
+      home: const MyHomePage(title: 'Khata'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
+  const MyHomePage({Key key, this.title}) : super(key: key);
   final String title;
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -25,10 +26,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
-  final _widgetOptions = [
+  final List<Widget> _widgetOptions = [
     Home(),
-    Text('Index 2: Business'),
-    Text('Index 2: School'),
+    const Text('Index 2: Business'),
+    const Text('Index 2: School'),
   ];
 
   @override
@@ -39,15 +40,16 @@ class _MyHomePageState extends State<MyHomePage> {
             style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
-                fontSize: 26)),
-        elevation: 0.0,
-        backgroundColor: Color(0xFFFFFF),
+                fontSize: 24,
+                fontFamily: 'Poppins')),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
       ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
+        items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
               icon: Icon(Icons.home), title: Text('Dashboard')),
           BottomNavigationBarItem(
