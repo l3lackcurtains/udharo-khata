@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:simple_khata/pages/customers.dart';
 import 'package:simple_khata/pages/home.dart';
+import 'package:simple_khata/pages/transactions.dart';
 
 void main() => runApp(MyApp());
 
@@ -9,9 +11,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: Colors.purple,
           primaryColor: Colors.deepPurple,
-          fontFamily: 'Quicksand'),
+          fontFamily: 'Roboto'),
       home: const MyHomePage(title: 'Khata'),
     );
   }
@@ -28,15 +30,16 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   final List<Widget> _widgetOptions = [
     Home(),
-    const Text('Index 2: Business'),
-    const Text('Index 2: School'),
+    Customers(),
+    Transactions(),
+    const Text('Index 4: School'),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Khata App',
+        title: const Text('Khata App',
             style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
@@ -49,18 +52,20 @@ class _MyHomePageState extends State<MyHomePage> {
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-              icon: Icon(Icons.home), title: Text('Dashboard')),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.business), title: Text('Transactions')),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.school), title: Text('Profile')),
-        ],
-        currentIndex: _selectedIndex,
-        fixedColor: Colors.deepPurple,
-        onTap: _onItemTapped,
-      ),
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+                icon: Icon(Icons.home), title: Text('Dashboard')),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.people), title: Text('Customers')),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.perm_media), title: Text('Transactions')),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.school), title: Text('Profile')),
+          ],
+          currentIndex: _selectedIndex,
+          fixedColor: Colors.deepPurple,
+          onTap: _onItemTapped,
+          type: BottomNavigationBarType.fixed),
     );
   }
 

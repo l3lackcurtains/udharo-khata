@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class Home extends StatefulWidget {
+class Transactions extends StatefulWidget {
   @override
-  _HomeState createState() => _HomeState();
+  _TransactionsState createState() => _TransactionsState();
 }
 
-class _HomeState extends State<Home> {
+class _TransactionsState extends State<Transactions> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -108,7 +108,7 @@ class _HomeState extends State<Home> {
                       child: Column(
                         children: const <Widget>[
                           ListTile(
-                            title: Text('Customers'),
+                            title: Text('Transactions'),
                             subtitle: Text('300'),
                           ),
                         ],
