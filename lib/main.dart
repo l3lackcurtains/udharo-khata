@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Khata',
       theme: ThemeData(
           primarySwatch: Colors.purple,
           primaryColor: Colors.deepPurple,
@@ -39,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Khata App',
+        title: const Text('Khata',
             style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
