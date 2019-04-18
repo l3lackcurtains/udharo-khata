@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:simple_khata/pages/addCustomer.dart';
 import 'package:simple_khata/pages/customers.dart';
 import 'package:simple_khata/pages/home.dart';
 import 'package:simple_khata/pages/transactions.dart';
@@ -14,7 +15,10 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.purple,
           primaryColor: Colors.deepPurple,
           fontFamily: 'Roboto'),
-      home: const MyHomePage(title: 'Khata'),
+      home: MyHomePage(title: 'Khata'),
+      routes: <String, WidgetBuilder>{
+        '/addcustomer': (BuildContext context) => AddCustomer(),
+      },
     );
   }
 }
