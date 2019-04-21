@@ -53,14 +53,4 @@ class CustomerDao {
 
     return result;
   }
-
-  // We are not going to use this in the demo
-  Future deleteAllCustomers() async {
-    final db = await dbProvider.database;
-    var result = await db.delete(
-      customerTABLE,
-    );
-
-    return result;
-  }
 }

@@ -14,6 +14,4 @@ class CustomerRepository {
       customerDao.updateCustomer(customer);
 
   Future deleteCustomerById(int id) => customerDao.deleteCustomer(id);
-
-  Future deleteAllCustomers() => customerDao.deleteAllCustomers();
 }
