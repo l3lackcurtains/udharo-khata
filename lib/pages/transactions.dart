@@ -18,7 +18,7 @@ class _TransactionsState extends State<Transactions> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          // Navigator.of(context).pushNamed('/addtransaction');
+          Navigator.of(context).pushNamed('/addtransaction');
         },
         icon: const Icon(Icons.add),
         label: const Text('Add Transaction'),

@@ -27,6 +27,6 @@ class TransactionDatabaseProvider {
 
   void initDB(Database database, int version) async {
     await database.execute(
-        'CREATE TABLE $transactionTABLE  (id INTEGER PRIMARY KEY, uid TEXT, ttype TEXT, amount TEXT, comment TEXT)');
+        'CREATE TABLE $transactionTABLE (id INTEGER PRIMARY KEY, uid TEXT, ttype TEXT, amount TEXT, comment TEXT)');
   }
 }

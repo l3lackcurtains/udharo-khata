@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simple_khata/pages/addCustomer.dart';
+import 'package:simple_khata/pages/addTransaction.dart';
 import 'package:simple_khata/pages/customers.dart';
 import 'package:simple_khata/pages/home.dart';
 import 'package:simple_khata/pages/transactions.dart';
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
       home: MyHomePage(title: 'Khata'),
       routes: <String, WidgetBuilder>{
         '/addcustomer': (BuildContext context) => AddCustomer(),
+        '/addtransaction': (BuildContext context) => AddTransaction(),
       },
     );
   }
