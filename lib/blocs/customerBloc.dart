@@ -18,6 +18,13 @@ class CustomerBloc {
     final List<Customer> customers =
         await _customerRepository.getAllCustomers(query: query);
     _customerController.sink.add(customers);
+    return customers;
+  }
+
+  getCustomer({String query}) async {
+    final List<Customer> customers =
+        await _customerRepository.getAllCustomers(query: query);
+    _customerController.sink.add(customers);
   }
 
   addCustomer(Customer customer) async {

@@ -26,6 +26,7 @@ dependencies:
 
   sqflite: ^1.1.0
   path_provider: any
+  autocomplete_textfield: ^1.7.3
 
 dev_dependencies:
   flutter_test:

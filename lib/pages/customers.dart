@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:simple_khata/blocs/customerBloc.dart';
 import 'package:simple_khata/models/customer.dart';
+import 'package:simple_khata/pages/addCustomer.dart';
 
 class Customers extends StatefulWidget {
   @override
@@ -18,7 +19,10 @@ class _CustomersState extends State<Customers> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          Navigator.of(context).pushNamed('/addcustomer');
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddCustomer()),
+          );
         },
         icon: const Icon(Icons.add),
         label: const Text('Add Customer'),
@@ -49,7 +53,6 @@ class _CustomersState extends State<Customers> {
                     subtitle: Text('${customer.phone}'),
                     trailing: Column(
                       children: <Widget>[
-                        Text('-2000'),
                         RaisedButton(
                           child: const Text('Delete'),
                           onPressed: () {

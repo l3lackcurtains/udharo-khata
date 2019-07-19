@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:simple_khata/pages/addCustomer.dart';
-import 'package:simple_khata/pages/addTransaction.dart';
 import 'package:simple_khata/pages/customers.dart';
 import 'package:simple_khata/pages/home.dart';
 import 'package:simple_khata/pages/transactions.dart';
@@ -11,23 +9,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Khata',
-      theme: ThemeData(
-          primarySwatch: Colors.purple,
-          primaryColor: Colors.deepPurple,
-          fontFamily: 'Roboto'),
-      home: MyHomePage(title: 'Khata'),
-      routes: <String, WidgetBuilder>{
-        '/addcustomer': (BuildContext context) => AddCustomer(),
-        '/addtransaction': (BuildContext context) => AddTransaction(),
-      },
-    );
+        title: 'Khata',
+        theme: ThemeData(
+            primarySwatch: Colors.purple,
+            primaryColor: Colors.deepPurple,
+            fontFamily: 'Roboto'),
+        home: MyHomePage());
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
+  const MyHomePage({Key key}) : super(key: key);
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }

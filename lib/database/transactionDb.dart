@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-final transactionTABLE = 'KhataTransaction';
+final transactionTABLE = 'KhataTransaction2';
 
 class TransactionDatabaseProvider {
   static final TransactionDatabaseProvider dbProvider =
@@ -27,6 +28,6 @@ class TransactionDatabaseProvider {
 
   void initDB(Database database, int version) async {
     await database.execute(
-        'CREATE TABLE $transactionTABLE (id INTEGER PRIMARY KEY, uid TEXT, ttype TEXT, amount TEXT, comment TEXT)');
+        'CREATE TABLE $transactionTABLE (id INTEGER PRIMARY KEY, uid INT, ttype TEXT, amount TEXT, comment TEXT)');
   }
 }

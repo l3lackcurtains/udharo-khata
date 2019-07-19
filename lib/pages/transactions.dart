@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:simple_khata/blocs/transactionBloc.dart';
 import 'package:simple_khata/models/transaction.dart';
+import 'package:simple_khata/pages/addTransaction.dart';
 
 class Transactions extends StatefulWidget {
   @override
@@ -18,7 +19,10 @@ class _TransactionsState extends State<Transactions> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          Navigator.of(context).pushNamed('/addtransaction');
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddTransaction()),
+          );
         },
         icon: const Icon(Icons.add),
         label: const Text('Add Transaction'),
@@ -45,11 +49,10 @@ class _TransactionsState extends State<Transactions> {
                 return ListTile(
                     dense: true,
                     onTap: () {},
-                    title: Text('${transaction.ttype}'),
-                    subtitle: Text('${transaction.comment}'),
+                    title: Text('${transaction.comment}'),
+                    subtitle: Text('${transaction.ttype}'),
                     trailing: Column(
                       children: <Widget>[
-                        Text('-2000'),
                         RaisedButton(
                           child: const Text('Delete'),
                           onPressed: () {
