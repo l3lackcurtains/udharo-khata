@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:simple_khata/blocs/customerBloc.dart';
 import 'package:simple_khata/blocs/transactionBloc.dart';
+import 'package:simple_khata/models/customer.dart';
 import 'package:simple_khata/models/transaction.dart';
 import 'package:simple_khata/pages/addTransaction.dart';
 
@@ -10,6 +12,7 @@ class Transactions extends StatefulWidget {
 
 class _TransactionsState extends State<Transactions> {
   final TransactionBloc transactionBloc = TransactionBloc();
+  final CustomerBloc customerBloc = CustomerBloc();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,7 +53,7 @@ class _TransactionsState extends State<Transactions> {
                     dense: true,
                     onTap: () {},
                     title: Text('${transaction.comment}'),
-                    subtitle: Text('${transaction.ttype}'),
+                    subtitle: Text(transaction.ttype),
                     trailing: Column(
                       children: <Widget>[
                         RaisedButton(
@@ -68,5 +71,10 @@ class _TransactionsState extends State<Transactions> {
     } else {
       return Container();
     }
+  }
+
+  Widget getTransactionCustomer(int id) {
+    Customer customer = customerBloc.getCustomer(id);
+    return Text(customer.name);
   }
 }

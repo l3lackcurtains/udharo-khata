@@ -6,9 +6,9 @@ import 'package:simple_khata/models/customer.dart';
 class CustomerBloc {
   final _customerRepository = CustomerRepository();
 
-  final _customerController = StreamController<List<Customer>>.broadcast();
+  final _customersController = StreamController<List<Customer>>.broadcast();
 
-  Stream<List<Customer>> get customers => _customerController.stream;
+  Stream<List<Customer>> get customers => _customersController.stream;
 
   CustomerBloc() {
     getCustomers();
@@ -17,14 +17,13 @@ class CustomerBloc {
   getCustomers({String query}) async {
     final List<Customer> customers =
         await _customerRepository.getAllCustomers(query: query);
-    _customerController.sink.add(customers);
+    _customersController.sink.add(customers);
     return customers;
   }
 
-  getCustomer({String query}) async {
-    final List<Customer> customers =
-        await _customerRepository.getAllCustomers(query: query);
-    _customerController.sink.add(customers);
+  getCustomer(int id) async {
+    final Customer customer = await _customerRepository.getCustomer(id);
+    return customer;
   }
 
   addCustomer(Customer customer) async {
@@ -43,6 +42,6 @@ class CustomerBloc {
   }
 
   dispose() {
-    _customerController.close();
+    _customersController.close();
   }
 }

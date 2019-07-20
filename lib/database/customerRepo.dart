@@ -7,6 +7,8 @@ class CustomerRepository {
   Future getAllCustomers({String query}) =>
       customerDao.getCustomers(query: query);
 
+  Future getCustomer(int id) => customerDao.getCustomer(id);
+
   Future insertCustomer(Customer customer) =>
       customerDao.createCustomer(customer);
 

@@ -21,10 +21,7 @@ class TransactionDao {
     List<Map<String, dynamic>> result;
     if (query != null) {
       if (query.isNotEmpty)
-        result = await db.query(transactionTABLE,
-            columns: columns,
-            where: 'description LIKE ?',
-            whereArgs: ["%$query%"]);
+        result = await db.query(transactionTABLE, columns: columns);
     } else {
       result = await db.query(transactionTABLE, columns: columns);
     }
@@ -32,11 +29,12 @@ class TransactionDao {
     List<Transaction> transactions = result.isNotEmpty
         ? result.map((item) => Transaction.fromDatabaseJson(item)).toList()
         : [];
+
     return transactions;
   }
 
   // Get transaction by ID
-  Future<Transaction> getTransactioon(int id) async {
+  Future<Transaction> getTransaction(int id) async {
     final db = await dbProvider.database;
     List<Map> maps =
         await db.query(transactionTABLE, where: 'id = ?', whereArgs: [id]);

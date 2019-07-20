@@ -202,10 +202,10 @@ class _AddTransactionState extends State<AddTransaction> {
 
     if (formState.validate()) {
       formState.save();
-      print(_customer);
       transaction.ttype = _transType == 0 ? 'credit' : 'payment';
       transaction.amount = _amount;
       transaction.comment = _comment;
+      transaction.uid = _customer;
 
       transactionBloc.addTransaction(transaction);
       Navigator.pop(context);

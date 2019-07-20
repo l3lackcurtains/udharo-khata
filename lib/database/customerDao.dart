@@ -35,6 +35,16 @@ class CustomerDao {
     return customers;
   }
 
+  // Get customer by ID
+  Future<Customer> getCustomer(int id) async {
+    final db = await dbProvider.database;
+    List<Map> maps =
+        await db.query(customerTABLE, where: 'id = ?', whereArgs: [id]);
+    Customer customer =
+        maps.length > 0 ? Customer.fromDatabaseJson(maps.first) : null;
+    return customer;
+  }
+
   // Update Customer record
   Future<int> updateCustomer(Customer customer) async {
     final db = await dbProvider.database;

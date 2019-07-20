@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:simple_khata/database/customerRepo.dart';
 import 'package:simple_khata/database/transactionRepo.dart';
 import 'package:simple_khata/models/transaction.dart';
 
 class TransactionBloc {
   final _transactionRepository = TransactionRepository();
+  final _customerRepository = CustomerRepository();
 
   final _transactionController =
       StreamController<List<Transaction>>.broadcast();

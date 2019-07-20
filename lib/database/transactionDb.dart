@@ -5,7 +5,7 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-final transactionTABLE = 'KhataTransaction2';
+final transactionTABLE = 'KhataTransaction';
 
 class TransactionDatabaseProvider {
   static final TransactionDatabaseProvider dbProvider =
