@@ -46,21 +46,61 @@ class _CustomersState extends State<Customers> {
               itemCount: snapshot.data.length,
               itemBuilder: (context, itemIndex) {
                 Customer customer = snapshot.data[itemIndex];
-                return ListTile(
-                    dense: true,
-                    onTap: () {},
-                    title: Text('${customer.name}'),
-                    subtitle: Text('${customer.phone}'),
-                    trailing: Column(
-                      children: <Widget>[
-                        RaisedButton(
-                          child: const Text('Delete'),
-                          onPressed: () {
-                            customerBloc.deleteCustomerById(customer.id);
-                          },
-                        )
-                      ],
-                    ));
+
+                return Padding(
+                  padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
+                  child: Column(
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(4, 4, 16, 4),
+                            child: CircleAvatar(
+                              backgroundColor: Colors.purple.shade500,
+                              child: Icon(Icons.person,
+                                  color: Colors.purple.shade100, size: 20.0),
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.fromLTRB(4, 4, 4, 4),
+                                child: Text(customer.name),
+                              ),
+                              Row(
+                                children: <Widget>[
+                                  Icon(
+                                    Icons.phone,
+                                    color: Colors.brown.shade600,
+                                    size: 16.0,
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.fromLTRB(8, 4, 4, 4),
+                                    child: Text(customer.phone),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Spacer(),
+                          Text("\$ 2000",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16)),
+                        ],
+                      ),
+                      snapshot.data.length - 1 != itemIndex
+                          ? Padding(
+                              padding: EdgeInsets.fromLTRB(0, 16, 0, 8),
+                              child: Divider(
+                                color: Colors.grey.shade500,
+                                height: 2,
+                              ),
+                            )
+                          : Container()
+                    ],
+                  ),
+                );
               },
             )
           : Container();

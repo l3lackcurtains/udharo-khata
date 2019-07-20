@@ -20,8 +20,8 @@ class _AddTransactionState extends State<AddTransaction> {
   final _customerRepository = CustomerRepository();
 
   final TransactionBloc transactionBloc = TransactionBloc();
-  String _amount, _comment, _customerName;
-  int _customer;
+  String _comment, _customerName;
+  int _customer, _amount;
   Transaction transaction = Transaction();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<AutoCompleteTextFieldState> _customerSuggestionKey =
@@ -161,6 +161,8 @@ class _AddTransactionState extends State<AddTransaction> {
                   ),
                   autovalidate: false,
                   validator: null,
+                  keyboardType: TextInputType.number,
+                  onSaved: (input) => _amount = int.parse(input),
                 ),
                 TextFormField(
                   decoration: const InputDecoration(
