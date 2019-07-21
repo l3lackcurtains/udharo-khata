@@ -1,12 +1,10 @@
 import 'dart:async';
 
-import 'package:simple_khata/database/customerRepo.dart';
 import 'package:simple_khata/database/transactionRepo.dart';
 import 'package:simple_khata/models/transaction.dart';
 
 class TransactionBloc {
   final _transactionRepository = TransactionRepository();
-  final _customerRepository = CustomerRepository();
 
   final _transactionController =
       StreamController<List<Transaction>>.broadcast();
@@ -21,6 +19,18 @@ class TransactionBloc {
     final List<Transaction> transactions =
         await _transactionRepository.getAllTransactions(query: query);
     _transactionController.sink.add(transactions);
+  }
+
+  getTransaction(int id) async {
+    final Transaction transaction =
+        await _transactionRepository.getTransaction(id);
+    return transaction;
+  }
+
+  getTransactionsByCustomerId(int cid) async {
+    final List<Transaction> transactions =
+        await _transactionRepository.getAllTransactionsByCustomerId(cid);
+    return transactions;
   }
 
   addTransaction(Transaction transaction) async {

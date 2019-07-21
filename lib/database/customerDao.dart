@@ -6,14 +6,12 @@ import 'package:simple_khata/models/customer.dart';
 class CustomerDao {
   final dbProvider = CustomerDatabaseProvider.dbProvider;
 
-  // Adds new Customer records
   Future<int> createCustomer(Customer customer) async {
     final db = await dbProvider.database;
     var result = db.insert(customerTABLE, customer.toDatabaseJson());
     return result;
   }
 
-  // Get All Customer items & Searches if query string was passed
   Future<List<Customer>> getCustomers(
       {List<String> columns, String query}) async {
     final db = await dbProvider.database;
@@ -35,7 +33,6 @@ class CustomerDao {
     return customers;
   }
 
-  // Get customer by ID
   Future<Customer> getCustomer(int id) async {
     final db = await dbProvider.database;
     List<Map> maps =
@@ -45,17 +42,16 @@ class CustomerDao {
     return customer;
   }
 
-  // Update Customer record
   Future<int> updateCustomer(Customer customer) async {
     final db = await dbProvider.database;
 
     var result = await db.update(customerTABLE, customer.toDatabaseJson(),
         where: "id = ?", whereArgs: [customer.id]);
+    print(customer.name);
 
     return result;
   }
 
-  // Delete Customer records
   Future<int> deleteCustomer(int id) async {
     final db = await dbProvider.database;
     var result =

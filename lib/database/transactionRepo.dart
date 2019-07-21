@@ -7,6 +7,11 @@ class TransactionRepository {
   Future getAllTransactions({String query}) =>
       transactionDao.getTransactions(query: query);
 
+  Future getTransaction(int id) => transactionDao.getTransaction(id);
+
+  Future getAllTransactionsByCustomerId(int cid) =>
+      transactionDao.getTransactionsByCustomerId(cid);
+
   Future insertTransaction(Transaction transaction) =>
       transactionDao.createTransaction(transaction);
 

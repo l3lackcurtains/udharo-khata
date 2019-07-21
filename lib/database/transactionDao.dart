@@ -6,14 +6,12 @@ import 'package:simple_khata/models/transaction.dart';
 class TransactionDao {
   final dbProvider = TransactionDatabaseProvider.dbProvider;
 
-  // Adds new Transaction records
   Future<int> createTransaction(Transaction transaction) async {
     final db = await dbProvider.database;
     var result = db.insert(transactionTABLE, transaction.toDatabaseJson());
     return result;
   }
 
-  // Get All Transaction items & Searches if query string was passed
   Future<List<Transaction>> getTransactions(
       {List<String> columns, String query}) async {
     final db = await dbProvider.database;
@@ -33,7 +31,19 @@ class TransactionDao {
     return transactions;
   }
 
-  // Get transaction by ID
+  Future<List<Transaction>> getTransactionsByCustomerId(int cid) async {
+    final db = await dbProvider.database;
+
+    List<Map> result =
+        await db.query(transactionTABLE, where: 'uid = ?', whereArgs: [cid]);
+
+    List<Transaction> transactions = result.isNotEmpty
+        ? result.map((item) => Transaction.fromDatabaseJson(item)).toList()
+        : [];
+
+    return transactions;
+  }
+
   Future<Transaction> getTransaction(int id) async {
     final db = await dbProvider.database;
     List<Map> maps =
@@ -44,7 +54,6 @@ class TransactionDao {
     return null;
   }
 
-  // Update Transaction record
   Future<int> updateTransaction(Transaction transaction) async {
     final db = await dbProvider.database;
 
@@ -54,7 +63,6 @@ class TransactionDao {
     return result;
   }
 
-  // Delete Transaction records
   Future<int> deleteTransaction(int id) async {
     final db = await dbProvider.database;
     var result =

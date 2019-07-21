@@ -5,61 +5,45 @@ import 'package:simple_khata/database/customerRepo.dart';
 import 'package:simple_khata/models/customer.dart';
 import 'package:simple_khata/models/transaction.dart';
 
-import 'singleCustomer.dart';
+import 'singleTransaction.dart';
 
-class AddTransaction extends StatefulWidget {
+class EditTransaction extends StatefulWidget {
   @override
-  _AddTransactionState createState() => _AddTransactionState();
+  _EditTransactionState createState() => _EditTransactionState();
 }
 
-class _AddTransactionState extends State<AddTransaction> {
+class _EditTransactionState extends State<EditTransaction> {
   // Transaction type
   // 0: credit 1: received
   int _transType = 0;
   static List<Customer> customers = new List<Customer>();
   AutoCompleteTextField searchTextField;
 
-  final _customerRepository = CustomerRepository();
-
   final TransactionBloc transactionBloc = TransactionBloc();
   String _comment, _customerName;
+  final _customerRepository = CustomerRepository();
   int _customer, _amount;
   Transaction transaction = Transaction();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<AutoCompleteTextFieldState> _customerSuggestionKey =
       GlobalKey();
 
-  void getCustomers() async {
-    try {
-      customers = await _customerRepository.getAllCustomers(query: null);
-    } catch (e) {
-      print("Error getting customers");
-      getCustomers();
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getCustomers();
-  }
-
   @override
   Widget build(BuildContext context) {
-    final AddTransactionScreenArguments args =
+    final EditTransactionScreenArguments args =
         ModalRoute.of(context).settings.arguments;
+    Transaction argTransaction = args.transaction;
 
-    if (args != null) {
-      _customer = args.customer.id;
-      _customerName = args.customer.name;
-    }
+    _transType = argTransaction.ttype == 'credit' ? 0 : 1;
+    _customer = argTransaction.uid;
+
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         elevation: 0.0,
         backgroundColor: Colors.transparent,
         title: const Text(
-          'Add Transaction',
+          'Edit Transaction',
           style: TextStyle(color: Colors.black),
         ),
         iconTheme: const IconThemeData(
@@ -122,55 +106,47 @@ class _AddTransactionState extends State<AddTransaction> {
                     )
                   ],
                 ),
-                args != null
-                    ? Row(children: <Widget>[
+                searchTextField = AutoCompleteTextField(
+                  key: _customerSuggestionKey,
+                  clearOnSubmit: false,
+                  suggestions: customers,
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.person),
+                    hintText: 'What is your customer name?',
+                    labelText: 'Customer Name *',
+                  ),
+                  itemFilter: (item, query) {
+                    _customerName = query;
+                    _customer = null;
+                    return item.name
+                        .toLowerCase()
+                        .startsWith(query.toLowerCase());
+                  },
+                  itemSorter: (a, b) {
+                    return a.name.compareTo(b.name);
+                  },
+                  itemSubmitted: (item) {
+                    setState(() {
+                      searchTextField.textField.controller.text = item.name;
+                      _customer = item.id;
+                    });
+                  },
+                  itemBuilder: (context, item) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
                         Padding(
-                            padding: EdgeInsets.fromLTRB(4, 16, 4, 16),
-                            child: Text(_customerName,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 20)))
-                      ])
-                    : searchTextField = AutoCompleteTextField(
-                        key: _customerSuggestionKey,
-                        clearOnSubmit: false,
-                        suggestions: customers,
-                        decoration: InputDecoration(
-                          icon: Icon(Icons.person),
-                          hintText: 'What is your customer name?',
-                          labelText: 'Customer Name *',
+                          padding: EdgeInsets.all(16.0),
+                          child: Text(
+                            item.name,
+                          ),
                         ),
-                        itemFilter: (item, query) {
-                          _customerName = query;
-                          _customer = null;
-                          return item.name
-                              .toLowerCase()
-                              .startsWith(query.toLowerCase());
-                        },
-                        itemSorter: (a, b) {
-                          return a.name.compareTo(b.name);
-                        },
-                        itemSubmitted: (item) {
-                          setState(() {
-                            searchTextField.textField.controller.text =
-                                item.name;
-                            _customer = item.id;
-                          });
-                        },
-                        itemBuilder: (context, item) {
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.all(16.0),
-                                child: Text(
-                                  item.name,
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
+                      ],
+                    );
+                  },
+                ),
                 TextFormField(
+                  initialValue: argTransaction.amount.toString(),
                   decoration: const InputDecoration(
                     icon: Icon(Icons.monetization_on),
                     hintText: 'How much is the amount?',
@@ -182,6 +158,7 @@ class _AddTransactionState extends State<AddTransaction> {
                   onSaved: (input) => _amount = int.parse(input),
                 ),
                 TextFormField(
+                  initialValue: argTransaction.comment,
                   decoration: const InputDecoration(
                     icon: Icon(Icons.comment),
                     hintText: 'Write comment about the transaction.',
@@ -202,10 +179,10 @@ class _AddTransactionState extends State<AddTransaction> {
                         textColor: Colors.white,
                         color: Colors.purple,
                         onPressed: () {
-                          addTransaction();
+                          editTransaction(argTransaction.id);
                         },
                         padding: const EdgeInsets.all(16.0),
-                        child: const Text('Add'),
+                        child: const Text('Update'),
                       ),
                     )
                   ],
@@ -216,17 +193,33 @@ class _AddTransactionState extends State<AddTransaction> {
     );
   }
 
-  void addTransaction() {
+  void getCustomers() async {
+    try {
+      customers = await _customerRepository.getAllCustomers(query: null);
+    } catch (e) {
+      print("Error getting customers");
+      getCustomers();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getCustomers();
+  }
+
+  void editTransaction(id) {
     final formState = _formKey.currentState;
 
     if (formState.validate()) {
       formState.save();
+      transaction.id = id;
       transaction.ttype = _transType == 0 ? 'credit' : 'payment';
       transaction.amount = _amount;
       transaction.comment = _comment;
       transaction.uid = _customer;
 
-      transactionBloc.addTransaction(transaction);
+      transactionBloc.updateTransaction(transaction);
       Navigator.pop(context);
     }
   }

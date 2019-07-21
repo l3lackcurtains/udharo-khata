@@ -3,6 +3,13 @@ import 'package:simple_khata/blocs/customerBloc.dart';
 import 'package:simple_khata/blocs/transactionBloc.dart';
 import 'package:simple_khata/models/transaction.dart';
 import 'package:simple_khata/pages/addTransaction.dart';
+import 'package:simple_khata/pages/singleTransaction.dart';
+
+class SingleTransactionScreenArguments {
+  final int transactionId;
+
+  SingleTransactionScreenArguments(this.transactionId);
+}
 
 class Transactions extends StatefulWidget {
   @override
@@ -39,71 +46,87 @@ class _TransactionsState extends State<Transactions> {
           if (snapshot.hasData) {
             return snapshot.data.length != 0
                 ? ListView.builder(
+                    padding: EdgeInsets.fromLTRB(0, 16, 0, 60),
                     itemCount: snapshot.data.length,
                     itemBuilder: (context, itemIndex) {
                       Transaction transaction = snapshot.data[itemIndex];
 
-                      return Padding(
-                        padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
-                        child: Column(
-                          children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Padding(
-                                  padding: EdgeInsets.fromLTRB(4, 2, 16, 2),
-                                  child: transaction.ttype == 'credit'
-                                      ? CircleAvatar(
-                                          backgroundColor:
-                                              Colors.orange.shade600,
-                                          child: Icon(
-                                            Icons.arrow_downward,
-                                            color: Colors.orange.shade100,
-                                            size: 20.0,
-                                          ),
-                                        )
-                                      : transaction.ttype == 'payment'
-                                          ? CircleAvatar(
-                                              backgroundColor:
-                                                  Colors.green.shade600,
-                                              child: Icon(
-                                                Icons.arrow_upward,
-                                                color: Colors.green.shade100,
-                                                size: 20.0,
-                                              ),
-                                            )
-                                          : null,
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text(
-                                        transaction.comment,
-                                        softWrap: true,
-                                        textAlign: TextAlign.left,
-                                      ),
-                                      getTransactionCustomer(transaction.uid),
-                                    ],
+                      return Column(
+                        children: <Widget>[
+                          FlatButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SingleTransaction(),
+                                  settings: RouteSettings(
+                                    arguments: SingleTransactionScreenArguments(
+                                      transaction.id,
+                                    ),
                                   ),
                                 ),
-                                Text("\$ " + transaction.amount.toString(),
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16)),
-                              ],
-                            ),
-                            snapshot.data.length - 1 != itemIndex
-                                ? Padding(
-                                    padding: EdgeInsets.fromLTRB(0, 16, 0, 8),
-                                    child: Divider(
-                                      color: Colors.grey.shade500,
-                                      height: 2,
+                              );
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(0, 8, 4, 8),
+                              child: Row(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 4, 12, 4),
+                                    child: transaction.ttype == 'credit'
+                                        ? CircleAvatar(
+                                            backgroundColor:
+                                                Colors.orange.shade100,
+                                            child: Icon(
+                                              Icons.arrow_downward,
+                                              color: Colors.orange.shade900,
+                                              size: 20.0,
+                                            ),
+                                          )
+                                        : transaction.ttype == 'payment'
+                                            ? CircleAvatar(
+                                                backgroundColor:
+                                                    Colors.green.shade100,
+                                                child: Icon(
+                                                  Icons.arrow_upward,
+                                                  color: Colors.green.shade900,
+                                                  size: 20.0,
+                                                ),
+                                              )
+                                            : null,
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          transaction.comment,
+                                          softWrap: true,
+                                          textAlign: TextAlign.left,
+                                        ),
+                                        getTransactionCustomer(transaction.uid),
+                                      ],
                                     ),
-                                  )
-                                : Container(),
-                          ],
-                        ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                                    child: Text(transaction.amount.toString(),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          snapshot.data.length - 1 != itemIndex
+                              ? Divider(
+                                  color: Colors.grey.shade500,
+                                  height: 2,
+                                )
+                              : Container(),
+                        ],
                       );
                     },
                   )
