@@ -22,7 +22,7 @@ class _AddTransactionState extends State<AddTransaction> {
   final TransactionBloc transactionBloc = TransactionBloc();
   final CustomerBloc customerBloc = CustomerBloc();
   String _comment, _customerName;
-  int _customer, _amount;
+  int _customerId, _amount;
   Transaction transaction = Transaction();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<AutoCompleteTextFieldState> _customerSuggestionKey =
@@ -34,7 +34,7 @@ class _AddTransactionState extends State<AddTransaction> {
         ModalRoute.of(context).settings.arguments;
 
     if (args != null) {
-      _customer = args.customer.id;
+      _customerId = args.customer.id;
       _customerName = args.customer.name;
     }
 
@@ -70,8 +70,8 @@ class _AddTransactionState extends State<AddTransaction> {
                               children: <Widget>[
                                 ActionChip(
                                     backgroundColor: _transType == 0
-                                        ? Colors.green.shade600
-                                        : Colors.grey.shade300,
+                                        ? Colors.green.shade500
+                                        : Colors.grey.shade200,
                                     avatar: CircleAvatar(
                                       backgroundColor: Colors.grey.shade200,
                                       child: Icon(
@@ -93,8 +93,8 @@ class _AddTransactionState extends State<AddTransaction> {
                               children: <Widget>[
                                 ActionChip(
                                     backgroundColor: _transType == 1
-                                        ? Colors.green.shade600
-                                        : Colors.grey.shade300,
+                                        ? Colors.green.shade500
+                                        : Colors.grey.shade200,
                                     avatar: CircleAvatar(
                                       backgroundColor: Colors.grey.shade200,
                                       child: Icon(
@@ -133,7 +133,7 @@ class _AddTransactionState extends State<AddTransaction> {
                                 ),
                                 itemFilter: (item, query) {
                                   _customerName = query;
-                                  _customer = null;
+                                  _customerId = null;
                                   return item.name
                                       .toLowerCase()
                                       .startsWith(query.toLowerCase());
@@ -145,7 +145,7 @@ class _AddTransactionState extends State<AddTransaction> {
                                   setState(() {
                                     searchTextField.textField.controller.text =
                                         item.name;
-                                    _customer = item.id;
+                                    _customerId = item.id;
                                   });
                                 },
                                 itemBuilder: (context, item) {
@@ -221,9 +221,11 @@ class _AddTransactionState extends State<AddTransaction> {
       transaction.ttype = _transType == 0 ? 'credit' : 'payment';
       transaction.amount = _amount;
       transaction.comment = _comment;
-      transaction.uid = _customer;
 
-      transactionBloc.addTransaction(transaction);
+      if (_customerId != null) {
+        transaction.uid = _customerId;
+        transactionBloc.addTransaction(transaction);
+      }
       Navigator.pop(context);
     }
   }

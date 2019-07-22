@@ -118,14 +118,23 @@ class _SingleTransactionState extends State<SingleTransaction> {
                             getTransactionCustomer(transaction.uid),
                             Row(
                               children: <Widget>[
-                                Chip(
-                                    label: Text('Payment received'),
-                                    backgroundColor: Colors.orange.shade100,
-                                    avatar: Icon(
-                                      Icons.arrow_downward,
-                                      color: Colors.orange.shade900,
-                                      size: 20.0,
-                                    )),
+                                transaction.ttype == 'credit'
+                                    ? Chip(
+                                        label: Text('Credit Given'),
+                                        backgroundColor: Colors.orange.shade100,
+                                        avatar: Icon(
+                                          Icons.arrow_upward,
+                                          color: Colors.orange.shade900,
+                                          size: 20.0,
+                                        ))
+                                    : Chip(
+                                        label: Text('Payment Received'),
+                                        backgroundColor: Colors.orange.shade100,
+                                        avatar: Icon(
+                                          Icons.arrow_downward,
+                                          color: Colors.orange.shade900,
+                                          size: 20.0,
+                                        )),
                                 Padding(
                                     padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
                                     child: Text(transaction.amount.toString(),

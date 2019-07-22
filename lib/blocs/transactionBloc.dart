@@ -19,6 +19,7 @@ class TransactionBloc {
     final List<Transaction> transactions =
         await _transactionRepository.getAllTransactions(query: query);
     _transactionController.sink.add(transactions);
+    return transactions;
   }
 
   getTransaction(int id) async {

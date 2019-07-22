@@ -56,7 +56,6 @@ class TransactionDao {
 
   Future<int> updateTransaction(Transaction transaction) async {
     final db = await dbProvider.database;
-
     var result = await db.update(transactionTABLE, transaction.toDatabaseJson(),
         where: "id = ?", whereArgs: [transaction.id]);
 

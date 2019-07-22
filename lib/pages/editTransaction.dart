@@ -15,7 +15,7 @@ class EditTransaction extends StatefulWidget {
 class _EditTransactionState extends State<EditTransaction> {
   // Transaction type
   // 0: credit 1: received
-  int _transType = 0;
+  String _transType = "credit";
   static List<Customer> customers = new List<Customer>();
 
   final _customersField = TextEditingController();
@@ -23,14 +23,23 @@ class _EditTransactionState extends State<EditTransaction> {
   final TransactionBloc transactionBloc = TransactionBloc();
   final CustomerBloc customerBloc = CustomerBloc();
 
-  String _comment, _customerName;
-  int _customer, _amount;
-
-  Transaction transaction = Transaction();
+  String _comment;
+  int _customerId, _amount;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<AutoCompleteTextFieldState> _customerSuggestionKey =
       GlobalKey();
+
+  @override
+  void didChangeDependencies() {
+    final EditTransactionScreenArguments args =
+        ModalRoute.of(context).settings.arguments;
+    Transaction argTransaction = args.transaction;
+    _customerId = argTransaction.uid;
+    _transType = argTransaction.ttype;
+
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,29 +47,20 @@ class _EditTransactionState extends State<EditTransaction> {
         ModalRoute.of(context).settings.arguments;
     Transaction argTransaction = args.transaction;
 
-    if (!this.mounted) {
-      setState(() {
-        _transType = argTransaction.ttype == 'credit' ? 0 : 1;
-        _customer = argTransaction.uid;
-      });
-    }
-
     return FutureBuilder(
         future: customerBloc.getCustomers(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
             dynamic customers = snapshot.data;
-            if (_customer != null) {
+            if (_customerId != null) {
               customers.forEach((item) {
-                if (_customer == item.id) {
-                  _customerName = item.name;
+                if (_customerId == item.id) {
                   _customersField.text = item.name;
                 }
               });
             } else {
               customers.forEach((item) {
                 if (argTransaction.uid == item.id) {
-                  _customerName = item.name;
                   _customersField.text = item.name;
                 }
               });
@@ -91,9 +91,9 @@ class _EditTransactionState extends State<EditTransaction> {
                             Column(
                               children: <Widget>[
                                 ActionChip(
-                                    backgroundColor: _transType == 0
-                                        ? Colors.green.shade600
-                                        : Colors.grey.shade300,
+                                    backgroundColor: _transType == "credit"
+                                        ? Colors.green.shade500
+                                        : Colors.grey.shade200,
                                     avatar: CircleAvatar(
                                       backgroundColor: Colors.grey.shade200,
                                       child: Icon(
@@ -105,7 +105,7 @@ class _EditTransactionState extends State<EditTransaction> {
                                     label: Text('Credit Given'),
                                     onPressed: () {
                                       setState(() {
-                                        _transType = 0;
+                                        _transType = "credit";
                                       });
                                     })
                               ],
@@ -114,9 +114,9 @@ class _EditTransactionState extends State<EditTransaction> {
                             Column(
                               children: <Widget>[
                                 ActionChip(
-                                    backgroundColor: _transType == 1
-                                        ? Colors.green.shade600
-                                        : Colors.grey.shade300,
+                                    backgroundColor: _transType == "payment"
+                                        ? Colors.green.shade500
+                                        : Colors.grey.shade200,
                                     avatar: CircleAvatar(
                                       backgroundColor: Colors.grey.shade200,
                                       child: Icon(
@@ -128,7 +128,7 @@ class _EditTransactionState extends State<EditTransaction> {
                                     label: Text('Payment Received'),
                                     onPressed: () {
                                       setState(() {
-                                        _transType = 1;
+                                        _transType = "payment";
                                       });
                                     })
                               ],
@@ -146,8 +146,7 @@ class _EditTransactionState extends State<EditTransaction> {
                             labelText: 'Customer Name *',
                           ),
                           itemFilter: (item, query) {
-                            _customerName = query;
-                            _customer = null;
+                            _customerId = null;
 
                             return item.name
                                 .toLowerCase()
@@ -158,7 +157,7 @@ class _EditTransactionState extends State<EditTransaction> {
                           },
                           itemSubmitted: (item) {
                             _customersField.text = item.name;
-                            _customer = item.id;
+                            _customerId = item.id;
                           },
                           itemBuilder: (context, item) {
                             return Row(
@@ -236,11 +235,13 @@ class _EditTransactionState extends State<EditTransaction> {
 
     if (formState.validate()) {
       formState.save();
+      Transaction transaction = Transaction();
       transaction.id = id;
-      transaction.ttype = _transType == 0 ? 'credit' : 'payment';
+      transaction.ttype = _transType;
       transaction.amount = _amount;
       transaction.comment = _comment;
-      if (_customer != null) {
+      if (_customerId != null) {
+        transaction.uid = _customerId;
         transactionBloc.updateTransaction(transaction);
       }
 

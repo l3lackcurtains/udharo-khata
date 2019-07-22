@@ -38,15 +38,14 @@ class _CustomersState extends State<Customers> {
   }
 
   Widget getCustomersList() {
-    return StreamBuilder(
-        stream: customerBloc.customers,
-        builder:
-            (BuildContext context, AsyncSnapshot<List<Customer>> snapshot) {
+    return FutureBuilder(
+        future: customerBloc.getCustomers(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
           return getCustomerCard(snapshot);
         });
   }
 
-  Widget getCustomerCard(AsyncSnapshot<List<Customer>> snapshot) {
+  Widget getCustomerCard(AsyncSnapshot snapshot) {
     if (snapshot.hasData) {
       return snapshot.data.length != 0
           ? ListView.builder(
