@@ -9,6 +9,9 @@ class TransactionRepository {
 
   Future getTransaction(int id) => transactionDao.getTransaction(id);
 
+  Future getCustomerTransactionsTotal(int id) =>
+      transactionDao.getCustomerTransactionsTotal(id);
+
   Future getAllTransactionsByCustomerId(int cid) =>
       transactionDao.getTransactionsByCustomerId(cid);
 

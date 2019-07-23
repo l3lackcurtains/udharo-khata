@@ -15,18 +15,34 @@ class AddTransaction extends StatefulWidget {
 class _AddTransactionState extends State<AddTransaction> {
   // Transaction type
   // 0: credit 1: received
-  int _transType = 0;
+  String _transType = "credit";
   static List<Customer> customers = new List<Customer>();
   AutoCompleteTextField searchTextField;
 
   final TransactionBloc transactionBloc = TransactionBloc();
   final CustomerBloc customerBloc = CustomerBloc();
+
   String _comment, _customerName;
   int _customerId, _amount;
+  DateTime _date = new DateTime.now();
+
   Transaction transaction = Transaction();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<AutoCompleteTextFieldState> _customerSuggestionKey =
       GlobalKey();
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: _date,
+      firstDate: DateTime(2015, 8),
+      lastDate: DateTime(2030),
+    );
+    if (picked != null && picked != _date)
+      setState(() {
+        _date = picked;
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,13 +79,14 @@ class _AddTransactionState extends State<AddTransaction> {
                   child: Form(
                     key: _formKey,
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Row(
                           children: <Widget>[
                             Column(
                               children: <Widget>[
                                 ActionChip(
-                                    backgroundColor: _transType == 0
+                                    backgroundColor: _transType == "credit"
                                         ? Colors.green.shade500
                                         : Colors.grey.shade200,
                                     avatar: CircleAvatar(
@@ -83,7 +100,7 @@ class _AddTransactionState extends State<AddTransaction> {
                                     label: Text('Credit Given'),
                                     onPressed: () {
                                       setState(() {
-                                        _transType = 0;
+                                        _transType = "credit";
                                       });
                                     })
                               ],
@@ -92,7 +109,7 @@ class _AddTransactionState extends State<AddTransaction> {
                             Column(
                               children: <Widget>[
                                 ActionChip(
-                                    backgroundColor: _transType == 1
+                                    backgroundColor: _transType == "payment"
                                         ? Colors.green.shade500
                                         : Colors.grey.shade200,
                                     avatar: CircleAvatar(
@@ -106,7 +123,7 @@ class _AddTransactionState extends State<AddTransaction> {
                                     label: Text('Payment Received'),
                                     onPressed: () {
                                       setState(() {
-                                        _transType = 1;
+                                        _transType = "payment";
                                       });
                                     })
                               ],
@@ -175,7 +192,7 @@ class _AddTransactionState extends State<AddTransaction> {
                           onSaved: (input) => _amount = int.parse(input),
                         ),
                         TextFormField(
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             icon: Icon(Icons.comment),
                             hintText: 'Write comment about the transaction.',
                             labelText: 'Comment *',
@@ -184,9 +201,20 @@ class _AddTransactionState extends State<AddTransaction> {
                           maxLines: 3,
                           onSaved: (input) => _comment = input,
                         ),
-                        const Padding(
-                          padding: EdgeInsets.all(36),
-                        ),
+                        Padding(
+                            padding: EdgeInsets.fromLTRB(0, 24, 8, 24),
+                            child: FlatButton.icon(
+                              color: Colors.grey.shade200,
+                              icon: Icon(
+                                Icons.calendar_today,
+                                color: Colors.grey.shade600,
+                              ),
+                              label: Text(
+                                  "${_date.day}/${_date.month}/${_date.year}"),
+                              onPressed: () {
+                                _selectDate(context);
+                              },
+                            )),
                         Row(
                           children: <Widget>[
                             Spacer(),
@@ -218,9 +246,10 @@ class _AddTransactionState extends State<AddTransaction> {
 
     if (formState.validate()) {
       formState.save();
-      transaction.ttype = _transType == 0 ? 'credit' : 'payment';
+      transaction.ttype = _transType;
       transaction.amount = _amount;
       transaction.comment = _comment;
+      transaction.date = _date;
 
       if (_customerId != null) {
         transaction.uid = _customerId;

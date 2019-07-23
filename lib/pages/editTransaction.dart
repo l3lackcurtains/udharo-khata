@@ -25,10 +25,24 @@ class _EditTransactionState extends State<EditTransaction> {
 
   String _comment;
   int _customerId, _amount;
+  DateTime _date;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<AutoCompleteTextFieldState> _customerSuggestionKey =
       GlobalKey();
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: _date,
+      firstDate: DateTime(2015, 8),
+      lastDate: DateTime(2030),
+    );
+    if (picked != null && picked != _date)
+      setState(() {
+        _date = picked;
+      });
+  }
 
   @override
   void didChangeDependencies() {
@@ -37,6 +51,7 @@ class _EditTransactionState extends State<EditTransaction> {
     Transaction argTransaction = args.transaction;
     _customerId = argTransaction.uid;
     _transType = argTransaction.ttype;
+    _date = argTransaction.date;
 
     super.didChangeDependencies();
   }
@@ -85,6 +100,7 @@ class _EditTransactionState extends State<EditTransaction> {
                   child: Form(
                     key: _formKey,
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Row(
                           children: <Widget>[
@@ -196,9 +212,20 @@ class _EditTransactionState extends State<EditTransaction> {
                           maxLines: 3,
                           onSaved: (input) => _comment = input,
                         ),
-                        const Padding(
-                          padding: EdgeInsets.all(36),
-                        ),
+                        Padding(
+                            padding: EdgeInsets.fromLTRB(0, 24, 8, 24),
+                            child: FlatButton.icon(
+                              color: Colors.grey.shade200,
+                              icon: Icon(
+                                Icons.calendar_today,
+                                color: Colors.grey.shade600,
+                              ),
+                              label: Text(
+                                  "${_date.day}/${_date.month}/${_date.year}"),
+                              onPressed: () {
+                                _selectDate(context);
+                              },
+                            )),
                         Row(
                           children: <Widget>[
                             Spacer(),
@@ -240,6 +267,8 @@ class _EditTransactionState extends State<EditTransaction> {
       transaction.ttype = _transType;
       transaction.amount = _amount;
       transaction.comment = _comment;
+      transaction.date = _date;
+
       if (_customerId != null) {
         transaction.uid = _customerId;
         transactionBloc.updateTransaction(transaction);

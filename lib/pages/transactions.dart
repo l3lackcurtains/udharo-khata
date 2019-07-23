@@ -86,9 +86,9 @@ class _TransactionsState extends State<Transactions> {
   }
 
   Widget getTransactionWithCustomer(Transaction transaction) {
-    return FutureBuilder<dynamic>(
+    return FutureBuilder(
         future: customerBloc.getCustomer(transaction.uid),
-        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
             Customer customer = snapshot.data;
             return Padding(
@@ -121,17 +121,31 @@ class _TransactionsState extends State<Transactions> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text(
-                          transaction.comment,
-                          softWrap: true,
-                          textAlign: TextAlign.left,
+                        Row(
+                          children: <Widget>[
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                              child: Text(customer.name.toString(),
+                                  style: TextStyle(
+                                      color: Colors.black87, fontSize: 16)),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+                              child: Text(
+                                  "${transaction.date.day}/${transaction.date.month}/${transaction.date.year}",
+                                  style: TextStyle(
+                                      color: Colors.black45, fontSize: 14)),
+                            ),
+                          ],
                         ),
                         Padding(
-                          padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
-                          child: Text(customer.name.toString(),
-                              style: TextStyle(
-                                color: Colors.black54,
-                              )),
+                          padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
+                          child: Text(
+                            transaction.comment,
+                            softWrap: true,
+                            textAlign: TextAlign.left,
+                            style: TextStyle(color: Colors.black54),
+                          ),
                         ),
                       ],
                     ),

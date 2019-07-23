@@ -9,7 +9,7 @@ class AddCustomer extends StatefulWidget {
 
 class _AddCustomerState extends State<AddCustomer> {
   final CustomerBloc customerBloc = CustomerBloc();
-  String _name, _phone;
+  String _name, _phone, _address;
   Customer customer = Customer();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -71,6 +71,7 @@ class _AddCustomerState extends State<AddCustomer> {
                   ),
                   autovalidate: false,
                   validator: null,
+                  onSaved: (input) => _address = input,
                 ),
                 const Padding(
                   padding: EdgeInsets.all(36),
@@ -104,6 +105,8 @@ class _AddCustomerState extends State<AddCustomer> {
       formState.save();
       customer.name = _name;
       customer.phone = _phone;
+      customer.address = _address;
+
       customerBloc.addCustomer(customer);
 
       Navigator.pop(context);

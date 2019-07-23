@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -26,6 +27,6 @@ class CustomerDatabaseProvider {
 
   void initDB(Database database, int version) async {
     await database.execute(
-        'CREATE TABLE $customerTABLE (id INTEGER PRIMARY KEY, name TEXT, phone TEXT)');
+        'CREATE TABLE $customerTABLE (id INTEGER PRIMARY KEY, name TEXT, phone TEXT, address TEXT)');
   }
 }

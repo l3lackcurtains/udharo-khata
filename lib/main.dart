@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:simple_khata/pages/customers.dart';
-import 'package:simple_khata/pages/home.dart';
 import 'package:simple_khata/pages/transactions.dart';
 
 void main() => runApp(MyApp());
@@ -27,10 +26,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   final List<Widget> _widgetOptions = [
-    Home(),
     Customers(),
     Transactions(),
-    const Text('Index 4: School'),
   ];
 
   @override
@@ -52,13 +49,9 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-                icon: Icon(Icons.home), title: Text('Dashboard')),
-            BottomNavigationBarItem(
                 icon: Icon(Icons.people), title: Text('Customers')),
             BottomNavigationBarItem(
                 icon: Icon(Icons.perm_media), title: Text('Transactions')),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.school), title: Text('Profile')),
           ],
           currentIndex: _selectedIndex,
           fixedColor: Colors.deepPurple,

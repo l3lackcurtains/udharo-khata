@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simple_khata/blocs/customerBloc.dart';
+import 'package:simple_khata/blocs/transactionBloc.dart';
 import 'package:simple_khata/models/customer.dart';
 import 'package:simple_khata/pages/addCustomer.dart';
 import 'package:simple_khata/pages/singleCustomer.dart';
@@ -17,6 +18,9 @@ class Customers extends StatefulWidget {
 
 class _CustomersState extends State<Customers> {
   final CustomerBloc customerBloc = CustomerBloc();
+
+  final TransactionBloc transactionBloc = TransactionBloc();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,6 +46,37 @@ class _CustomersState extends State<Customers> {
         future: customerBloc.getCustomers(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           return getCustomerCard(snapshot);
+        });
+  }
+
+  Widget getCustomerTransactionsTotalWidget(int cid) {
+    return FutureBuilder(
+        future: transactionBloc.getCustomerTransactionsTotal(cid),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.hasData) {
+            int total = snapshot.data;
+            bool neg = false;
+            if (total.isNegative) {
+              neg = true;
+            }
+            return Row(children: <Widget>[
+              Text(total.abs().toString(),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              neg
+                  ? Icon(
+                      Icons.arrow_downward,
+                      color: Colors.orange.shade900,
+                      size: 16.0,
+                    )
+                  : Icon(
+                      Icons.arrow_upward,
+                      color: Colors.green.shade900,
+                      size: 16.0,
+                    ),
+            ]);
+          }
+
+          return Container();
         });
   }
 
@@ -105,9 +140,7 @@ class _CustomersState extends State<Customers> {
                               ],
                             ),
                             Spacer(),
-                            Text("\$ 2000",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 16)),
+                            getCustomerTransactionsTotalWidget(customer.id),
                           ],
                         ),
                       ),

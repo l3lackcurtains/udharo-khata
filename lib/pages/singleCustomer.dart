@@ -114,7 +114,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
                   Padding(
                     padding: EdgeInsets.fromLTRB(0, 0, 0, 16),
                     child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Padding(
                           padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
@@ -150,7 +150,24 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                     child: Text(customer.phone),
                                   ),
                                 ],
-                              )
+                              ),
+                              customer.address != null &&
+                                      customer.address.length > 0
+                                  ? Row(
+                                      children: <Widget>[
+                                        Icon(
+                                          Icons.location_on,
+                                          color: Colors.brown.shade600,
+                                          size: 16.0,
+                                        ),
+                                        Padding(
+                                          padding:
+                                              EdgeInsets.fromLTRB(8, 4, 4, 4),
+                                          child: Text(customer.address),
+                                        ),
+                                      ],
+                                    )
+                                  : Container()
                             ],
                           ),
                         ),
@@ -183,22 +200,42 @@ class _SingleCustomerState extends State<SingleCustomer> {
         });
   }
 
+  Widget getCustomerTransactionsTotalWidget(int cid) {
+    return FutureBuilder(
+        future: transactionBloc.getCustomerTransactionsTotal(cid),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.hasData) {
+            int total = snapshot.data;
+            bool neg = false;
+            if (total.isNegative) {
+              neg = true;
+            }
+            return Row(children: <Widget>[
+              Text(total.abs().toString(),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              neg
+                  ? Icon(
+                      Icons.arrow_downward,
+                      color: Colors.orange.shade900,
+                      size: 16.0,
+                    )
+                  : Icon(
+                      Icons.arrow_upward,
+                      color: Colors.green.shade900,
+                      size: 16.0,
+                    ),
+            ]);
+          }
+
+          return Container();
+        });
+  }
+
   Widget getCustomerTransactions(int cid) {
     return FutureBuilder(
         future: transactionBloc.getTransactionsByCustomerId(cid),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData && snapshot.data.length != 0) {
-            var totalTransaction = 0;
-            snapshot.data.forEach((trans) {
-              if (trans.ttype == 'payment') {
-                totalTransaction +=
-                    totalTransaction + trans.amount != null ? trans.amount : 0;
-              } else {
-                totalTransaction -=
-                    totalTransaction + trans.amount != null ? trans.amount : 0;
-              }
-            });
-
             return Column(
               children: <Widget>[
                 Container(
@@ -217,11 +254,8 @@ class _SingleCustomerState extends State<SingleCustomer> {
                       ),
                       Spacer(),
                       Chip(
-                        backgroundColor: Colors.green.shade100,
-                        label: Text(totalTransaction.toString(),
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 14)),
-                      )
+                          backgroundColor: Colors.green.shade100,
+                          label: getCustomerTransactionsTotalWidget(cid))
                     ],
                   ),
                 ),
