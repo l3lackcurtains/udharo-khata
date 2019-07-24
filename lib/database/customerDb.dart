@@ -27,6 +27,6 @@ class CustomerDatabaseProvider {
 
   void initDB(Database database, int version) async {
     await database.execute(
-        'CREATE TABLE $customerTABLE (id INTEGER PRIMARY KEY, name TEXT, phone TEXT, address TEXT, image TEXT)');
+        'CREATE TABLE $customerTABLE (id INTEGER PRIMARY KEY, name TEXT, phone TEXT, address TEXT, image BLOB)');
   }
 }

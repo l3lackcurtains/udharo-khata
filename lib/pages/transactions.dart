@@ -34,8 +34,8 @@ class _TransactionsState extends State<Transactions> {
             MaterialPageRoute(builder: (context) => AddTransaction()),
           );
         },
-        icon: const Icon(Icons.add),
-        label: const Text('Add Transaction'),
+        icon: Icon(Icons.add),
+        label: Text('Add Transaction'),
       ),
     );
   }
@@ -72,7 +72,7 @@ class _TransactionsState extends State<Transactions> {
                           ),
                           snapshot.data.length - 1 != itemIndex
                               ? Divider(
-                                  color: Colors.grey.shade500,
+                                  color: Colors.grey.shade300,
                                   height: 2,
                                 )
                               : Container(),
@@ -101,7 +101,7 @@ class _TransactionsState extends State<Transactions> {
                     padding: EdgeInsets.fromLTRB(0, 0, 16, 0),
                     child: CircleAvatar(
                       backgroundColor: Colors.grey.shade200,
-                      radius: 28,
+                      radius: 24,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -110,14 +110,14 @@ class _TransactionsState extends State<Transactions> {
                             "${transaction.date.day}",
                             style: TextStyle(
                               color: Colors.deepPurple.shade900,
-                              fontSize: 17,
+                              fontSize: 16,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
                           Text(
                             "${convertNumberToMonth(transaction.date.month)}",
                             style:
-                                TextStyle(color: Colors.black87, fontSize: 12),
+                                TextStyle(color: Colors.black87, fontSize: 11),
                           )
                         ],
                       ),

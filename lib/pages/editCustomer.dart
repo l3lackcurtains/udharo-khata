@@ -16,12 +16,13 @@ class EditCustomer extends StatefulWidget {
 class _EditCustomerState extends State<EditCustomer> {
   final CustomerBloc customerBloc = CustomerBloc();
 
-  String _name, _phone;
+  String _name, _phone, _address;
   File _image;
 
   Customer customer = Customer();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Future getImageFromGallery() async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -46,21 +47,29 @@ class _EditCustomerState extends State<EditCustomer> {
     Customer argCustomer = args.customer;
 
     return Scaffold(
+      key: _scaffoldKey,
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         elevation: 0.0,
         backgroundColor: Colors.transparent,
-        title: const Text(
+        title: Text(
           'Edit Customer',
           style: TextStyle(color: Colors.black),
         ),
-        iconTheme: const IconThemeData(
+        iconTheme: IconThemeData(
           color: Colors.black, //change your color here
         ),
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          updateCustomer(argCustomer.id);
+        },
+        icon: Icon(Icons.check),
+        label: Text('Update Customer'),
+      ),
       body: Container(
           decoration: BoxDecoration(color: Colors.white),
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(20),
           child: Form(
             key: _formKey,
             child: Column(
@@ -68,7 +77,7 @@ class _EditCustomerState extends State<EditCustomer> {
                 customerImageWidget(argCustomer.image),
                 TextFormField(
                   initialValue: argCustomer.name,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     icon: Icon(Icons.person),
                     hintText: 'What is your customer name?',
                     labelText: 'Name *',
@@ -78,12 +87,13 @@ class _EditCustomerState extends State<EditCustomer> {
                     if (input.isEmpty) {
                       return 'Please type customer name';
                     }
+                    return null;
                   },
                   onSaved: (input) => _name = input,
                 ),
                 TextFormField(
                   initialValue: argCustomer.phone,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     icon: Icon(Icons.call_missed_outgoing),
                     hintText: 'Contact Number of customer.',
                     labelText: 'Phone Number *',
@@ -93,37 +103,22 @@ class _EditCustomerState extends State<EditCustomer> {
                     if (input.isEmpty) {
                       return 'Please type customer phone number';
                     }
+
+                    return null;
                   },
                   onSaved: (input) => _phone = input,
                 ),
                 TextFormField(
-                  decoration: const InputDecoration(
+                  initialValue: argCustomer.address,
+                  decoration: InputDecoration(
                     icon: Icon(Icons.location_city),
                     hintText: 'Where your customer resides.',
                     labelText: 'Physical Address',
                   ),
                   autovalidate: false,
                   validator: null,
+                  onSaved: (input) => _address = input,
                 ),
-                const Padding(
-                  padding: EdgeInsets.all(36),
-                ),
-                Row(
-                  children: <Widget>[
-                    Spacer(),
-                    Expanded(
-                      child: RaisedButton(
-                        textColor: Colors.white,
-                        color: Colors.purple,
-                        onPressed: () {
-                          updateCustomer(argCustomer.id);
-                        },
-                        padding: const EdgeInsets.all(16.0),
-                        child: const Text('Update'),
-                      ),
-                    )
-                  ],
-                )
               ],
             ),
           )),
@@ -203,9 +198,27 @@ class _EditCustomerState extends State<EditCustomer> {
 
     if (formState.validate()) {
       formState.save();
+
+      // More Validation
+      if (_image != null && _image.lengthSync() > 2000000) {
+        final snackBar = SnackBar(
+            content: Row(children: <Widget>[
+          Icon(
+            Icons.warning,
+            color: Colors.redAccent,
+          ),
+          Padding(
+              padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+              child: Text('Image size is too big. (Max size 2MB)'))
+        ]));
+        _scaffoldKey.currentState.showSnackBar(snackBar);
+        return;
+      }
+
       customer.id = id;
       customer.name = _name;
       customer.phone = _phone;
+      customer.address = _address;
 
       if (_image != null) {
         String base64Image = base64Encode(_image.readAsBytesSync());

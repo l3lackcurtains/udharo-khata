@@ -116,80 +116,84 @@ class _SingleTransactionState extends State<SingleTransaction> {
                     ),
                     // action button
                   ]),
-              body: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            getTransactionCustomer(transaction),
-                            Row(
-                              children: <Widget>[
-                                transaction.ttype == 'credit'
-                                    ? Chip(
-                                        label: Text('Credit Given'),
-                                        backgroundColor: Colors.orange.shade100,
-                                        avatar: Icon(
-                                          Icons.arrow_upward,
-                                          color: Colors.orange.shade900,
-                                          size: 20.0,
-                                        ))
-                                    : Chip(
-                                        label: Text('Payment Received'),
-                                        backgroundColor: Colors.orange.shade100,
-                                        avatar: Icon(
-                                          Icons.arrow_downward,
-                                          color: Colors.orange.shade900,
-                                          size: 20.0,
-                                        )),
-                                Padding(
-                                    padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
-                                    child: Text(transaction.amount.toString(),
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 14)))
-                              ],
-                            ),
-                            Divider(
-                              color: Colors.grey.shade500,
-                              height: 36,
-                            ),
-                            Container(
-                              width: MediaQuery.of(context).size.width * 0.9,
-                              child: Text(
-                                transaction.comment,
-                                softWrap: true,
-                                textAlign: TextAlign.left,
-                                style: TextStyle(color: Colors.black),
+              body: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              getTransactionCustomer(transaction),
+                              Row(
+                                children: <Widget>[
+                                  transaction.ttype == 'credit'
+                                      ? Chip(
+                                          label: Text('Credit Given'),
+                                          backgroundColor:
+                                              Colors.orange.shade100,
+                                          avatar: Icon(
+                                            Icons.arrow_upward,
+                                            color: Colors.orange.shade900,
+                                            size: 20.0,
+                                          ))
+                                      : Chip(
+                                          label: Text('Payment Received'),
+                                          backgroundColor:
+                                              Colors.orange.shade100,
+                                          avatar: Icon(
+                                            Icons.arrow_downward,
+                                            color: Colors.orange.shade900,
+                                            size: 20.0,
+                                          )),
+                                  Padding(
+                                      padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
+                                      child: Text(transaction.amount.toString(),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14)))
+                                ],
                               ),
-                            ),
-                            Container(
-                              width: MediaQuery.of(context).size.width * 0.9,
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Padding(
-                                  padding: EdgeInsets.fromLTRB(0, 36, 0, 36),
-                                  child: transactionAttachment != null
-                                      ? Image.memory(transactionAttachment,
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.8,
-                                          fit: BoxFit.cover)
-                                      : Container(),
+                              Divider(
+                                color: Colors.grey.shade300,
+                                height: 36,
+                              ),
+                              Container(
+                                width: MediaQuery.of(context).size.width * 0.9,
+                                child: Text(
+                                  transaction.comment,
+                                  softWrap: true,
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(color: Colors.black),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                              Container(
+                                width: MediaQuery.of(context).size.width * 0.9,
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 36, 0, 36),
+                                    child: transactionAttachment != null
+                                        ? Image.memory(transactionAttachment,
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.8,
+                                            fit: BoxFit.cover)
+                                        : Container(),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           }

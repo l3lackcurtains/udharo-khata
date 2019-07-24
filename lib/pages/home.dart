@@ -12,9 +12,9 @@ class _HomeState extends State<Home> {
         decoration: BoxDecoration(color: Colors.white),
         child: Column(
           children: <Widget>[
-            const Padding(padding: EdgeInsets.all(20.0)),
+            Padding(padding: EdgeInsets.all(20.0)),
             Row(
-              children: const <Widget>[
+              children: <Widget>[
                 Padding(padding: EdgeInsets.all(8.0)),
                 Text(
                   'Hello Madhav!',
@@ -25,9 +25,9 @@ class _HomeState extends State<Home> {
                 ),
               ],
             ),
-            const Padding(padding: EdgeInsets.all(10.0)),
+            Padding(padding: EdgeInsets.all(10.0)),
             Row(
-              children: const <Widget>[
+              children: <Widget>[
                 Padding(padding: EdgeInsets.all(8.0)),
                 Text(
                   'Your Khata Summary',
@@ -38,9 +38,9 @@ class _HomeState extends State<Home> {
                 ),
               ],
             ),
-            const Padding(padding: EdgeInsets.all(10.0)),
+            Padding(padding: EdgeInsets.all(10.0)),
             Container(
-              padding: const EdgeInsets.all(10.0),
+              padding: EdgeInsets.all(10.0),
               child: Row(
                 children: <Widget>[
                   Expanded(
@@ -49,7 +49,7 @@ class _HomeState extends State<Home> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0)),
                       child: Column(
-                        children: const <Widget>[
+                        children: <Widget>[
                           ListTile(
                             title: Text(
                               'Debit Amount',
@@ -74,7 +74,7 @@ class _HomeState extends State<Home> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0)),
                       child: Column(
-                        children: const <Widget>[
+                        children: <Widget>[
                           ListTile(
                             title: Text(
                               'Credit Amount',
@@ -97,7 +97,7 @@ class _HomeState extends State<Home> {
               ),
             ),
             Container(
-              padding: const EdgeInsets.all(10.0),
+              padding: EdgeInsets.all(10.0),
               child: Row(
                 children: <Widget>[
                   Expanded(
@@ -106,7 +106,7 @@ class _HomeState extends State<Home> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0)),
                       child: Column(
-                        children: const <Widget>[
+                        children: <Widget>[
                           ListTile(
                             title: Text('Customers'),
                             subtitle: Text('300'),
@@ -116,9 +116,9 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
+                    padding: EdgeInsets.fromLTRB(30, 10, 30, 10),
                     child: IconButton(
-                      icon: const Icon(Icons.add_circle_outline),
+                      icon: Icon(Icons.add_circle_outline),
                       iconSize: 40,
                       onPressed: () {},
                     ),

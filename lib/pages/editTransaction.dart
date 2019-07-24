@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,7 @@ class _EditTransactionState extends State<EditTransaction> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<AutoCompleteTextFieldState> _customerSuggestionKey =
       GlobalKey();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -103,21 +105,29 @@ class _EditTransactionState extends State<EditTransaction> {
             }
 
             return Scaffold(
+              key: _scaffoldKey,
               resizeToAvoidBottomPadding: false,
               appBar: AppBar(
                 elevation: 0.0,
                 backgroundColor: Colors.transparent,
-                title: const Text(
+                title: Text(
                   'Edit Transaction',
                   style: TextStyle(color: Colors.black),
                 ),
-                iconTheme: const IconThemeData(
+                iconTheme: IconThemeData(
                   color: Colors.black,
                 ),
               ),
+              floatingActionButton: FloatingActionButton.extended(
+                onPressed: () {
+                  updateTransaction(argTransaction.id);
+                },
+                icon: Icon(Icons.check),
+                label: Text('Update Transaction'),
+              ),
               body: Container(
                   decoration: BoxDecoration(color: Colors.white),
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20),
                   child: Form(
                     key: _formKey,
                     child: Column(
@@ -212,19 +222,29 @@ class _EditTransactionState extends State<EditTransaction> {
                         ),
                         TextFormField(
                           initialValue: argTransaction.amount.toString(),
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             icon: Icon(Icons.monetization_on),
                             hintText: 'How much is the amount?',
                             labelText: 'Amount',
                           ),
                           autovalidate: false,
-                          validator: null,
+                          validator: (input) {
+                            if (input.isEmpty) {
+                              return 'Please insert amount.';
+                            }
+
+                            final isDigitsOnly = int.tryParse(input);
+                            if (isDigitsOnly == null) {
+                              return 'Input needs to be valid number.';
+                            }
+                            return null;
+                          },
                           keyboardType: TextInputType.number,
                           onSaved: (input) => _amount = int.parse(input),
                         ),
                         TextFormField(
                           initialValue: argTransaction.comment,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             icon: Icon(Icons.comment),
                             hintText: 'Write comment about the transaction.',
                             labelText: 'Comment *',
@@ -247,23 +267,7 @@ class _EditTransactionState extends State<EditTransaction> {
                                 _selectDate(context);
                               },
                             )),
-                        transactionAttachmentWidget(),
-                        Row(
-                          children: <Widget>[
-                            Spacer(),
-                            Expanded(
-                              child: RaisedButton(
-                                textColor: Colors.white,
-                                color: Colors.purple,
-                                onPressed: () {
-                                  editTransaction(argTransaction.id);
-                                },
-                                padding: const EdgeInsets.all(16.0),
-                                child: const Text('Update'),
-                              ),
-                            )
-                          ],
-                        )
+                        transactionAttachmentWidget(argTransaction.attachment),
                       ],
                     ),
                   )),
@@ -273,14 +277,24 @@ class _EditTransactionState extends State<EditTransaction> {
         });
   }
 
-  Widget transactionAttachmentWidget() {
+  Widget transactionAttachmentWidget(String image) {
+    Uint8List transactionAttachment;
+    if (image != null) {
+      transactionAttachment = Base64Decoder().convert(image);
+    }
+
     return Row(
       children: <Widget>[
         Expanded(
           child: _attachment == null
-              ? Image(
-                  image: AssetImage('images/no_image.jpg'),
-                )
+              ? transactionAttachment == null
+                  ? Image(
+                      image: AssetImage('images/no_image.jpg'),
+                    )
+                  : Image.memory(
+                      transactionAttachment,
+                      width: 60,
+                    )
               : Image.file(
                   _attachment,
                 ),
@@ -335,11 +349,43 @@ class _EditTransactionState extends State<EditTransaction> {
     _customersField.dispose();
   }
 
-  void editTransaction(id) {
+  void updateTransaction(id) {
     final formState = _formKey.currentState;
 
     if (formState.validate()) {
       formState.save();
+
+      if (_customerId == null) {
+        final snackBar = SnackBar(
+            content: Row(children: <Widget>[
+          Icon(
+            Icons.warning,
+            color: Colors.redAccent,
+          ),
+          Padding(
+              padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+              child: Text('Select a valid customer.'))
+        ]));
+        _scaffoldKey.currentState.showSnackBar(snackBar);
+        return;
+      }
+
+      // More Validation
+      if (_attachment != null && _attachment.lengthSync() > 2000000) {
+        final snackBar = SnackBar(
+            content: Row(children: <Widget>[
+          Icon(
+            Icons.warning,
+            color: Colors.redAccent,
+          ),
+          Padding(
+              padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+              child: Text('Image size is too big. (Max size 2MB)'))
+        ]));
+        _scaffoldKey.currentState.showSnackBar(snackBar);
+        return;
+      }
+
       Transaction transaction = Transaction();
       transaction.id = id;
       transaction.ttype = _transType;

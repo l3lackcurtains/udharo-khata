@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:simple_khata/blocs/customerBloc.dart';
 import 'package:simple_khata/blocs/transactionBloc.dart';
@@ -35,6 +36,7 @@ class _AddTransactionState extends State<AddTransaction> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<AutoCompleteTextFieldState> _customerSuggestionKey =
       GlobalKey();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -82,6 +84,7 @@ class _AddTransactionState extends State<AddTransaction> {
             dynamic customers = snapshot.data;
 
             return Scaffold(
+              key: _scaffoldKey,
               resizeToAvoidBottomPadding: false,
               appBar: AppBar(
                 elevation: 0.0,
@@ -94,168 +97,171 @@ class _AddTransactionState extends State<AddTransaction> {
                   color: Colors.black,
                 ),
               ),
-              body: Container(
-                  decoration: BoxDecoration(color: Colors.white),
-                  padding: EdgeInsets.all(20),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Column(
-                              children: <Widget>[
-                                ActionChip(
-                                    backgroundColor: _transType == "credit"
-                                        ? Colors.green.shade500
-                                        : Colors.grey.shade200,
-                                    avatar: CircleAvatar(
-                                      backgroundColor: Colors.grey.shade200,
-                                      child: Icon(
-                                        Icons.send,
-                                        color: Colors.blueAccent,
-                                        size: 16.0,
-                                      ),
-                                    ),
-                                    label: Text('Credit Given'),
-                                    onPressed: () {
-                                      setState(() {
-                                        _transType = "credit";
-                                      });
-                                    })
-                              ],
-                            ),
-                            Padding(padding: EdgeInsets.all(8.0)),
-                            Column(
-                              children: <Widget>[
-                                ActionChip(
-                                    backgroundColor: _transType == "payment"
-                                        ? Colors.green.shade500
-                                        : Colors.grey.shade200,
-                                    avatar: CircleAvatar(
-                                      backgroundColor: Colors.grey.shade200,
-                                      child: Icon(
-                                        Icons.receipt,
-                                        color: Colors.redAccent,
-                                        size: 16.0,
-                                      ),
-                                    ),
-                                    label: Text('Payment Received'),
-                                    onPressed: () {
-                                      setState(() {
-                                        _transType = "payment";
-                                      });
-                                    })
-                              ],
-                            )
-                          ],
-                        ),
-                        args != null
-                            ? Row(children: <Widget>[
-                                Padding(
-                                    padding: EdgeInsets.fromLTRB(4, 16, 4, 16),
-                                    child: Text(_customerName,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 20)))
-                              ])
-                            : searchTextField = AutoCompleteTextField(
-                                key: _customerSuggestionKey,
-                                clearOnSubmit: false,
-                                suggestions: customers,
-                                decoration: InputDecoration(
-                                  icon: Icon(Icons.person),
-                                  hintText: 'What is your customer name?',
-                                  labelText: 'Customer Name *',
-                                ),
-                                itemFilter: (item, query) {
-                                  _customerName = query;
-                                  _customerId = null;
-                                  return item.name
-                                      .toLowerCase()
-                                      .startsWith(query.toLowerCase());
-                                },
-                                itemSorter: (a, b) {
-                                  return a.name.compareTo(b.name);
-                                },
-                                itemSubmitted: (item) {
-                                  setState(() {
-                                    searchTextField.textField.controller.text =
-                                        item.name;
-                                    _customerId = item.id;
-                                  });
-                                },
-                                itemBuilder: (context, item) {
-                                  return Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: EdgeInsets.all(16.0),
-                                        child: Text(
-                                          item.name,
+              floatingActionButton: FloatingActionButton.extended(
+                onPressed: () {
+                  addTransaction();
+                },
+                icon: Icon(Icons.add),
+                label: Text('Add Transaction'),
+              ),
+              body: SingleChildScrollView(
+                child: Container(
+                    padding: EdgeInsets.all(20),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              Column(
+                                children: <Widget>[
+                                  ActionChip(
+                                      backgroundColor: _transType == "credit"
+                                          ? Colors.green.shade500
+                                          : Colors.grey.shade200,
+                                      avatar: CircleAvatar(
+                                        backgroundColor: Colors.grey.shade200,
+                                        child: Icon(
+                                          Icons.send,
+                                          color: Colors.blueAccent,
+                                          size: 16.0,
                                         ),
                                       ),
-                                    ],
-                                  );
-                                },
+                                      label: Text('Credit Given'),
+                                      onPressed: () {
+                                        setState(() {
+                                          _transType = "credit";
+                                        });
+                                      })
+                                ],
                               ),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            icon: Icon(Icons.monetization_on),
-                            hintText: 'How much is the amount?',
-                            labelText: 'Amount',
+                              Padding(padding: EdgeInsets.all(8.0)),
+                              Column(
+                                children: <Widget>[
+                                  ActionChip(
+                                      backgroundColor: _transType == "payment"
+                                          ? Colors.green.shade500
+                                          : Colors.grey.shade200,
+                                      avatar: CircleAvatar(
+                                        backgroundColor: Colors.grey.shade200,
+                                        child: Icon(
+                                          Icons.receipt,
+                                          color: Colors.redAccent,
+                                          size: 16.0,
+                                        ),
+                                      ),
+                                      label: Text('Payment Received'),
+                                      onPressed: () {
+                                        setState(() {
+                                          _transType = "payment";
+                                        });
+                                      })
+                                ],
+                              )
+                            ],
                           ),
-                          autovalidate: false,
-                          validator: null,
-                          keyboardType: TextInputType.number,
-                          onSaved: (input) => _amount = int.parse(input),
-                        ),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            icon: Icon(Icons.comment),
-                            hintText: 'Write comment about the transaction.',
-                            labelText: 'Comment *',
+                          args != null
+                              ? Row(children: <Widget>[
+                                  Padding(
+                                      padding:
+                                          EdgeInsets.fromLTRB(4, 16, 4, 16),
+                                      child: Text(_customerName,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20)))
+                                ])
+                              : searchTextField = AutoCompleteTextField(
+                                  key: _customerSuggestionKey,
+                                  clearOnSubmit: false,
+                                  suggestions: customers,
+                                  decoration: InputDecoration(
+                                    icon: Icon(Icons.person),
+                                    hintText: 'What is your customer name?',
+                                    labelText: 'Customer Name *',
+                                  ),
+                                  itemFilter: (item, query) {
+                                    _customerName = query;
+                                    _customerId = null;
+                                    return item.name
+                                        .toLowerCase()
+                                        .startsWith(query.toLowerCase());
+                                  },
+                                  itemSorter: (a, b) {
+                                    return a.name.compareTo(b.name);
+                                  },
+                                  itemSubmitted: (item) {
+                                    setState(() {
+                                      searchTextField.textField.controller
+                                          .text = item.name;
+                                      _customerId = item.id;
+                                    });
+                                  },
+                                  itemBuilder: (context, item) {
+                                    return Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        Padding(
+                                          padding: EdgeInsets.all(16.0),
+                                          child: Text(
+                                            item.name,
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                          TextFormField(
+                            decoration: InputDecoration(
+                              icon: Icon(Icons.monetization_on),
+                              hintText: 'How much is the amount?',
+                              labelText: 'Amount',
+                            ),
+                            autovalidate: false,
+                            validator: (input) {
+                              if (input.isEmpty) {
+                                return 'Please insert amount.';
+                              }
+
+                              final isDigitsOnly = int.tryParse(input);
+                              if (isDigitsOnly == null) {
+                                return 'Input needs to be valid number.';
+                              }
+                              return null;
+                            },
+                            keyboardType: TextInputType.number,
+                            onSaved: (input) => _amount = int.parse(input),
                           ),
-                          autovalidate: false,
-                          maxLines: 3,
-                          onSaved: (input) => _comment = input,
-                        ),
-                        Padding(
-                            padding: EdgeInsets.fromLTRB(0, 24, 8, 24),
-                            child: FlatButton.icon(
-                              color: Colors.grey.shade200,
-                              icon: Icon(
-                                Icons.calendar_today,
-                                color: Colors.grey.shade600,
-                              ),
-                              label: Text(
-                                  "${_date.day}/${_date.month}/${_date.year}"),
-                              onPressed: () {
-                                _selectDate(context);
-                              },
-                            )),
-                        transactionAttachmentWidget(),
-                        Row(
-                          children: <Widget>[
-                            Spacer(),
-                            Expanded(
-                              child: RaisedButton(
-                                textColor: Colors.white,
-                                color: Colors.purple,
+                          TextFormField(
+                            decoration: InputDecoration(
+                              icon: Icon(Icons.comment),
+                              hintText: 'Write comment about the transaction.',
+                              labelText: 'Comment *',
+                            ),
+                            autovalidate: false,
+                            maxLines: 3,
+                            onSaved: (input) => _comment = input,
+                          ),
+                          Padding(
+                              padding: EdgeInsets.fromLTRB(0, 24, 8, 24),
+                              child: FlatButton.icon(
+                                color: Colors.grey.shade200,
+                                icon: Icon(
+                                  Icons.calendar_today,
+                                  color: Colors.grey.shade600,
+                                ),
+                                label: Text(
+                                    "${_date.day}/${_date.month}/${_date.year}"),
                                 onPressed: () {
-                                  addTransaction();
+                                  _selectDate(context);
                                 },
-                                padding: EdgeInsets.all(16.0),
-                                child: Text('Add'),
-                              ),
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                  )),
+                              )),
+                          transactionAttachmentWidget(),
+                        ],
+                      ),
+                    )),
+              ),
             );
           }
 
@@ -324,6 +330,38 @@ class _AddTransactionState extends State<AddTransaction> {
 
     if (formState.validate()) {
       formState.save();
+
+      if (_customerId == null) {
+        final snackBar = SnackBar(
+            content: Row(children: <Widget>[
+          Icon(
+            Icons.warning,
+            color: Colors.redAccent,
+          ),
+          Padding(
+              padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+              child: Text('Select a valid customer.'))
+        ]));
+        _scaffoldKey.currentState.showSnackBar(snackBar);
+        return;
+      }
+
+      // More Validation
+      if (_attachment != null && _attachment.lengthSync() > 2000000) {
+        final snackBar = SnackBar(
+            content: Row(children: <Widget>[
+          Icon(
+            Icons.warning,
+            color: Colors.redAccent,
+          ),
+          Padding(
+              padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+              child: Text('Image size is too big. (Max size 2MB)'))
+        ]));
+        _scaffoldKey.currentState.showSnackBar(snackBar);
+        return;
+      }
+
       transaction.ttype = _transType;
       transaction.amount = _amount;
       transaction.comment = _comment;

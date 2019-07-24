@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:simple_khata/blocs/customerBloc.dart';
 import 'package:simple_khata/blocs/transactionBloc.dart';
+import 'package:simple_khata/helpers/conversion.dart';
 import 'package:simple_khata/models/customer.dart';
 import 'package:simple_khata/models/transaction.dart';
 import 'package:simple_khata/pages/singleTransaction.dart';
@@ -239,13 +240,13 @@ class _SingleCustomerState extends State<SingleCustomer> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               neg
                   ? Icon(
-                      Icons.arrow_downward,
-                      color: Colors.orange.shade900,
+                      Icons.arrow_upward,
+                      color: Colors.green.shade900,
                       size: 16.0,
                     )
                   : Icon(
-                      Icons.arrow_upward,
-                      color: Colors.green.shade900,
+                      Icons.arrow_downward,
+                      color: Colors.orange.shade900,
                       size: 16.0,
                     ),
               Padding(
@@ -315,54 +316,99 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                 );
                               },
                               child: Padding(
-                                padding: EdgeInsets.fromLTRB(0, 8, 4, 8),
+                                padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
                                 child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
                                     Padding(
-                                      padding: EdgeInsets.fromLTRB(0, 4, 12, 4),
-                                      child: transaction.ttype == 'credit'
-                                          ? CircleAvatar(
-                                              backgroundColor:
-                                                  Colors.orange.shade100,
-                                              child: Icon(
-                                                Icons.arrow_downward,
-                                                color: Colors.orange.shade900,
-                                                size: 20.0,
+                                      padding: EdgeInsets.fromLTRB(0, 0, 16, 0),
+                                      child: CircleAvatar(
+                                        backgroundColor: Colors.grey.shade200,
+                                        radius: 20,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            Text(
+                                              "${transaction.date.day}",
+                                              style: TextStyle(
+                                                color:
+                                                    Colors.deepPurple.shade900,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500,
                                               ),
+                                            ),
+                                            Text(
+                                              "${convertNumberToMonth(transaction.date.month)}",
+                                              style: TextStyle(
+                                                  color: Colors.black87,
+                                                  fontSize: 10),
                                             )
-                                          : transaction.ttype == 'payment'
-                                              ? CircleAvatar(
-                                                  backgroundColor:
-                                                      Colors.green.shade100,
-                                                  child: Icon(
-                                                    Icons.arrow_upward,
-                                                    color:
-                                                        Colors.green.shade900,
-                                                    size: 20.0,
-                                                  ),
-                                                )
-                                              : null,
+                                          ],
+                                        ),
+                                      ),
                                     ),
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: <Widget>[
-                                          Text(
-                                            transaction.comment,
-                                            softWrap: true,
-                                            textAlign: TextAlign.left,
+                                          Container(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.9,
+                                            padding:
+                                                EdgeInsets.fromLTRB(0, 4, 8, 4),
+                                            child: Text(
+                                              transaction.comment,
+                                              softWrap: true,
+                                              textAlign: TextAlign.left,
+                                              style: TextStyle(
+                                                  color: Colors.black87),
+                                            ),
                                           ),
                                         ],
                                       ),
                                     ),
-                                    Padding(
-                                      padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                                      child: Text(
-                                          "\$ " + transaction.amount.toString(),
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14)),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: <Widget>[
+                                        Row(children: <Widget>[
+                                          Text(
+                                              transaction.amount
+                                                  .abs()
+                                                  .toString(),
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16)),
+                                          transaction.ttype == 'payment'
+                                              ? Icon(
+                                                  Icons.arrow_downward,
+                                                  color: Colors.orange.shade900,
+                                                  size: 16.0,
+                                                )
+                                              : Icon(
+                                                  Icons.arrow_upward,
+                                                  color: Colors.green.shade900,
+                                                  size: 16.0,
+                                                ),
+                                        ]),
+                                        Padding(
+                                          padding:
+                                              EdgeInsets.fromLTRB(0, 4, 0, 0),
+                                          child: Text(
+                                            transaction.ttype.toUpperCase(),
+                                            style: TextStyle(
+                                                color: Colors.black38,
+                                                fontSize: 10,
+                                                letterSpacing: 0.6),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
@@ -370,7 +416,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
                             ),
                             snapshot.data.length - 1 != itemIndex
                                 ? Divider(
-                                    color: Colors.grey.shade500,
+                                    color: Colors.grey.shade300,
                                     height: 2,
                                   )
                                 : Container(),

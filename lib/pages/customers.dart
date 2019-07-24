@@ -38,8 +38,8 @@ class _CustomersState extends State<Customers> {
             MaterialPageRoute(builder: (context) => AddCustomer()),
           );
         },
-        icon: const Icon(Icons.add),
-        label: const Text('Add Customer'),
+        icon: Icon(Icons.add),
+        label: Text('Add Customer'),
       ),
     );
   }
@@ -74,13 +74,13 @@ class _CustomersState extends State<Customers> {
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                   neg
                       ? Icon(
-                          Icons.arrow_downward,
-                          color: Colors.orange.shade900,
+                          Icons.arrow_upward,
+                          color: Colors.green.shade900,
                           size: 16.0,
                         )
                       : Icon(
-                          Icons.arrow_upward,
-                          color: Colors.green.shade900,
+                          Icons.arrow_downward,
+                          color: Colors.orange.shade900,
                           size: 16.0,
                         ),
                 ]),
@@ -188,7 +188,7 @@ class _CustomersState extends State<Customers> {
                     ),
                     snapshot.data.length - 1 != itemIndex
                         ? Divider(
-                            color: Colors.grey.shade500,
+                            color: Colors.grey.shade300,
                             height: 2,
                           )
                         : Container()
