@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:simple_khata/blocs/customerBloc.dart';
 import 'package:simple_khata/blocs/transactionBloc.dart';
@@ -76,6 +79,12 @@ class _SingleCustomerState extends State<SingleCustomer> {
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             Customer customer = snapshot.data;
+
+            Uint8List customerImage;
+            if (customer.image != null) {
+              customerImage = Base64Decoder().convert(customer.image);
+            }
+
             return Scaffold(
               resizeToAvoidBottomPadding: false,
               appBar: AppBar(
@@ -116,15 +125,28 @@ class _SingleCustomerState extends State<SingleCustomer> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
-                          child: CircleAvatar(
-                            radius: 36,
-                            backgroundColor: Colors.purple.shade500,
-                            child: Icon(Icons.person,
-                                color: Colors.purple.shade100, size: 36.0),
-                          ),
-                        ),
+                        Hero(
+                            tag: customer.id,
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
+                              child: customerImage != null
+                                  ? CircleAvatar(
+                                      radius: 40.0,
+                                      child: ClipOval(
+                                          child: Image.memory(customerImage,
+                                              height: 80,
+                                              width: 80,
+                                              fit: BoxFit.cover)),
+                                      backgroundColor: Colors.transparent,
+                                    )
+                                  : CircleAvatar(
+                                      backgroundColor: Colors.purple.shade500,
+                                      radius: 40,
+                                      child: Icon(Icons.person,
+                                          color: Colors.purple.shade100,
+                                          size: 40.0),
+                                    ),
+                            )),
                         Padding(
                           padding: EdgeInsets.fromLTRB(8, 12, 8, 8),
                           child: Column(
@@ -207,8 +229,10 @@ class _SingleCustomerState extends State<SingleCustomer> {
           if (snapshot.hasData) {
             int total = snapshot.data;
             bool neg = false;
+            String ttype = "payment";
             if (total.isNegative) {
               neg = true;
+              ttype = "credit";
             }
             return Row(children: <Widget>[
               Text(total.abs().toString(),
@@ -224,6 +248,14 @@ class _SingleCustomerState extends State<SingleCustomer> {
                       color: Colors.green.shade900,
                       size: 16.0,
                     ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(4, 0, 0, 0),
+                child: Text(
+                  ttype.toUpperCase(),
+                  style: TextStyle(
+                      color: Colors.black38, fontSize: 10, letterSpacing: 0.6),
+                ),
+              )
             ]);
           }
 

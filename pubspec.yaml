@@ -76,6 +76,8 @@ flutter:
         - asset: fonts/Quicksand/Quicksand-Regular.ttf
         - asset: fonts/Quicksand/Quicksand-Bold.ttf
           weight: 700
+  assets:
+    - images/
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.io/custom-fonts/#from-packages

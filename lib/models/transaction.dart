@@ -8,6 +8,7 @@ class Transaction {
   String comment;
   Customer customer;
   DateTime date;
+  String attachment;
 
   Transaction(
       {this.id,
@@ -16,7 +17,8 @@ class Transaction {
       this.amount,
       this.comment,
       this.customer,
-      this.date});
+      this.date,
+      this.attachment});
 
   factory Transaction.fromDatabaseJson(Map<String, dynamic> data) =>
       Transaction(
@@ -25,7 +27,8 @@ class Transaction {
           ttype: data['ttype'],
           amount: data['amount'],
           comment: data['comment'],
-          date: DateTime.parse(data['date']));
+          date: DateTime.parse(data['date']),
+          attachment: data['attachment']);
 
   Map<String, dynamic> toDatabaseJson() => {
         'id': this.id,
@@ -33,6 +36,7 @@ class Transaction {
         'ttype': this.ttype,
         'amount': this.amount,
         'comment': this.comment,
-        'date': this.date.toString()
+        'date': this.date.toString(),
+        'attachment': this.attachment
       };
 }

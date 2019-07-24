@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:simple_khata/blocs/customerBloc.dart';
 import 'package:simple_khata/blocs/transactionBloc.dart';
 import 'package:simple_khata/models/customer.dart';
@@ -26,6 +30,7 @@ class _EditTransactionState extends State<EditTransaction> {
   String _comment;
   int _customerId, _amount;
   DateTime _date;
+  File _attachment;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<AutoCompleteTextFieldState> _customerSuggestionKey =
@@ -36,12 +41,28 @@ class _EditTransactionState extends State<EditTransaction> {
       context: context,
       initialDate: _date,
       firstDate: DateTime(2015, 8),
-      lastDate: DateTime(2030),
+      lastDate: DateTime.now(),
     );
     if (picked != null && picked != _date)
       setState(() {
         _date = picked;
       });
+  }
+
+  Future getImageFromGallery() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      _attachment = image;
+    });
+  }
+
+  Future getImageFromCamera() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.camera);
+
+    setState(() {
+      _attachment = image;
+    });
   }
 
   @override
@@ -226,6 +247,7 @@ class _EditTransactionState extends State<EditTransaction> {
                                 _selectDate(context);
                               },
                             )),
+                        transactionAttachmentWidget(),
                         Row(
                           children: <Widget>[
                             Spacer(),
@@ -251,6 +273,62 @@ class _EditTransactionState extends State<EditTransaction> {
         });
   }
 
+  Widget transactionAttachmentWidget() {
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: _attachment == null
+              ? Image(
+                  image: AssetImage('images/no_image.jpg'),
+                )
+              : Image.file(
+                  _attachment,
+                ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(16),
+          child: FlatButton(
+            onPressed: () {
+              showUploadDialog();
+            },
+            child: Text('Upload Attachment Image'),
+          ),
+        )
+      ],
+    );
+  }
+
+  void showUploadDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: Text('Upload Attachment Image'),
+          children: <Widget>[
+            SimpleDialogOption(
+              child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text('Upload from Camera')),
+              onPressed: () {
+                Navigator.of(context).pop();
+                getImageFromCamera();
+              },
+            ),
+            SimpleDialogOption(
+              child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text('Upload from Gallery')),
+              onPressed: () {
+                Navigator.of(context).pop();
+                getImageFromGallery();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -268,6 +346,11 @@ class _EditTransactionState extends State<EditTransaction> {
       transaction.amount = _amount;
       transaction.comment = _comment;
       transaction.date = _date;
+
+      if (_attachment != null) {
+        String base64Image = base64Encode(_attachment.readAsBytesSync());
+        transaction.attachment = base64Image;
+      }
 
       if (_customerId != null) {
         transaction.uid = _customerId;

@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:simple_khata/blocs/customerBloc.dart';
 import 'package:simple_khata/blocs/transactionBloc.dart';
+import 'package:simple_khata/models/customer.dart';
 import 'package:simple_khata/models/transaction.dart';
 
 import 'editTransaction.dart';
@@ -72,6 +76,13 @@ class _SingleTransactionState extends State<SingleTransaction> {
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             Transaction transaction = snapshot.data;
+
+            Uint8List transactionAttachment;
+            if (transaction.attachment != null) {
+              transactionAttachment =
+                  Base64Decoder().convert(transaction.attachment);
+            }
+
             return Scaffold(
               resizeToAvoidBottomPadding: false,
               appBar: AppBar(
@@ -115,7 +126,7 @@ class _SingleTransactionState extends State<SingleTransaction> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            getTransactionCustomer(transaction.uid),
+                            getTransactionCustomer(transaction),
                             Row(
                               children: <Widget>[
                                 transaction.ttype == 'credit'
@@ -147,12 +158,32 @@ class _SingleTransactionState extends State<SingleTransaction> {
                               color: Colors.grey.shade500,
                               height: 36,
                             ),
-                            Padding(
-                                padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
-                                child: Text(
-                                  transaction.comment,
-                                  style: TextStyle(color: Colors.black),
-                                ))
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.9,
+                              child: Text(
+                                transaction.comment,
+                                softWrap: true,
+                                textAlign: TextAlign.left,
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.9,
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Padding(
+                                  padding: EdgeInsets.fromLTRB(0, 36, 0, 36),
+                                  child: transactionAttachment != null
+                                      ? Image.memory(transactionAttachment,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.8,
+                                          fit: BoxFit.cover)
+                                      : Container(),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ],
@@ -167,11 +198,12 @@ class _SingleTransactionState extends State<SingleTransaction> {
         });
   }
 
-  Widget getTransactionCustomer(int id) {
+  Widget getTransactionCustomer(Transaction transaction) {
     return FutureBuilder<dynamic>(
-        future: customerBloc.getCustomer(id),
+        future: customerBloc.getCustomer(transaction.uid),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
+            Customer customer = snapshot.data;
             return Row(
               children: <Widget>[
                 Padding(
@@ -182,12 +214,22 @@ class _SingleTransactionState extends State<SingleTransaction> {
                         color: Colors.purple.shade100, size: 20.0),
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
-                  child: Text(snapshot.data.name.toString(),
-                      style: TextStyle(
-                        color: Colors.black54,
-                      )),
+                Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      child: Text(customer.name,
+                          style:
+                              TextStyle(color: Colors.black87, fontSize: 16)),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+                      child: Text(
+                          "${transaction.date.day}/${transaction.date.month}/${transaction.date.year}",
+                          style:
+                              TextStyle(color: Colors.black45, fontSize: 14)),
+                    ),
+                  ],
                 )
               ],
             );

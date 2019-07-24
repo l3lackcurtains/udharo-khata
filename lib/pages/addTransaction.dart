@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:simple_khata/blocs/customerBloc.dart';
 import 'package:simple_khata/blocs/transactionBloc.dart';
 import 'package:simple_khata/models/customer.dart';
@@ -25,6 +29,7 @@ class _AddTransactionState extends State<AddTransaction> {
   String _comment, _customerName;
   int _customerId, _amount;
   DateTime _date = new DateTime.now();
+  File _attachment;
 
   Transaction transaction = Transaction();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -36,12 +41,28 @@ class _AddTransactionState extends State<AddTransaction> {
       context: context,
       initialDate: _date,
       firstDate: DateTime(2015, 8),
-      lastDate: DateTime(2030),
+      lastDate: DateTime.now(),
     );
     if (picked != null && picked != _date)
       setState(() {
         _date = picked;
       });
+  }
+
+  Future getImageFromGallery() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      _attachment = image;
+    });
+  }
+
+  Future getImageFromCamera() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.camera);
+
+    setState(() {
+      _attachment = image;
+    });
   }
 
   @override
@@ -65,17 +86,17 @@ class _AddTransactionState extends State<AddTransaction> {
               appBar: AppBar(
                 elevation: 0.0,
                 backgroundColor: Colors.transparent,
-                title: const Text(
+                title: Text(
                   'Add Transaction',
                   style: TextStyle(color: Colors.black),
                 ),
-                iconTheme: const IconThemeData(
+                iconTheme: IconThemeData(
                   color: Colors.black,
                 ),
               ),
               body: Container(
                   decoration: BoxDecoration(color: Colors.white),
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20),
                   child: Form(
                     key: _formKey,
                     child: Column(
@@ -181,7 +202,7 @@ class _AddTransactionState extends State<AddTransaction> {
                                 },
                               ),
                         TextFormField(
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             icon: Icon(Icons.monetization_on),
                             hintText: 'How much is the amount?',
                             labelText: 'Amount',
@@ -215,6 +236,7 @@ class _AddTransactionState extends State<AddTransaction> {
                                 _selectDate(context);
                               },
                             )),
+                        transactionAttachmentWidget(),
                         Row(
                           children: <Widget>[
                             Spacer(),
@@ -225,8 +247,8 @@ class _AddTransactionState extends State<AddTransaction> {
                                 onPressed: () {
                                   addTransaction();
                                 },
-                                padding: const EdgeInsets.all(16.0),
-                                child: const Text('Add'),
+                                padding: EdgeInsets.all(16.0),
+                                child: Text('Add'),
                               ),
                             )
                           ],
@@ -241,6 +263,62 @@ class _AddTransactionState extends State<AddTransaction> {
         });
   }
 
+  Widget transactionAttachmentWidget() {
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: _attachment == null
+              ? Image(
+                  image: AssetImage('images/no_image.jpg'),
+                )
+              : Image.file(
+                  _attachment,
+                ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(16),
+          child: FlatButton(
+            onPressed: () {
+              showUploadDialog();
+            },
+            child: Text('Upload Attachment Image'),
+          ),
+        )
+      ],
+    );
+  }
+
+  void showUploadDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: Text('Upload Attachment Image'),
+          children: <Widget>[
+            SimpleDialogOption(
+              child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text('Upload from Camera')),
+              onPressed: () {
+                Navigator.of(context).pop();
+                getImageFromCamera();
+              },
+            ),
+            SimpleDialogOption(
+              child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text('Upload from Gallery')),
+              onPressed: () {
+                Navigator.of(context).pop();
+                getImageFromGallery();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void addTransaction() {
     final formState = _formKey.currentState;
 
@@ -250,6 +328,11 @@ class _AddTransactionState extends State<AddTransaction> {
       transaction.amount = _amount;
       transaction.comment = _comment;
       transaction.date = _date;
+
+      if (_attachment != null) {
+        String base64Image = base64Encode(_attachment.readAsBytesSync());
+        transaction.attachment = base64Image;
+      }
 
       if (_customerId != null) {
         transaction.uid = _customerId;

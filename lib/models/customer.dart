@@ -1,11 +1,9 @@
-import 'dart:io';
-
 class Customer {
   int id;
   String name;
   String phone;
   String address;
-  File image;
+  String image;
 
   Customer({this.id, this.name, this.phone, this.address, this.image});
 
@@ -13,12 +11,14 @@ class Customer {
       id: data['id'],
       name: data['name'],
       phone: data['phone'],
-      address: data['address']);
+      address: data['address'],
+      image: data['image']);
 
   Map<String, dynamic> toDatabaseJson() => {
         'id': this.id,
         'name': this.name,
         'phone': this.phone,
-        'address': this.address
+        'address': this.address,
+        'image': this.image
       };
 }
