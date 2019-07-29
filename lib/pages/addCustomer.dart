@@ -95,7 +95,6 @@ class _AddCustomerState extends State<AddCustomer> {
                     if (input.isEmpty) {
                       return 'Please type customer phone number';
                     }
-
                     return null;
                   },
                   onSaved: (input) => _phone = input,
