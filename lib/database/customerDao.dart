@@ -13,16 +13,18 @@ class CustomerDao {
   }
 
   Future<List<Customer>> getCustomers(
-      {List<String> columns, String query}) async {
+      {List<String> columns, String query, int page}) async {
     final db = await dbProvider.database;
 
     List<Map<String, dynamic>> result;
     if (query != null) {
       if (query.isNotEmpty)
-        result = await db.query(customerTABLE,
-            columns: columns,
-            where: 'description LIKE ?',
-            whereArgs: ["%$query%"]);
+        result = await db.query(
+          customerTABLE,
+          columns: columns,
+          where: 'name LIKE ?',
+          whereArgs: ["%$query%"],
+        );
     } else {
       result = await db.query(customerTABLE, columns: columns);
     }

@@ -4,8 +4,8 @@ import 'package:simple_khata/models/customer.dart';
 class CustomerRepository {
   final customerDao = CustomerDao();
 
-  Future getAllCustomers({String query}) =>
-      customerDao.getCustomers(query: query);
+  Future getAllCustomers({String query, int page}) =>
+      customerDao.getCustomers(query: query, page: page);
 
   Future getCustomer(int id) => customerDao.getCustomer(id);
 
