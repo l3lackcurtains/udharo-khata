@@ -41,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 fontSize: 24,
                 fontFamily: 'Poppins')),
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.grey.shade100,
       ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),

@@ -23,6 +23,9 @@ class _CustomersState extends State<Customers> {
   final CustomerBloc customerBloc = CustomerBloc();
   final TransactionBloc transactionBloc = TransactionBloc();
 
+  final TextEditingController _searchInputController =
+      new TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,14 +50,43 @@ class _CustomersState extends State<Customers> {
     return Column(
       children: <Widget>[
         Container(
-          child: TextFormField(
-            decoration: InputDecoration(
-                hintText: 'What is your customer name?',
-                border: null,
+          decoration: BoxDecoration(color: Colors.grey.shade100),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: TextField(
+              controller: _searchInputController,
+              decoration: InputDecoration(
+                hintText: 'Search Customer',
+                contentPadding: EdgeInsets.fromLTRB(8, 12, 8, 12),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    width: 0,
+                    style: BorderStyle.none,
+                  ),
+                ),
+                suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _searchInputController.clear();
+                      });
+                    },
+                    icon: Icon(
+                      Icons.clear,
+                      size: 16,
+                      color: _searchInputController.text.length > 0
+                          ? Colors.grey.shade600
+                          : Colors.transparent,
+                    )),
                 filled: true,
-                focusedBorder: null,
-                enabledBorder: null,
-                fillColor: Colors.blueGrey.shade100),
+                fillColor: Colors.white,
+              ),
+              onChanged: (text) {
+                setState(() {
+                  print(text);
+                });
+              },
+            ),
           ),
         ),
         Expanded(
