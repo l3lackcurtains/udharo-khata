@@ -21,7 +21,6 @@ class Customers extends StatefulWidget {
 
 class _CustomersState extends State<Customers> {
   final CustomerBloc customerBloc = CustomerBloc();
-
   final TransactionBloc transactionBloc = TransactionBloc();
 
   @override
@@ -45,11 +44,28 @@ class _CustomersState extends State<Customers> {
   }
 
   Widget getCustomersList() {
-    return FutureBuilder(
-        future: customerBloc.getCustomers(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          return getCustomerCard(snapshot);
-        });
+    return Column(
+      children: <Widget>[
+        Container(
+          child: TextFormField(
+            decoration: InputDecoration(
+                hintText: 'What is your customer name?',
+                border: null,
+                filled: true,
+                focusedBorder: null,
+                enabledBorder: null,
+                fillColor: Colors.blueGrey.shade100),
+          ),
+        ),
+        Expanded(
+          child: FutureBuilder(
+              future: customerBloc.getCustomers(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                return getCustomerCard(snapshot);
+              }),
+        ),
+      ],
+    );
   }
 
   Widget getCustomerTransactionsTotalWidget(int cid) {
