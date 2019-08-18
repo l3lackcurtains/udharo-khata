@@ -198,8 +198,6 @@ class _EditCustomerState extends State<EditCustomer> {
 
     if (formState.validate()) {
       formState.save();
-
-      // More Validation
       if (_image != null && _image.lengthSync() > 2000000) {
         final snackBar = SnackBar(
             content: Row(children: <Widget>[
