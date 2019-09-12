@@ -2,3 +2,4 @@
 
 # Simple Khata
 
+Khata is an android app for small size shops and business to keep record of debit and credit.
