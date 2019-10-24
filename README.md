@@ -2,4 +2,4 @@
 
 # Khata
 
-Khata is an android app for small size shops and business to keep record of debit and credit. It is a simple accounting system which keeps record of credit given and payment received.
+Khata is an android app for small size shops and business to keep record of debit and credit. It is a simple accounting system which keeps record of credit given and payment received. It is widely used in countries like Nepal, India and Bangladesh.
