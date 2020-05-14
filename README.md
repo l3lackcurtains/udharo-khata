@@ -1,5 +1,16 @@
-[![Codemagic build status](https://api.codemagic.io/apps/5cb4c008aef6f81a59f079a5/5cb4c008aef6f81a59f079a4/status_badge.svg)](https://codemagic.io/apps/5cb4c008aef6f81a59f079a5/5cb4c008aef6f81a59f079a4/latest_build)
+# udharokhata
 
-# Khata
+A new Flutter project.
 
-Khata is an android app for small size shops and business to keep record of debit and credit. It is a simple accounting system which keeps record of credit given and payment received. It is widely used in countries like Nepal, India and Bangladesh.
+## Getting Started
+
+This project is a starting point for a Flutter application.
+
+A few resources to get you started if this is your first Flutter project:
+
+- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+
+For help getting started with Flutter, view our
+[online documentation](https://flutter.dev/docs), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.

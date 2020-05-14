@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:simple_khata/blocs/customerBloc.dart';
-import 'package:simple_khata/models/customer.dart';
+import 'package:udharokhata/blocs/customerBloc.dart';
+import 'package:udharokhata/models/customer.dart';
 
 class AddCustomer extends StatefulWidget {
   @override

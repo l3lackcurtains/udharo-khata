@@ -1,5 +1,5 @@
-import 'package:simple_khata/database/customerDao.dart';
-import 'package:simple_khata/models/customer.dart';
+import 'package:udharokhata/database/customerDao.dart';
+import 'package:udharokhata/models/customer.dart';
 
 class CustomerRepository {
   final customerDao = CustomerDao();

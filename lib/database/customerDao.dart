@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:simple_khata/database/customerDb.dart';
-import 'package:simple_khata/models/customer.dart';
+import 'package:udharokhata/database/customerDb.dart';
+import 'package:udharokhata/models/customer.dart';
 
 class CustomerDao {
   final dbProvider = CustomerDatabaseProvider.dbProvider;

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:simple_khata/blocs/customerBloc.dart';
-import 'package:simple_khata/blocs/transactionBloc.dart';
-import 'package:simple_khata/helpers/conversion.dart';
-import 'package:simple_khata/models/customer.dart';
-import 'package:simple_khata/models/transaction.dart';
-import 'package:simple_khata/pages/addTransaction.dart';
-import 'package:simple_khata/pages/singleTransaction.dart';
+import 'package:udharokhata/blocs/customerBloc.dart';
+import 'package:udharokhata/blocs/transactionBloc.dart';
+import 'package:udharokhata/helpers/conversion.dart';
+import 'package:udharokhata/models/customer.dart';
+import 'package:udharokhata/models/transaction.dart';
+import 'package:udharokhata/pages/addTransaction.dart';
+import 'package:udharokhata/pages/singleTransaction.dart';
 
 class SingleTransactionScreenArguments {
   final int transactionId;

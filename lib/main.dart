@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:simple_khata/pages/customers.dart';
-import 'package:simple_khata/pages/transactions.dart';
+import 'package:udharokhata/pages/customers.dart';
+import 'package:udharokhata/pages/transactions.dart';
 
 void main() => runApp(MyApp());
 

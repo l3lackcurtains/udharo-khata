@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:simple_khata/database/transactionDb.dart';
-import 'package:simple_khata/models/transaction.dart';
+import 'package:udharokhata/database/transactionDb.dart';
+import 'package:udharokhata/models/transaction.dart';
 
 class TransactionDao {
   final dbProvider = TransactionDatabaseProvider.dbProvider;

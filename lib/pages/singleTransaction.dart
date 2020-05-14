@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:simple_khata/blocs/customerBloc.dart';
-import 'package:simple_khata/blocs/transactionBloc.dart';
-import 'package:simple_khata/models/customer.dart';
-import 'package:simple_khata/models/transaction.dart';
+import 'package:udharokhata/blocs/customerBloc.dart';
+import 'package:udharokhata/blocs/transactionBloc.dart';
+import 'package:udharokhata/models/customer.dart';
+import 'package:udharokhata/models/transaction.dart';
 
 import 'editTransaction.dart';
 import 'transactions.dart';

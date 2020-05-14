@@ -1,5 +1,5 @@
-import 'package:simple_khata/database/transactionDao.dart';
-import 'package:simple_khata/models/transaction.dart';
+import 'package:udharokhata/database/transactionDao.dart';
+import 'package:udharokhata/models/transaction.dart';
 
 class TransactionRepository {
   final transactionDao = TransactionDao();

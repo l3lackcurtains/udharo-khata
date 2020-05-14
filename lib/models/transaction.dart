@@ -1,4 +1,4 @@
-import 'package:simple_khata/models/customer.dart';
+import 'package:udharokhata/models/customer.dart';
 
 class Transaction {
   int id;

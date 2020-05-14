@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:simple_khata/database/transactionRepo.dart';
-import 'package:simple_khata/models/transaction.dart';
+import 'package:udharokhata/database/transactionRepo.dart';
+import 'package:udharokhata/models/transaction.dart';
 
 class TransactionBloc {
   final _transactionRepository = TransactionRepository();

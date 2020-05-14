@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:simple_khata/database/customerRepo.dart';
-import 'package:simple_khata/models/customer.dart';
+import 'package:udharokhata/database/customerRepo.dart';
+import 'package:udharokhata/models/customer.dart';
 
 class CustomerBloc {
   final _customerRepository = CustomerRepository();

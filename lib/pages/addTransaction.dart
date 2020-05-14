@@ -5,10 +5,10 @@ import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:simple_khata/blocs/customerBloc.dart';
-import 'package:simple_khata/blocs/transactionBloc.dart';
-import 'package:simple_khata/models/customer.dart';
-import 'package:simple_khata/models/transaction.dart';
+import 'package:udharokhata/blocs/customerBloc.dart';
+import 'package:udharokhata/blocs/transactionBloc.dart';
+import 'package:udharokhata/models/customer.dart';
+import 'package:udharokhata/models/transaction.dart';
 
 import 'singleCustomer.dart';
 

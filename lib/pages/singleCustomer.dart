@@ -2,13 +2,13 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:simple_khata/blocs/customerBloc.dart';
-import 'package:simple_khata/blocs/transactionBloc.dart';
-import 'package:simple_khata/helpers/conversion.dart';
-import 'package:simple_khata/models/customer.dart';
-import 'package:simple_khata/models/transaction.dart';
-import 'package:simple_khata/pages/singleTransaction.dart';
-import 'package:simple_khata/pages/transactions.dart';
+import 'package:udharokhata/blocs/customerBloc.dart';
+import 'package:udharokhata/blocs/transactionBloc.dart';
+import 'package:udharokhata/helpers/conversion.dart';
+import 'package:udharokhata/models/customer.dart';
+import 'package:udharokhata/models/transaction.dart';
+import 'package:udharokhata/pages/singleTransaction.dart';
+import 'package:udharokhata/pages/transactions.dart';
 
 import 'addTransaction.dart';
 import 'customers.dart';

@@ -4,9 +4,9 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:simple_khata/blocs/customerBloc.dart';
-import 'package:simple_khata/models/customer.dart';
-import 'package:simple_khata/pages/singleCustomer.dart';
+import 'package:udharokhata/blocs/customerBloc.dart';
+import 'package:udharokhata/models/customer.dart';
+import 'package:udharokhata/pages/singleCustomer.dart';
 
 class EditCustomer extends StatefulWidget {
   @override
