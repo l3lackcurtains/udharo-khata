@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:udharokhata/pages/backup.dart';
 import 'package:udharokhata/pages/customers.dart';
 import 'package:udharokhata/pages/transactions.dart';
+
+import 'pages/signin.dart';
 
 void main() => runApp(MyApp());
 
@@ -13,7 +16,7 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.purple,
             primaryColor: Colors.deepPurple,
             fontFamily: 'Roboto'),
-        home: MyHomePage());
+        home: SignIn());
   }
 }
 
@@ -25,10 +28,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
-  final List<Widget> _widgetOptions = [
-    Customers(),
-    Transactions(),
-  ];
+  final List<Widget> _widgetOptions = [Customers(), Transactions(), Backup()];
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +52,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 icon: Icon(Icons.people), title: Text('Customers')),
             BottomNavigationBarItem(
                 icon: Icon(Icons.perm_media), title: Text('Transactions')),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.backup), title: Text('Backup')),
           ],
           currentIndex: _selectedIndex,
           fixedColor: Colors.deepPurple,

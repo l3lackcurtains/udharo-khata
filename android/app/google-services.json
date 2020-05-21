@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "971278159109",
+    "firebase_url": "https://udharokhata.firebaseio.com",
+    "project_id": "udharokhata",
+    "storage_bucket": "udharokhata.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:971278159109:android:fd1a376414d784008c7b6c",
+        "android_client_info": {
+          "package_name": "com.udharo.khata"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "971278159109-iqmj0rta1iilghv03io6n9t749pv8kqe.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.udharo.khata",
+            "certificate_hash": "6f9bae981220451a76e851c2e32a16314309c6a4"
+          }
+        },
+        {
+          "client_id": "971278159109-8m2ssvu11b3sejk44cm97qarm0ba5erj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHB23gI-q8C48a6aYPtHol3yZNQ0a1z08"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "971278159109-8m2ssvu11b3sejk44cm97qarm0ba5erj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
-import 'package:udharokhata/models/customer.dart';
 import 'package:udharokhata/models/transaction.dart';
 
 import 'singleCustomer.dart';
@@ -21,7 +20,6 @@ class _AddTransactionState extends State<AddTransaction> {
   // Transaction type
   // 0: credit 1: received
   String _transType = "credit";
-  static List<Customer> customers = new List<Customer>();
   AutoCompleteTextField searchTextField;
 
   final TransactionBloc transactionBloc = TransactionBloc();
