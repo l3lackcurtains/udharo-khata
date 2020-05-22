@@ -1,9 +1,14 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
+import 'package:udharokhata/helpers/generatePdf.dart';
 import 'package:udharokhata/models/customer.dart';
 import 'package:udharokhata/pages/addCustomer.dart';
 import 'package:udharokhata/pages/singleCustomer.dart';
@@ -51,42 +56,62 @@ class _CustomersState extends State<Customers> {
       children: <Widget>[
         Container(
           decoration: BoxDecoration(color: Colors.grey.shade100),
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
-            child: TextField(
-              controller: _searchInputController,
-              decoration: InputDecoration(
-                hintText: 'Search Customer',
-                contentPadding: EdgeInsets.fromLTRB(8, 12, 8, 12),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    width: 0,
-                    style: BorderStyle.none,
-                  ),
+          padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              IconButton(
+                icon: Icon(Icons.picture_as_pdf),
+                color: Colors.red,
+                onPressed: () async {
+                  List<Customer> customers = await customerBloc.getCustomers();
+                  Uint8List pdf =
+                      await generatePdf(PdfPageFormat.a4, customers);
+                  final dir = await getExternalStorageDirectory();
+                  final file = File(dir.path + "/report.pdf");
+                  await file.writeAsBytes(pdf);
+                  OpenFile.open(file.path);
+                },
+              )
+            ],
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(color: Colors.grey.shade100),
+          padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
+          child: TextField(
+            controller: _searchInputController,
+            decoration: InputDecoration(
+              hintText: 'Search Customer',
+              contentPadding: EdgeInsets.fromLTRB(8, 12, 8, 12),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  width: 0,
+                  style: BorderStyle.none,
                 ),
-                suffixIcon: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        _searchInputController.clear();
-                      });
-                    },
-                    icon: Icon(
-                      Icons.clear,
-                      size: 16,
-                      color: _searchInputController.text.length > 0
-                          ? Colors.grey.shade600
-                          : Colors.transparent,
-                    )),
-                filled: true,
-                fillColor: Colors.white,
               ),
-              onChanged: (text) {
-                setState(() {
-                  print(text);
-                });
-              },
+              suffixIcon: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _searchInputController.clear();
+                    });
+                  },
+                  icon: Icon(
+                    Icons.clear,
+                    size: 16,
+                    color: _searchInputController.text.length > 0
+                        ? Colors.grey.shade600
+                        : Colors.transparent,
+                  )),
+              filled: true,
+              fillColor: Colors.white,
             ),
+            onChanged: (text) {
+              setState(() {
+                print(text);
+              });
+            },
           ),
         ),
         Expanded(

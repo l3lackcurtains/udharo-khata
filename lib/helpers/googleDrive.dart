@@ -1,11 +1,14 @@
 import 'dart:io';
 
+import 'package:archive/archive_io.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as ga;
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
 import 'package:path/path.dart' as path;
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 class GoogleHttpClient extends IOClient {
   Map<String, String> _headers;
@@ -50,7 +53,19 @@ class GoogleClient {
     return '$user';
   }
 
-  uploadFileToGoogleDrive(String filepath) async {
+  uploadFileToGoogleDrive() async {
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+
+    String filepath = join(documentsDirectory.path, 'backup.zip');
+    var encoder = ZipFileEncoder();
+    encoder.create(filepath);
+    String customerdb = join(documentsDirectory.path, 'customer.db');
+    String transactiondb = join(documentsDirectory.path, 'transaction.db');
+    encoder.addFile(File(customerdb));
+    encoder.addFile(File(transactiondb));
+
+    encoder.close();
+
     googleSignInAccount = await googleSignIn.signIn();
     var client = GoogleHttpClient(await googleSignInAccount.authHeaders);
     var drive = ga.DriveApi(client);
@@ -61,7 +76,7 @@ class GoogleClient {
 
     await drive.files.list(spaces: 'appDataFolder').then((list) async {
       for (var i = 0; i < list.files.length; i++) {
-        if (list.files[i].name == 'customer.db') {
+        if (list.files[i].name == 'backup.zip') {
           var fileId = list.files[i].id;
           await drive.files.delete(
             fileId,
@@ -85,14 +100,16 @@ class GoogleClient {
     List<dynamic> fileList = [];
     await drive.files.list(spaces: 'appDataFolder').then((list) {
       for (var i = 0; i < list.files.length; i++) {
-        print("Id: ${list.files[i].id} File Name:${list.files[i].name}");
         fileList.add({"id": list.files[i].id, "name": list.files[i].name});
       }
     });
     return fileList;
   }
 
-  Future<void> downloadGoogleDriveFile(String fName) async {
+  Future<void> downloadGoogleDriveFile() async {
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String zipPath = join(documentsDirectory.path, 'backup.zip');
+
     googleSignInAccount = await googleSignIn.signIn();
     var client = GoogleHttpClient(await googleSignInAccount.authHeaders);
     var drive = ga.DriveApi(client);
@@ -100,7 +117,7 @@ class GoogleClient {
     await drive.files.list(spaces: 'appDataFolder').then((list) async {
       var fileId = '0';
       for (var i = 0; i < list.files.length; i++) {
-        if (list.files[i].name == 'customer.db') {
+        if (list.files[i].name == 'backup.zip') {
           fileId = list.files[i].id;
           break;
         }
@@ -109,16 +126,33 @@ class GoogleClient {
       if (fileId != '0') {
         ga.Media file = await drive.files
             .get(fileId, downloadOptions: ga.DownloadOptions.FullMedia);
-        final saveFile = File(fName);
+        var saveFile = File(zipPath);
+
         List<int> dataStore = [];
         file.stream.listen((data) {
           dataStore.insertAll(dataStore.length, data);
         }, onDone: () {
           saveFile.writeAsBytes(dataStore);
-          print("File saved at ${saveFile.path}");
         }, onError: (error) {
           print(error);
         });
+
+        final bytes = saveFile.readAsBytesSync();
+
+        // Decode the Zip file
+        final archive = ZipDecoder().decodeBytes(bytes);
+
+        // Extract the contents of the Zip archive to disk.
+        for (final file in archive) {
+          final filename = file.name;
+          if (file.isFile) {
+            final data = file.content as List<int>;
+            String filePath = join(documentsDirectory.path, filename);
+            File(filePath)
+              ..createSync(recursive: true)
+              ..writeAsBytesSync(data);
+          }
+        }
       }
     });
   }
