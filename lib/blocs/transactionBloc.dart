@@ -29,7 +29,7 @@ class TransactionBloc {
   }
 
   getCustomerTransactionsTotal(int id) async {
-    final int total =
+    final double total =
         await _transactionRepository.getCustomerTransactionsTotal(id);
     return total;
   }

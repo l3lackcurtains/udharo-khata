@@ -64,9 +64,7 @@ class _CustomersState extends State<Customers> {
                 icon: Icon(Icons.picture_as_pdf),
                 color: Colors.red,
                 onPressed: () async {
-                  List<Customer> customers = await customerBloc.getCustomers();
-                  Uint8List pdf =
-                      await generatePdf(PdfPageFormat.a4, customers);
+                  Uint8List pdf = await generatePdf(PdfPageFormat.a4);
                   final dir = await getExternalStorageDirectory();
                   final file = File(dir.path + "/report.pdf");
                   await file.writeAsBytes(pdf);
@@ -130,7 +128,7 @@ class _CustomersState extends State<Customers> {
         future: transactionBloc.getCustomerTransactionsTotal(cid),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
-            int total = snapshot.data;
+            double total = snapshot.data;
             if (total == 0) return Container();
             bool neg = false;
             String ttype = "payment";

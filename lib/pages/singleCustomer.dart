@@ -228,7 +228,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
         future: transactionBloc.getCustomerTransactionsTotal(cid),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
-            int total = snapshot.data;
+            double total = snapshot.data;
             bool neg = false;
             String ttype = "payment";
             if (total.isNegative) {

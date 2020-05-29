@@ -155,5 +155,6 @@ class GoogleClient {
         }
       }
     });
+    print("Restore complete");
   }
 }

@@ -54,7 +54,7 @@ class TransactionDao {
     return null;
   }
 
-  Future<int> getCustomerTransactionsTotal(int cid) async {
+  Future<double> getCustomerTransactionsTotal(int cid) async {
     final db = await dbProvider.database;
 
     List<Map> result =
@@ -64,7 +64,7 @@ class TransactionDao {
         ? result.map((item) => Transaction.fromDatabaseJson(item)).toList()
         : [];
 
-    int totalTransaction = 0;
+    double totalTransaction = 0;
     transactions.forEach((trans) {
       if (trans.ttype == 'payment') {
         totalTransaction +=
