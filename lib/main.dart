@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:udharokhata/pages/backup.dart';
 import 'package:udharokhata/pages/customers.dart';
+import 'package:udharokhata/pages/settings.dart';
 import 'package:udharokhata/pages/transactions.dart';
 
 import 'pages/signin.dart';
@@ -28,7 +28,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
-  final List<Widget> _widgetOptions = [Customers(), Transactions(), Backup()];
+  final List<Widget> _widgetOptions = [
+    Customers(),
+    Transactions(),
+    Settings(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
             BottomNavigationBarItem(
                 icon: Icon(Icons.perm_media), title: Text('Transactions')),
             BottomNavigationBarItem(
-                icon: Icon(Icons.backup), title: Text('Backup')),
+                icon: Icon(Icons.settings), title: Text('Settings')),
           ],
           currentIndex: _selectedIndex,
           fixedColor: Colors.deepPurple,

@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
-import 'package:udharokhata/helpers/generatePdf.dart';
+import 'package:udharokhata/helpers/generateCustomersPdf.dart';
 import 'package:udharokhata/models/customer.dart';
 import 'package:udharokhata/pages/addCustomer.dart';
 import 'package:udharokhata/pages/singleCustomer.dart';
@@ -31,24 +31,55 @@ class _CustomersState extends State<Customers> {
   final TextEditingController _searchInputController =
       new TextEditingController();
 
+  bool _absorbing = false;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(color: Colors.white),
-        child: getCustomersList(),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AddCustomer()),
-          );
-        },
-        icon: Icon(Icons.add),
-        label: Text('Add Customer'),
-      ),
+    return Stack(
+      children: [
+        Scaffold(
+          body: Container(
+            decoration: BoxDecoration(color: Colors.white),
+            child: getCustomersList(),
+          ),
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddCustomer()),
+              );
+            },
+            icon: Icon(Icons.add),
+            label: Text('Add Customer'),
+          ),
+        ),
+        _absorbing
+            ? AbsorbPointer(
+                absorbing: _absorbing,
+                child: Container(
+                  child: Center(child: CircularProgressIndicator()),
+                  constraints: BoxConstraints.expand(),
+                  color: Colors.white,
+                ),
+              )
+            : Container(),
+      ],
     );
+  }
+
+  void generatePdf() async {
+    setState(() {
+      _absorbing = true;
+    });
+    Uint8List pdf = await generateCustomerPdf(PdfPageFormat.a4);
+    final dir = await getExternalStorageDirectory();
+    final file = File(dir.path + "/report.pdf");
+    await file.writeAsBytes(pdf);
+    OpenFile.open(file.path);
+
+    setState(() {
+      _absorbing = false;
+    });
   }
 
   Widget getCustomersList() {
@@ -64,11 +95,7 @@ class _CustomersState extends State<Customers> {
                 icon: Icon(Icons.picture_as_pdf),
                 color: Colors.red,
                 onPressed: () async {
-                  Uint8List pdf = await generatePdf(PdfPageFormat.a4);
-                  final dir = await getExternalStorageDirectory();
-                  final file = File(dir.path + "/report.pdf");
-                  await file.writeAsBytes(pdf);
-                  OpenFile.open(file.path);
+                  generatePdf();
                 },
               )
             ],

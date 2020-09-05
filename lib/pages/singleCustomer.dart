@@ -1,10 +1,15 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
 import 'package:udharokhata/helpers/conversion.dart';
+import 'package:udharokhata/helpers/generateCustomerTransaction.dart';
 import 'package:udharokhata/models/customer.dart';
 import 'package:udharokhata/models/transaction.dart';
 import 'package:udharokhata/pages/singleTransaction.dart';
@@ -34,6 +39,8 @@ class SingleCustomer extends StatefulWidget {
 class _SingleCustomerState extends State<SingleCustomer> {
   final CustomerBloc customerBloc = CustomerBloc();
   final TransactionBloc transactionBloc = TransactionBloc();
+
+  bool _absorbing = false;
 
   void _showDeleteDialog(customer) {
     showDialog(
@@ -70,6 +77,20 @@ class _SingleCustomerState extends State<SingleCustomer> {
     );
   }
 
+  void generatePdf() async {
+    setState(() {
+      _absorbing = true;
+    });
+    Uint8List pdf = await generateCustomerTransactionPdf(PdfPageFormat.a4);
+    final dir = await getExternalStorageDirectory();
+    final file = File(dir.path + "/report.pdf");
+    await file.writeAsBytes(pdf);
+    OpenFile.open(file.path);
+    setState(() {
+      _absorbing = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final SingleCustomerScreenArguments args =
@@ -86,139 +107,175 @@ class _SingleCustomerState extends State<SingleCustomer> {
               customerImage = Base64Decoder().convert(customer.image);
             }
 
-            return Scaffold(
-              resizeToAvoidBottomPadding: false,
-              appBar: AppBar(
-                  elevation: 0.0,
-                  backgroundColor: Colors.transparent,
-                  title: null,
-                  iconTheme: IconThemeData(
-                    color: Colors.black, //change your color here
-                  ),
-                  actions: <Widget>[
-                    // action button
-                    IconButton(
-                      icon: Icon(Icons.edit, size: 20.0, color: Colors.purple),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => EditCustomer(),
-                                settings: RouteSettings(
-                                  arguments: EditCustomerScreenArguments(
-                                    customer,
-                                  ),
-                                )));
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.delete, size: 20.0, color: Colors.red),
-                      onPressed: () {
-                        _showDeleteDialog(customer);
-                      },
-                    ),
-                    // action button
-                  ]),
-              body: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(0, 0, 0, 16),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Hero(
-                            tag: customer.id,
-                            child: Padding(
-                              padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
-                              child: customerImage != null
-                                  ? CircleAvatar(
-                                      radius: 40.0,
-                                      child: ClipOval(
-                                          child: Image.memory(customerImage,
-                                              height: 80,
-                                              width: 80,
-                                              fit: BoxFit.cover)),
-                                      backgroundColor: Colors.transparent,
-                                    )
-                                  : CircleAvatar(
-                                      backgroundColor: Colors.purple.shade500,
-                                      radius: 40,
-                                      child: Icon(Icons.person,
-                                          color: Colors.purple.shade100,
-                                          size: 40.0),
-                                    ),
-                            )),
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(8, 12, 8, 8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
-                                child: Text(
-                                  customer.name,
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 20),
-                                ),
-                              ),
-                              Row(
+            return Stack(
+              children: [
+                Scaffold(
+                  resizeToAvoidBottomPadding: false,
+                  appBar: AppBar(
+                      elevation: 0.0,
+                      backgroundColor: Colors.transparent,
+                      title: null,
+                      iconTheme: IconThemeData(
+                        color: Colors.black, //change your color here
+                      ),
+                      actions: <Widget>[
+                        // action button
+                        IconButton(
+                          icon: Icon(Icons.edit,
+                              size: 20.0, color: Colors.purple),
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => EditCustomer(),
+                                    settings: RouteSettings(
+                                      arguments: EditCustomerScreenArguments(
+                                        customer,
+                                      ),
+                                    )));
+                          },
+                        ),
+                        IconButton(
+                          icon:
+                              Icon(Icons.delete, size: 20.0, color: Colors.red),
+                          onPressed: () {
+                            _showDeleteDialog(customer);
+                          },
+                        ),
+                        // action button
+                      ]),
+                  body: Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Hero(
+                                tag: customer.id,
+                                child: Padding(
+                                  padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
+                                  child: customerImage != null
+                                      ? CircleAvatar(
+                                          radius: 40.0,
+                                          child: ClipOval(
+                                              child: Image.memory(customerImage,
+                                                  height: 80,
+                                                  width: 80,
+                                                  fit: BoxFit.cover)),
+                                          backgroundColor: Colors.transparent,
+                                        )
+                                      : CircleAvatar(
+                                          backgroundColor:
+                                              Colors.purple.shade500,
+                                          radius: 40,
+                                          child: Icon(Icons.person,
+                                              color: Colors.purple.shade100,
+                                              size: 40.0),
+                                        ),
+                                )),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(8, 12, 8, 8),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Icon(
-                                    Icons.phone,
-                                    color: Colors.brown.shade600,
-                                    size: 16.0,
-                                  ),
                                   Padding(
-                                    padding: EdgeInsets.fromLTRB(8, 4, 4, 4),
-                                    child: Text(customer.phone),
+                                    padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
+                                    child: Text(
+                                      customer.name,
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 20),
+                                    ),
                                   ),
+                                  Row(
+                                    children: <Widget>[
+                                      Icon(
+                                        Icons.phone,
+                                        color: Colors.brown.shade600,
+                                        size: 16.0,
+                                      ),
+                                      Padding(
+                                        padding:
+                                            EdgeInsets.fromLTRB(8, 4, 4, 4),
+                                        child: Text(customer.phone),
+                                      ),
+                                    ],
+                                  ),
+                                  customer.address != null &&
+                                          customer.address.length > 0
+                                      ? Row(
+                                          children: <Widget>[
+                                            Icon(
+                                              Icons.location_on,
+                                              color: Colors.brown.shade600,
+                                              size: 16.0,
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.fromLTRB(
+                                                  8, 4, 4, 4),
+                                              child: Text(customer.address),
+                                            ),
+                                          ],
+                                        )
+                                      : Container()
                                 ],
                               ),
-                              customer.address != null &&
-                                      customer.address.length > 0
-                                  ? Row(
-                                      children: <Widget>[
-                                        Icon(
-                                          Icons.location_on,
-                                          color: Colors.brown.shade600,
-                                          size: 16.0,
-                                        ),
-                                        Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(8, 4, 4, 4),
-                                          child: Text(customer.address),
-                                        ),
-                                      ],
-                                    )
-                                  : Container()
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                  Expanded(child: getCustomerTransactions(customer.id))
-                ],
-              ),
-              floatingActionButton: FloatingActionButton.extended(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => AddTransaction(),
-                        settings: RouteSettings(
-                          arguments: AddTransactionScreenArguments(
-                            customer,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          FlatButton.icon(
+                            onPressed: () {},
+                            icon: Icon(Icons.share,
+                                size: 20.0, color: Colors.green),
+                            label: Text("Share"),
                           ),
-                        )),
-                  );
-                },
-                icon: Icon(Icons.add),
-                label: Text('Add Transaction'),
-              ),
+                          FlatButton.icon(
+                            onPressed: () {
+                              generatePdf();
+                            },
+                            icon: Icon(Icons.picture_as_pdf,
+                                size: 20.0, color: Colors.blue),
+                            label: Text("Export"),
+                          )
+                        ],
+                      ),
+                      Expanded(child: getCustomerTransactions(customer.id))
+                    ],
+                  ),
+                  floatingActionButton: FloatingActionButton.extended(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AddTransaction(),
+                            settings: RouteSettings(
+                              arguments: AddTransactionScreenArguments(
+                                customer,
+                              ),
+                            )),
+                      );
+                    },
+                    icon: Icon(Icons.add),
+                    label: Text('Add Transaction'),
+                  ),
+                ),
+                _absorbing
+                    ? AbsorbPointer(
+                        absorbing: _absorbing,
+                        child: Container(
+                          child: Center(child: CircularProgressIndicator()),
+                          constraints: BoxConstraints.expand(),
+                          color: Colors.white,
+                        ),
+                      )
+                    : Container(),
+              ],
             );
           }
-
           return Container();
         });
   }

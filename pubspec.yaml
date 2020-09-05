@@ -31,6 +31,8 @@ dependencies:
   pdf: ^1.8.1
   intl: ^0.16.1
   open_file: ^3.0.1
+  share: ^0.6.5
+  flutter_pdfview: ^1.0.3+3
 
   
 dev_dependencies:
@@ -57,3 +59,11 @@ flutter:
     - images/no_image.jpg
     - images/noimage_person.png
     - images/google_logo.png
+    - images/cv_template.png
+    - images/share.png
+    - images/backup.png
+    - images/business.png
+    - images/cv/email.png
+    - images/cv/phone.png
+    - images/cv/location.png
+    - images/cv/website.png

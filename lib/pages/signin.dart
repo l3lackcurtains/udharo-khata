@@ -32,7 +32,7 @@ class _SignInState extends State<SignIn> {
       splashColor: Colors.red,
       onPressed: () {
         GoogleClient().signInWithGoogle().whenComplete(() {
-          Navigator.of(context).push(
+          Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) {
                 return MyHomePage();

@@ -35,44 +35,56 @@ class _BackupState extends State<Backup> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              RaisedButton(
-                onPressed: () {
-                  backupData();
-                },
-                child: Text("Backup Now."),
-              ),
-              RaisedButton(
-                onPressed: () {
-                  restoreData();
-                },
-                child: Text("Restore Now."),
-              ),
-            ],
-          ),
-          Expanded(
-            child: FutureBuilder<List<dynamic>>(
-                future:
-                    _backupList, // a previously-obtained Future<String> or null
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    if (snapshot.data.length == 0) return Container();
-                    return Column(
-                        children: snapshot.data.map((item) {
-                      return InkWell(
-                          child: Container(
-                              padding: EdgeInsets.all(8),
-                              child: Text(item['name'])));
-                    }).toList());
-                  }
-                  return Container();
-                }),
-          )
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Khata',
+            style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+                fontFamily: 'Poppins')),
+        elevation: 0,
+        backgroundColor: Colors.grey.shade100,
+      ),
+      body: Container(
+        child: Column(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                RaisedButton(
+                  onPressed: () {
+                    backupData();
+                  },
+                  child: Text("Backup Now."),
+                ),
+                RaisedButton(
+                  onPressed: () {
+                    restoreData();
+                  },
+                  child: Text("Restore Now."),
+                ),
+              ],
+            ),
+            Expanded(
+              child: FutureBuilder<List<dynamic>>(
+                  future:
+                      _backupList, // a previously-obtained Future<String> or null
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      if (snapshot.data.length == 0) return Container();
+                      return Column(
+                          children: snapshot.data.map((item) {
+                        return InkWell(
+                            child: Container(
+                                padding: EdgeInsets.all(8),
+                                child: Text(item['name'])));
+                      }).toList());
+                    }
+                    return Container();
+                  }),
+            )
+          ],
+        ),
       ),
     );
   }
