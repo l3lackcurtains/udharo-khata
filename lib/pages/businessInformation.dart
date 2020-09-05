@@ -7,6 +7,7 @@ import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:udharokhata/blocs/businessBloc.dart';
 import 'package:udharokhata/models/business.dart';
 
 class BusinessInformation extends StatefulWidget {
@@ -15,24 +16,26 @@ class BusinessInformation extends StatefulWidget {
 }
 
 class _BusinessInformationState extends State<BusinessInformation> {
+  final BusinessBloc businessBloc = BusinessBloc();
+
   String _pathPDF = "";
   bool _pdfLoaded = false;
 
   final _formKey = GlobalKey<FormState>();
   Business _businessInfo = Business();
-  String _name = "Madhav Poudel";
+  String _name = "YOUR NAME";
   String _phone = "+000 0000000000";
   String _email = "info@udharokhata.com";
   String _address = "Malepatan, Pokhara, Nepal";
   String _logo = "";
   String _website = "https://udharokhata.com";
   String _role = "Accountant";
-  String _companyName = "Udharo Khata";
+  String _companyName = "YOUR COMPANY";
 
   @override
   void initState() {
     super.initState();
-    buildPDF();
+    initBusinessCard();
   }
 
   void downloadPdf() async {
@@ -41,24 +44,60 @@ class _BusinessInformationState extends State<BusinessInformation> {
     OpenFile.open(file.path);
   }
 
+  void initBusinessCard() async {
+    if (this.mounted) {
+      Business bs = await businessBloc.getBusiness(0);
+
+      setState(() {
+        if (bs != null) {
+          _businessInfo = bs;
+        } else {
+          _businessInfo.id = 0;
+          _businessInfo.name = _name;
+          _businessInfo.phone = _phone;
+          _businessInfo.email = _email;
+          _businessInfo.address = _address;
+          _businessInfo.logo = _logo;
+          _businessInfo.website = _website;
+          _businessInfo.role = _role;
+          _businessInfo.companyName = _companyName;
+        }
+
+        _pdfLoaded = false;
+      });
+
+      await businessCardMaker();
+      final dir = await getExternalStorageDirectory();
+      setState(() {
+        _pathPDF = dir.path + "/business_card.pdf";
+        _pdfLoaded = true;
+      });
+    }
+  }
+
   void buildPDF() async {
-    setState(() {
-      _pdfLoaded = false;
-      _businessInfo.name = _name;
-      _businessInfo.phone = _phone;
-      _businessInfo.email = _email;
-      _businessInfo.address = _address;
-      _businessInfo.logo = _logo;
-      _businessInfo.website = _website;
-      _businessInfo.role = _role;
-      _businessInfo.companyName = _companyName;
-    });
-    await businessCardMaker();
-    final dir = await getExternalStorageDirectory();
-    setState(() {
-      _pathPDF = dir.path + "/business_card.pdf";
-      _pdfLoaded = true;
-    });
+    if (this.mounted) {
+      setState(() {
+        _pdfLoaded = false;
+        _businessInfo.id = 0;
+        _businessInfo.name = _name;
+        _businessInfo.phone = _phone;
+        _businessInfo.email = _email;
+        _businessInfo.address = _address;
+        _businessInfo.logo = _logo;
+        _businessInfo.website = _website;
+        _businessInfo.role = _role;
+        _businessInfo.companyName = _companyName;
+      });
+
+      await businessCardMaker();
+      final dir = await getExternalStorageDirectory();
+
+      setState(() {
+        _pathPDF = dir.path + "/business_card.pdf";
+        _pdfLoaded = true;
+      });
+    }
   }
 
   Future<void> businessCardMaker() async {
@@ -194,6 +233,21 @@ class _BusinessInformationState extends State<BusinessInformation> {
     file.writeAsBytesSync(doc.save());
   }
 
+  void updateBusinessInformation() {
+    final formState = _formKey.currentState;
+    if (formState.validate()) {
+      formState.save();
+      businessBloc.updateBusiness(_businessInfo);
+      Navigator.pop(context);
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    businessBloc.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -221,148 +275,235 @@ class _BusinessInformationState extends State<BusinessInformation> {
             Container(
               color: Colors.white,
               padding: EdgeInsets.all(24),
-              child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: <Widget>[
-                      Focus(
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Name *',
-                          ),
-                          initialValue: _name,
-                          keyboardType: TextInputType.text,
-                          onChanged: (String val) {
-                            setState(() {
-                              _name = val;
-                            });
-                          },
-                        ),
-                        onFocusChange: (hasFocus) {
-                          if (!hasFocus) {
-                            buildPDF();
-                          }
-                        },
-                      ),
-                      Focus(
-                        child: TextFormField(
-                            decoration: InputDecoration(
-                              labelText: 'Company Name *',
+              child: FutureBuilder(
+                  future: businessBloc.getBusiness(0),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    Business businessItem = snapshot.data;
+                    print(snapshot.hasData);
+                    if (snapshot.hasData) {
+                      businessItem = _businessInfo;
+                    } else {
+                      businessItem.id = 0;
+                      businessItem.name = _name;
+                      businessItem.phone = _phone;
+                      businessItem.email = _email;
+                      businessItem.address = _address;
+                      businessItem.logo = _logo;
+                      businessItem.website = _website;
+                      businessItem.role = _role;
+                      businessItem.companyName = _companyName;
+                    }
+                    return Form(
+                        key: _formKey,
+                        child: Column(
+                          children: <Widget>[
+                            Focus(
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                  labelText: 'Name *',
+                                ),
+                                initialValue: businessItem.name,
+                                keyboardType: TextInputType.text,
+                                onChanged: (String val) {
+                                  if (mounted) {
+                                    setState(() {
+                                      _name = val;
+                                    });
+                                  }
+                                },
+                                onSaved: (String val) {
+                                  if (mounted) {
+                                    setState(() {
+                                      _name = val;
+                                      _businessInfo.name = val;
+                                    });
+                                  }
+                                },
+                              ),
+                              onFocusChange: (hasFocus) {
+                                if (!hasFocus) {
+                                  buildPDF();
+                                }
+                              },
                             ),
-                            initialValue: _companyName,
-                            keyboardType: TextInputType.text,
-                            onChanged: (String val) {
-                              setState(() {
-                                _companyName = val;
-                              });
-                            },
-                            onEditingComplete: () {
-                              buildPDF();
-                            }),
-                        onFocusChange: (hasFocus) {
-                          if (!hasFocus) {
-                            buildPDF();
-                          }
-                        },
-                      ),
-                      Focus(
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Company Role *',
-                          ),
-                          initialValue: _role,
-                          keyboardType: TextInputType.text,
-                          onChanged: (String val) {
-                            setState(() {
-                              _role = val;
-                            });
-                          },
-                        ),
-                        onFocusChange: (hasFocus) {
-                          if (!hasFocus) {
-                            buildPDF();
-                          }
-                        },
-                      ),
-                      Focus(
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Company Address',
-                          ),
-                          initialValue: _address,
-                          keyboardType: TextInputType.text,
-                          onChanged: (String val) {
-                            setState(() {
-                              _address = val;
-                            });
-                          },
-                        ),
-                        onFocusChange: (hasFocus) {
-                          if (!hasFocus) {
-                            buildPDF();
-                          }
-                        },
-                      ),
-                      Focus(
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Phone',
-                          ),
-                          initialValue: _phone,
-                          keyboardType: TextInputType.phone,
-                          onChanged: (String val) {
-                            setState(() {
-                              _phone = val;
-                            });
-                          },
-                        ),
-                        onFocusChange: (hasFocus) {
-                          if (!hasFocus) {
-                            buildPDF();
-                          }
-                        },
-                      ),
-                      Focus(
-                        child: TextFormField(
-                          keyboardType: TextInputType.emailAddress,
-                          initialValue: _email,
-                          decoration: InputDecoration(
-                            labelText: 'Email',
-                          ),
-                          onChanged: (String val) {
-                            setState(() {
-                              _email = val;
-                            });
-                          },
-                        ),
-                        onFocusChange: (hasFocus) {
-                          if (!hasFocus) {
-                            buildPDF();
-                          }
-                        },
-                      ),
-                      Focus(
-                        child: TextFormField(
-                          keyboardType: TextInputType.text,
-                          initialValue: _website,
-                          decoration: InputDecoration(
-                            labelText: 'Website',
-                          ),
-                          onChanged: (String val) async {
-                            setState(() {
-                              _website = val;
-                            });
-                          },
-                        ),
-                        onFocusChange: (hasFocus) {
-                          if (!hasFocus) {
-                            buildPDF();
-                          }
-                        },
-                      ),
-                    ],
-                  ) // Build this out in the next steps.
-                  ),
+                            Focus(
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                  labelText: 'Company Name *',
+                                ),
+                                initialValue: businessItem.companyName,
+                                keyboardType: TextInputType.text,
+                                onChanged: (String val) {
+                                  if (mounted) {
+                                    setState(() {
+                                      _companyName = val;
+                                    });
+                                  }
+                                },
+                                onSaved: (String val) {
+                                  if (mounted) {
+                                    setState(() {
+                                      _companyName = val;
+                                      _businessInfo.companyName = val;
+                                    });
+                                  }
+                                },
+                              ),
+                              onFocusChange: (hasFocus) {
+                                if (!hasFocus) {
+                                  buildPDF();
+                                }
+                              },
+                            ),
+                            Focus(
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                  labelText: 'Company Role *',
+                                ),
+                                initialValue: businessItem.role,
+                                keyboardType: TextInputType.text,
+                                onChanged: (String val) {
+                                  if (mounted) {
+                                    setState(() {
+                                      _role = val;
+                                    });
+                                  }
+                                },
+                                onSaved: (String val) {
+                                  if (mounted) {
+                                    setState(() {
+                                      _role = val;
+                                      _businessInfo.role = val;
+                                    });
+                                  }
+                                },
+                              ),
+                              onFocusChange: (hasFocus) {
+                                if (!hasFocus) {
+                                  buildPDF();
+                                }
+                              },
+                            ),
+                            Focus(
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                  labelText: 'Company Address',
+                                ),
+                                initialValue: businessItem.address,
+                                keyboardType: TextInputType.text,
+                                onChanged: (String val) {
+                                  if (mounted) {
+                                    setState(() {
+                                      _address = val;
+                                    });
+                                  }
+                                },
+                                onSaved: (String val) {
+                                  if (mounted) {
+                                    setState(() {
+                                      _address = val;
+                                      _businessInfo.address = val;
+                                    });
+                                  }
+                                },
+                              ),
+                              onFocusChange: (hasFocus) {
+                                if (!hasFocus) {
+                                  buildPDF();
+                                }
+                              },
+                            ),
+                            Focus(
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                  labelText: 'Phone',
+                                ),
+                                initialValue: businessItem.phone,
+                                keyboardType: TextInputType.phone,
+                                onChanged: (String val) {
+                                  if (mounted) {
+                                    setState(() {
+                                      _phone = val;
+                                    });
+                                  }
+                                },
+                                onSaved: (String val) {
+                                  if (mounted) {
+                                    setState(() {
+                                      _phone = val;
+                                      _businessInfo.phone = val;
+                                    });
+                                  }
+                                },
+                              ),
+                              onFocusChange: (hasFocus) {
+                                if (!hasFocus) {
+                                  buildPDF();
+                                }
+                              },
+                            ),
+                            Focus(
+                              child: TextFormField(
+                                keyboardType: TextInputType.emailAddress,
+                                initialValue: businessItem.email,
+                                decoration: InputDecoration(
+                                  labelText: 'Email',
+                                ),
+                                onChanged: (String val) {
+                                  if (mounted) {
+                                    setState(() {
+                                      _email = val;
+                                    });
+                                  }
+                                },
+                                onSaved: (String val) {
+                                  if (mounted) {
+                                    setState(() {
+                                      _email = val;
+                                      _businessInfo.email = val;
+                                    });
+                                  }
+                                },
+                              ),
+                              onFocusChange: (hasFocus) {
+                                if (!hasFocus) {
+                                  buildPDF();
+                                }
+                              },
+                            ),
+                            Focus(
+                              child: TextFormField(
+                                keyboardType: TextInputType.text,
+                                initialValue: businessItem.website,
+                                decoration: InputDecoration(
+                                  labelText: 'Website',
+                                ),
+                                onChanged: (String val) async {
+                                  if (mounted) {
+                                    setState(() {
+                                      _website = val;
+                                    });
+                                  }
+                                },
+                                onSaved: (String val) {
+                                  if (mounted) {
+                                    setState(() {
+                                      _website = val;
+                                      _businessInfo.website = val;
+                                    });
+                                  }
+                                },
+                              ),
+                              onFocusChange: (hasFocus) {
+                                if (!hasFocus) {
+                                  buildPDF();
+                                }
+                              },
+                            ),
+                          ],
+                        ) // Build this out in the next steps.
+                        );
+                  }),
             ),
           ],
         ),
@@ -377,7 +518,9 @@ class _BusinessInformationState extends State<BusinessInformation> {
             children: <Widget>[
               Expanded(
                 child: RaisedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    updateBusinessInformation();
+                  },
                   child: Text("Save"),
                 ),
               ),
@@ -389,7 +532,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
                   onPressed: () {
                     downloadPdf();
                   },
-                  child: Text("Download"),
+                  child: Text("Download Card"),
                 ),
               ),
             ],
