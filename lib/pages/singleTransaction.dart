@@ -8,21 +8,12 @@ import 'package:udharokhata/models/customer.dart';
 import 'package:udharokhata/models/transaction.dart';
 
 import 'editTransaction.dart';
-import 'transactions.dart';
-
-class EditTransactionScreenArguments {
-  final Transaction transaction;
-
-  EditTransactionScreenArguments(this.transaction);
-}
-
-class AddTransactionScreenArguments {
-  final Transaction transaction;
-
-  AddTransactionScreenArguments(this.transaction);
-}
 
 class SingleTransaction extends StatefulWidget {
+  final int transactionId;
+  final Function() notifyParent;
+  SingleTransaction(this.transactionId, this.notifyParent, {Key key})
+      : super(key: key);
   @override
   _SingleTransactionState createState() => _SingleTransactionState();
 }
@@ -30,6 +21,11 @@ class SingleTransaction extends StatefulWidget {
 class _SingleTransactionState extends State<SingleTransaction> {
   final TransactionBloc transactionBloc = TransactionBloc();
   final CustomerBloc customerBloc = CustomerBloc();
+
+  refresh() {
+    setState(() {});
+    widget.notifyParent();
+  }
 
   void _showDeleteDialog(transaction) {
     showDialog(
@@ -68,11 +64,8 @@ class _SingleTransactionState extends State<SingleTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    final SingleTransactionScreenArguments args =
-        ModalRoute.of(context).settings.arguments;
-
     return FutureBuilder<dynamic>(
-        future: transactionBloc.getTransaction(args.transactionId),
+        future: transactionBloc.getTransaction(widget.transactionId),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             Transaction transaction = snapshot.data;
@@ -98,14 +91,12 @@ class _SingleTransactionState extends State<SingleTransaction> {
                       icon: Icon(Icons.edit, size: 20.0, color: Colors.purple),
                       onPressed: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => EditTransaction(),
-                                settings: RouteSettings(
-                                  arguments: EditTransactionScreenArguments(
-                                    transaction,
-                                  ),
-                                )));
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                EditTransaction(transaction, refresh),
+                          ),
+                        );
                       },
                     ),
                     IconButton(

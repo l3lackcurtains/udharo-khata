@@ -5,7 +5,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:pdf/pdf.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
 import 'package:udharokhata/helpers/conversion.dart';
@@ -13,25 +12,14 @@ import 'package:udharokhata/helpers/generateCustomerTransaction.dart';
 import 'package:udharokhata/models/customer.dart';
 import 'package:udharokhata/models/transaction.dart';
 import 'package:udharokhata/pages/singleTransaction.dart';
-import 'package:udharokhata/pages/transactions.dart';
 
 import 'addTransaction.dart';
-import 'customers.dart';
 import 'editCustomer.dart';
 
-class EditCustomerScreenArguments {
-  final Customer customer;
-
-  EditCustomerScreenArguments(this.customer);
-}
-
-class AddTransactionScreenArguments {
-  final Customer customer;
-
-  AddTransactionScreenArguments(this.customer);
-}
-
 class SingleCustomer extends StatefulWidget {
+  final int customerId;
+
+  SingleCustomer(this.customerId, {Key key}) : super(key: key);
   @override
   _SingleCustomerState createState() => _SingleCustomerState();
 }
@@ -41,6 +29,10 @@ class _SingleCustomerState extends State<SingleCustomer> {
   final TransactionBloc transactionBloc = TransactionBloc();
 
   bool _absorbing = false;
+
+  refresh() {
+    setState(() {});
+  }
 
   void _showDeleteDialog(customer) {
     showDialog(
@@ -81,7 +73,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
     setState(() {
       _absorbing = true;
     });
-    Uint8List pdf = await generateCustomerTransactionPdf(PdfPageFormat.a4);
+    Uint8List pdf = await generateCustomerTransactionPdf(widget.customerId);
     final dir = await getExternalStorageDirectory();
     final file = File(dir.path + "/report.pdf");
     await file.writeAsBytes(pdf);
@@ -93,11 +85,8 @@ class _SingleCustomerState extends State<SingleCustomer> {
 
   @override
   Widget build(BuildContext context) {
-    final SingleCustomerScreenArguments args =
-        ModalRoute.of(context).settings.arguments;
-
     return FutureBuilder<dynamic>(
-        future: customerBloc.getCustomer(args.customerId),
+        future: customerBloc.getCustomer(widget.customerId),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             Customer customer = snapshot.data;
@@ -125,14 +114,14 @@ class _SingleCustomerState extends State<SingleCustomer> {
                               size: 20.0, color: Colors.purple),
                           onPressed: () {
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => EditCustomer(),
-                                    settings: RouteSettings(
-                                      arguments: EditCustomerScreenArguments(
-                                        customer,
-                                      ),
-                                    )));
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EditCustomer(
+                                  customer,
+                                  refresh,
+                                ),
+                              ),
+                            );
                           },
                         ),
                         IconButton(
@@ -152,7 +141,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
                             Hero(
-                                tag: customer.id,
+                                tag: widget.customerId,
                                 child: Padding(
                                   padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
                                   child: customerImage != null
@@ -243,7 +232,8 @@ class _SingleCustomerState extends State<SingleCustomer> {
                           )
                         ],
                       ),
-                      Expanded(child: getCustomerTransactions(customer.id))
+                      Expanded(
+                          child: getCustomerTransactions(widget.customerId))
                     ],
                   ),
                   floatingActionButton: FloatingActionButton.extended(
@@ -251,12 +241,9 @@ class _SingleCustomerState extends State<SingleCustomer> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => AddTransaction(),
-                            settings: RouteSettings(
-                              arguments: AddTransactionScreenArguments(
-                                customer,
-                              ),
-                            )),
+                          builder: (context) =>
+                              AddTransaction(customer, refresh),
+                        ),
                       );
                     },
                     icon: Icon(Icons.add),
@@ -362,13 +349,8 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => SingleTransaction(),
-                                    settings: RouteSettings(
-                                      arguments:
-                                          SingleTransactionScreenArguments(
-                                        transaction.id,
-                                      ),
-                                    ),
+                                    builder: (context) => SingleTransaction(
+                                        transaction.id, refresh),
                                   ),
                                 );
                               },
@@ -398,7 +380,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                               ),
                                             ),
                                             Text(
-                                              "${convertNumberToMonth(transaction.date.month)}",
+                                              "${convertNumberToMonth(transaction.date.month).substring(0, 3)}",
                                               style: TextStyle(
                                                   color: Colors.black87,
                                                   fontSize: 10),

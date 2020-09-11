@@ -7,11 +7,13 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
+import 'package:udharokhata/models/customer.dart';
 import 'package:udharokhata/models/transaction.dart';
 
-import 'singleCustomer.dart';
-
 class AddTransaction extends StatefulWidget {
+  final Function() notifyParent;
+  final Customer customer;
+  AddTransaction(this.customer, this.notifyParent, {Key key}) : super(key: key);
   @override
   _AddTransactionState createState() => _AddTransactionState();
 }
@@ -26,9 +28,11 @@ class _AddTransactionState extends State<AddTransaction> {
   final CustomerBloc customerBloc = CustomerBloc();
 
   String _comment, _customerName;
-  int _customerId, _amount;
+  int _customerId;
+  double _amount;
   DateTime _date = new DateTime.now();
   File _attachment;
+  final picker = ImagePicker();
 
   Transaction transaction = Transaction();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -50,30 +54,25 @@ class _AddTransactionState extends State<AddTransaction> {
   }
 
   Future getImageFromGallery() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    var attachment = await picker.getImage(source: ImageSource.gallery);
 
     setState(() {
-      _attachment = image;
+      _attachment = File(attachment.path);
     });
   }
 
   Future getImageFromCamera() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.camera);
+    var attachment = await picker.getImage(source: ImageSource.camera);
 
     setState(() {
-      _attachment = image;
+      _attachment = File(attachment.path);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final AddTransactionScreenArguments args =
-        ModalRoute.of(context).settings.arguments;
-
-    if (args != null) {
-      _customerId = args.customer.id;
-      _customerName = args.customer.name;
-    }
+    _customerId = widget.customer.id;
+    _customerName = widget.customer.name;
 
     return FutureBuilder(
         future: customerBloc.getCustomers(),
@@ -159,7 +158,7 @@ class _AddTransactionState extends State<AddTransaction> {
                               )
                             ],
                           ),
-                          args != null
+                          widget.customer != null
                               ? Row(children: <Widget>[
                                   Padding(
                                       padding:
@@ -222,14 +221,15 @@ class _AddTransactionState extends State<AddTransaction> {
                                 return 'Please insert amount.';
                               }
 
-                              final isDigitsOnly = int.tryParse(input);
+                              final isDigitsOnly =
+                                  double.tryParse(input) != null;
                               if (isDigitsOnly == null) {
                                 return 'Input needs to be valid number.';
                               }
                               return null;
                             },
                             keyboardType: TextInputType.number,
-                            onSaved: (input) => _amount = int.parse(input),
+                            onSaved: (input) => _amount = double.parse(input),
                           ),
                           TextFormField(
                             decoration: InputDecoration(
@@ -374,6 +374,7 @@ class _AddTransactionState extends State<AddTransaction> {
         transaction.uid = _customerId;
         transactionBloc.addTransaction(transaction);
       }
+      widget.notifyParent();
       Navigator.pop(context);
     }
   }

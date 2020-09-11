@@ -4,7 +4,7 @@ class Transaction {
   int id;
   int uid;
   String ttype;
-  int amount;
+  double amount;
   String comment;
   Customer customer;
   DateTime date;

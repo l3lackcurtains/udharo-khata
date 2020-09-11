@@ -7,6 +7,8 @@ import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/models/customer.dart';
 
 class AddCustomer extends StatefulWidget {
+  final Function() notifyParent;
+  AddCustomer(this.notifyParent, {Key key}) : super(key: key);
   @override
   _AddCustomerState createState() => _AddCustomerState();
 }
@@ -16,6 +18,7 @@ class _AddCustomerState extends State<AddCustomer> {
 
   String _name, _phone, _address;
   File _image;
+  final picker = ImagePicker();
 
   Customer customer = Customer();
 
@@ -23,18 +26,18 @@ class _AddCustomerState extends State<AddCustomer> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Future getImageFromGallery() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    var image = await picker.getImage(source: ImageSource.gallery);
 
     setState(() {
-      _image = image;
+      _image = File(image.path);
     });
   }
 
   Future getImageFromCamera() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.camera);
+    var image = await picker.getImage(source: ImageSource.camera);
 
     setState(() {
-      _image = image;
+      _image = File(image.path);
     });
   }
 
@@ -210,7 +213,7 @@ class _AddCustomerState extends State<AddCustomer> {
       }
 
       customerBloc.addCustomer(customer);
-
+      widget.notifyParent();
       Navigator.pop(context);
     }
   }

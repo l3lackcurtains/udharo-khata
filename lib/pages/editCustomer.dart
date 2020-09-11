@@ -6,9 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/models/customer.dart';
-import 'package:udharokhata/pages/singleCustomer.dart';
 
 class EditCustomer extends StatefulWidget {
+  final Customer customer;
+  final Function() notifyParent;
+  EditCustomer(this.customer, this.notifyParent, {Key key}) : super(key: key);
   @override
   _EditCustomerState createState() => _EditCustomerState();
 }
@@ -18,6 +20,7 @@ class _EditCustomerState extends State<EditCustomer> {
 
   String _name, _phone, _address;
   File _image;
+  final picker = ImagePicker();
 
   Customer customer = Customer();
 
@@ -25,26 +28,24 @@ class _EditCustomerState extends State<EditCustomer> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Future getImageFromGallery() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    final image = await picker.getImage(source: ImageSource.gallery);
 
     setState(() {
-      _image = image;
+      _image = File(image.path);
     });
   }
 
   Future getImageFromCamera() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.camera);
+    final image = await picker.getImage(source: ImageSource.camera);
 
     setState(() {
-      _image = image;
+      _image = File(image.path);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final EditCustomerScreenArguments args =
-        ModalRoute.of(context).settings.arguments;
-    Customer argCustomer = args.customer;
+    Customer customer = widget.customer;
 
     return Scaffold(
       key: _scaffoldKey,
@@ -62,7 +63,7 @@ class _EditCustomerState extends State<EditCustomer> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          updateCustomer(argCustomer.id);
+          updateCustomer(customer.id);
         },
         icon: Icon(Icons.check),
         label: Text('Update Customer'),
@@ -74,9 +75,9 @@ class _EditCustomerState extends State<EditCustomer> {
             key: _formKey,
             child: Column(
               children: <Widget>[
-                customerImageWidget(argCustomer.image),
+                customerImageWidget(customer.image),
                 TextFormField(
-                  initialValue: argCustomer.name,
+                  initialValue: customer.name,
                   decoration: InputDecoration(
                     icon: Icon(Icons.person),
                     hintText: 'What is your customer name?',
@@ -92,7 +93,7 @@ class _EditCustomerState extends State<EditCustomer> {
                   onSaved: (input) => _name = input,
                 ),
                 TextFormField(
-                  initialValue: argCustomer.phone,
+                  initialValue: customer.phone,
                   decoration: InputDecoration(
                     icon: Icon(Icons.call_missed_outgoing),
                     hintText: 'Contact Number of customer.',
@@ -109,7 +110,7 @@ class _EditCustomerState extends State<EditCustomer> {
                   onSaved: (input) => _phone = input,
                 ),
                 TextFormField(
-                  initialValue: argCustomer.address,
+                  initialValue: customer.address,
                   decoration: InputDecoration(
                     icon: Icon(Icons.location_city),
                     hintText: 'Where your customer resides.',
@@ -222,9 +223,8 @@ class _EditCustomerState extends State<EditCustomer> {
         String base64Image = base64Encode(_image.readAsBytesSync());
         customer.image = base64Image;
       }
-
       customerBloc.updateCustomer(customer);
-
+      widget.notifyParent();
       Navigator.pop(context);
     }
   }

@@ -1,39 +1,53 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:udharokhata/blocs/businessBloc.dart';
+import 'package:udharokhata/blocs/customerBloc.dart';
+import 'package:udharokhata/blocs/transactionBloc.dart';
+import 'package:udharokhata/models/business.dart';
+import 'package:udharokhata/models/customer.dart';
+import 'package:udharokhata/models/transaction.dart';
 
-Future<Uint8List> generateCustomerTransactionPdf(
-    PdfPageFormat pageFormat) async {
-  final lorem = pw.LoremText();
+Future<Uint8List> generateCustomerTransactionPdf(int customerId) async {
+  PdfPageFormat pageFormat = PdfPageFormat.a4;
+  final CustomerBloc customerBloc = CustomerBloc();
+  final TransactionBloc transactionBloc = TransactionBloc();
+  final BusinessBloc businessBloc = BusinessBloc();
 
-  final products = <Product>[
-    Product('19874', lorem.sentence(4), 3.99, 2),
-    Product('98452', lorem.sentence(6), 15, 2),
-    Product('28375', lorem.sentence(4), 6.95, 3),
-    Product('95673', lorem.sentence(3), 49.99, 4),
-    Product('23763', lorem.sentence(2), 560.03, 1),
-    Product('55209', lorem.sentence(5), 26, 1),
-    Product('09853', lorem.sentence(5), 26, 1),
-    Product('23463', lorem.sentence(5), 34, 1),
-    Product('56783', lorem.sentence(5), 7, 4),
-    Product('78256', lorem.sentence(5), 23, 1),
-    Product('23745', lorem.sentence(5), 94, 1),
-    Product('07834', lorem.sentence(5), 12, 1),
-    Product('23547', lorem.sentence(5), 34, 1),
-    Product('98387', lorem.sentence(5), 7.99, 2),
-  ];
+  Customer customer = await customerBloc.getCustomer(customerId);
+  List<Transaction> transactions =
+      await transactionBloc.getTransactionsByCustomerId(customerId);
+
+  double transactionTotal =
+      await transactionBloc.getCustomerTransactionsTotal(customerId);
+
+  Business businessInfo = Business();
+
+  businessInfo.id = 0;
+  businessInfo.name = "";
+  businessInfo.phone = "";
+  businessInfo.email = "";
+  businessInfo.address = "";
+  businessInfo.logo = "";
+  businessInfo.website = "";
+  businessInfo.role = "";
+  businessInfo.companyName = "";
+
+  List<Business> businesses = await businessBloc.getBusinesss();
+  if (businesses.length > 0) {
+    businessInfo = businesses[0];
+  }
 
   final invoice = Invoice(
     invoiceNumber: '1',
-    products: products,
-    customerName: 'Madhav',
-    customerAddress: 'Malepatan, Pokhara, Nepal',
-    paymentInfo:
-        '4509 Wiseman Street\nKnoxville, Tennessee(TN), 37929\n865-372-0425',
-    tax: .15,
+    transactions: transactions,
+    customer: customer,
+    businessInfo: businessInfo,
+    total: transactionTotal,
     baseColor: PdfColors.teal,
     accentColor: PdfColors.blueGrey900,
   );
@@ -43,22 +57,20 @@ Future<Uint8List> generateCustomerTransactionPdf(
 
 class Invoice {
   Invoice({
-    this.products,
-    this.customerName,
-    this.customerAddress,
+    this.transactions,
+    this.customer,
+    this.businessInfo,
     this.invoiceNumber,
-    this.tax,
-    this.paymentInfo,
+    this.total,
     this.baseColor,
     this.accentColor,
   });
 
-  final List<Product> products;
-  final String customerName;
-  final String customerAddress;
+  final List<Transaction> transactions;
+  final Customer customer;
+  final Business businessInfo;
   final String invoiceNumber;
-  final double tax;
-  final String paymentInfo;
+  final double total;
   final PdfColor baseColor;
   final PdfColor accentColor;
 
@@ -71,10 +83,9 @@ class Invoice {
   PdfColor get _accentTextColor =>
       baseColor.luminance < 0.5 ? _lightColor : _darkColor;
 
-  double get _total =>
-      products.map<double>((p) => p.total).reduce((a, b) => a + b);
+  double get _total => total;
 
-  double get _grandTotal => _total * (1 + tax);
+  double get _grandTotal => _total;
 
   PdfImage _logo;
 
@@ -86,12 +97,13 @@ class Invoice {
     final font2 = await rootBundle.load('fonts/Poppins/Poppins-Regular.ttf');
     final font3 = await rootBundle.load('fonts/Poppins/Poppins-Regular.ttf');
 
-    _logo = PdfImage.file(
-      doc.document,
-      bytes: (await rootBundle.load('images/google_logo.png'))
-          .buffer
-          .asUint8List(),
-    );
+    if (businessInfo.logo.length > 0) {
+      Uint8List logo = Base64Decoder().convert(businessInfo.logo);
+      _logo = PdfImage.file(
+        doc.document,
+        bytes: logo,
+      );
+    }
 
     // Add page to the PDF
     doc.addPage(
@@ -109,8 +121,6 @@ class Invoice {
           _contentTable(context),
           pw.SizedBox(height: 20),
           _contentFooter(context),
-          pw.SizedBox(height: 20),
-          _termsAndConditions(context),
         ],
       ),
     );
@@ -130,7 +140,7 @@ class Invoice {
                 children: [
                   pw.Container(
                     height: 50,
-                    padding: const pw.EdgeInsets.only(left: 20),
+                    padding: pw.EdgeInsets.only(left: 20),
                     alignment: pw.Alignment.centerLeft,
                     child: pw.Text(
                       'TRANSACTION STATEMENT',
@@ -146,7 +156,7 @@ class Invoice {
                       borderRadius: 2,
                       color: accentColor,
                     ),
-                    padding: const pw.EdgeInsets.only(
+                    padding: pw.EdgeInsets.only(
                         left: 40, top: 10, bottom: 10, right: 20),
                     alignment: pw.Alignment.centerLeft,
                     height: 50,
@@ -158,10 +168,10 @@ class Invoice {
                       child: pw.GridView(
                         crossAxisCount: 2,
                         children: [
-                          pw.Text('Invoice #'),
-                          pw.Text(invoiceNumber),
+                          pw.Text('For'),
+                          pw.Text(customer.name),
                           pw.Text('Date:'),
-                          pw.Text(_formatDate(DateTime.now())),
+                          pw.Text(_formatDate(DateTime.now()).split(",")[0]),
                         ],
                       ),
                     ),
@@ -175,9 +185,9 @@ class Invoice {
                 children: [
                   pw.Container(
                     alignment: pw.Alignment.topRight,
-                    padding: const pw.EdgeInsets.only(bottom: 8, left: 30),
+                    padding: pw.EdgeInsets.only(bottom: 8, left: 0),
                     height: 72,
-                    child: _logo != null ? pw.Image(_logo) : pw.PdfLogo(),
+                    child: _logo != null ? pw.Image(_logo) : pw.Container(),
                   ),
                   // pw.Container(
                   //   color: baseColor,
@@ -198,17 +208,16 @@ class Invoice {
       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
       crossAxisAlignment: pw.CrossAxisAlignment.end,
       children: [
-        pw.Container(
-          height: 20,
-          width: 100,
-          child: pw.BarcodeWidget(
-            barcode: pw.Barcode.pdf417(),
-            data: 'Invoice# $invoiceNumber',
+        pw.Text(
+          'PDF generated by Udharo Khata',
+          style: pw.TextStyle(
+            fontSize: 12,
+            color: PdfColors.grey,
           ),
         ),
         pw.Text(
-          'Page ${context.pageNumber}/${context.pagesCount}',
-          style: const pw.TextStyle(
+          'Page ${context.pageNumber} of ${context.pagesCount}',
+          style: pw.TextStyle(
             fontSize: 12,
             color: PdfColors.grey,
           ),
@@ -277,7 +286,7 @@ class Invoice {
       children: [
         pw.Expanded(
           child: pw.Container(
-            margin: const pw.EdgeInsets.symmetric(horizontal: 20),
+            margin: pw.EdgeInsets.symmetric(horizontal: 20),
             height: 70,
             child: pw.FittedBox(
               child: pw.Text(
@@ -293,45 +302,58 @@ class Invoice {
         pw.Expanded(
           child: pw.Row(
             children: [
+              pw.SizedBox(width: 120),
               pw.Container(
-                margin: const pw.EdgeInsets.only(left: 10, right: 10),
-                height: 70,
-                child: pw.Text(
-                  'Statement of ',
-                  style: pw.TextStyle(
-                    color: _darkColor,
-                    fontWeight: pw.FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-              pw.Expanded(
-                child: pw.Container(
-                  height: 70,
-                  child: pw.RichText(
-                      text: pw.TextSpan(
-                          text: '$customerName\n',
-                          style: pw.TextStyle(
-                            color: _darkColor,
-                            fontWeight: pw.FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                          children: [
-                        const pw.TextSpan(
-                          text: '\n',
-                          style: pw.TextStyle(
-                            fontSize: 5,
-                          ),
+                height: 80,
+                child: pw.RichText(
+                    text: pw.TextSpan(
+                        text: '${businessInfo.companyName}\n',
+                        style: pw.TextStyle(
+                          color: _darkColor,
+                          fontWeight: pw.FontWeight.bold,
+                          fontSize: 14,
                         ),
-                        pw.TextSpan(
-                          text: customerAddress,
-                          style: pw.TextStyle(
-                            fontWeight: pw.FontWeight.normal,
-                            fontSize: 10,
-                          ),
+                        children: [
+                      pw.TextSpan(
+                        text: '\n',
+                        style: pw.TextStyle(
+                          fontSize: 5,
                         ),
-                      ])),
-                ),
+                      ),
+                      pw.TextSpan(
+                        text: businessInfo.address,
+                        style: pw.TextStyle(
+                          fontWeight: pw.FontWeight.normal,
+                          fontSize: 10,
+                        ),
+                      ),
+                      pw.TextSpan(
+                        text: '\n',
+                        style: pw.TextStyle(
+                          fontSize: 5,
+                        ),
+                      ),
+                      pw.TextSpan(
+                        text: businessInfo.phone,
+                        style: pw.TextStyle(
+                          fontWeight: pw.FontWeight.normal,
+                          fontSize: 10,
+                        ),
+                      ),
+                      pw.TextSpan(
+                        text: '\n',
+                        style: pw.TextStyle(
+                          fontSize: 5,
+                        ),
+                      ),
+                      pw.TextSpan(
+                        text: businessInfo.email,
+                        style: pw.TextStyle(
+                          fontWeight: pw.FontWeight.normal,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ])),
               ),
             ],
           ),
@@ -344,8 +366,7 @@ class Invoice {
     return pw.Row(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        pw.Expanded(
-          flex: 2,
+        pw.Container(
           child: pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
@@ -356,126 +377,41 @@ class Invoice {
                   fontWeight: pw.FontWeight.bold,
                 ),
               ),
-              pw.Container(
-                margin: const pw.EdgeInsets.only(top: 20, bottom: 8),
-                child: pw.Text(
-                  'Payment Info:',
-                  style: pw.TextStyle(
-                    color: baseColor,
-                    fontWeight: pw.FontWeight.bold,
-                  ),
-                ),
-              ),
-              pw.Text(
-                paymentInfo,
-                style: const pw.TextStyle(
-                  fontSize: 8,
-                  lineSpacing: 5,
-                  color: _darkColor,
-                ),
-              ),
             ],
           ),
         ),
-        pw.Expanded(
-          flex: 1,
-          child: pw.DefaultTextStyle(
-            style: const pw.TextStyle(
-              fontSize: 10,
-              color: _darkColor,
-            ),
-            child: pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.start,
-              children: [
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text('Sub Total:'),
-                    pw.Text(_formatCurrency(_total)),
-                  ],
-                ),
-                pw.SizedBox(height: 5),
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text('Tax:'),
-                    pw.Text('${(tax * 100).toStringAsFixed(1)}%'),
-                  ],
-                ),
-                pw.Divider(color: accentColor),
-                pw.DefaultTextStyle(
-                  style: pw.TextStyle(
-                    color: baseColor,
-                    fontSize: 14,
-                    fontWeight: pw.FontWeight.bold,
-                  ),
-                  child: pw.Row(
-                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                    children: [
-                      pw.Text('Total:'),
-                      pw.Text(_formatCurrency(_grandTotal)),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  pw.Widget _termsAndConditions(pw.Context context) {
-    return pw.Row(
-      crossAxisAlignment: pw.CrossAxisAlignment.end,
-      children: [
         pw.Expanded(
           child: pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Container(
-                decoration: pw.BoxDecoration(
-                  border: pw.BoxBorder(
-                    top: true,
-                    color: accentColor,
-                  ),
+              pw.DefaultTextStyle(
+                style: pw.TextStyle(
+                  color: baseColor,
+                  fontSize: 14,
+                  fontWeight: pw.FontWeight.bold,
                 ),
-                padding: const pw.EdgeInsets.only(top: 10, bottom: 4),
-                child: pw.Text(
-                  'Terms & Conditions',
-                  style: pw.TextStyle(
-                    fontSize: 12,
-                    color: baseColor,
-                    fontWeight: pw.FontWeight.bold,
-                  ),
-                ),
-              ),
-              pw.Text(
-                pw.LoremText().paragraph(40),
-                textAlign: pw.TextAlign.justify,
-                style: const pw.TextStyle(
-                  fontSize: 6,
-                  lineSpacing: 2,
-                  color: _darkColor,
+                child: pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.end,
+                  children: [
+                    pw.Text('Total: '),
+                    pw.Text(_formatCurrency(_grandTotal)),
+                  ],
                 ),
               ),
             ],
           ),
-        ),
-        pw.Expanded(
-          child: pw.SizedBox(),
         ),
       ],
     );
   }
 
   pw.Widget _contentTable(pw.Context context) {
-    const tableHeaders = [
-      'SKU#',
-      'Item Description',
-      'Price',
-      'Quantity',
-      'Total'
+    List<String> tableHeaders = [
+      'ID',
+      'Date',
+      'Description',
+      'Credit',
+      'Debit'
     ];
 
     return pw.Table.fromTextArray(
@@ -490,7 +426,7 @@ class Invoice {
       cellAlignments: {
         0: pw.Alignment.centerLeft,
         1: pw.Alignment.centerLeft,
-        2: pw.Alignment.centerRight,
+        2: pw.Alignment.centerLeft,
         3: pw.Alignment.center,
         4: pw.Alignment.centerRight,
       },
@@ -499,7 +435,7 @@ class Invoice {
         fontSize: 10,
         fontWeight: pw.FontWeight.bold,
       ),
-      cellStyle: const pw.TextStyle(
+      cellStyle: pw.TextStyle(
         color: _darkColor,
         fontSize: 10,
       ),
@@ -515,52 +451,30 @@ class Invoice {
         (col) => tableHeaders[col],
       ),
       data: List<List<String>>.generate(
-        products.length,
-        (row) => List<String>.generate(
-          tableHeaders.length,
-          (col) => products[row].getIndex(col),
-        ),
+        transactions.length,
+        (row) {
+          return [
+            transactions[row].id.toString(),
+            _formatDate(transactions[row].date).toString(),
+            transactions[row].comment,
+            transactions[row].ttype == "credit"
+                ? _formatCurrency(transactions[row].amount).toString()
+                : "",
+            transactions[row].ttype == "payment"
+                ? _formatCurrency(transactions[row].amount).toString()
+                : ""
+          ];
+        },
       ),
     );
   }
 }
 
 String _formatCurrency(double amount) {
-  return '\$${amount.toStringAsFixed(2)}';
+  return '${amount.toStringAsFixed(2)}\$';
 }
 
 String _formatDate(DateTime date) {
-  final format = DateFormat.yMMMMd('en_US');
+  final format = DateFormat.yMd('en_US');
   return format.format(date);
-}
-
-class Product {
-  const Product(
-    this.sku,
-    this.productName,
-    this.price,
-    this.quantity,
-  );
-
-  final String sku;
-  final String productName;
-  final double price;
-  final int quantity;
-  double get total => price * quantity;
-
-  String getIndex(int index) {
-    switch (index) {
-      case 0:
-        return sku;
-      case 1:
-        return productName;
-      case 2:
-        return _formatCurrency(price);
-      case 3:
-        return quantity.toString();
-      case 4:
-        return _formatCurrency(total);
-    }
-    return '';
-  }
 }

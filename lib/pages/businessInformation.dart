@@ -1,8 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
@@ -22,16 +25,20 @@ class _BusinessInformationState extends State<BusinessInformation> {
   bool _pdfLoaded = false;
 
   final _formKey = GlobalKey<FormState>();
-  Business _businessInfo = Business();
-  String _name = "YOUR NAME";
-  String _phone = "+000 0000000000";
-  String _email = "info@udharokhata.com";
-  String _address = "Malepatan, Pokhara, Nepal";
-  String _logo = "";
-  String _website = "https://udharokhata.com";
-  String _role = "Accountant";
-  String _companyName = "YOUR COMPANY";
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  Business _businessInfo = Business();
+  String _name = "";
+  String _phone = "";
+  String _email = "";
+  String _address = "";
+  String _logo = "";
+  String _website = "";
+  String _role = "";
+  String _companyName = "";
+
+  File _image;
+  final picker = ImagePicker();
   @override
   void initState() {
     super.initState();
@@ -45,59 +52,54 @@ class _BusinessInformationState extends State<BusinessInformation> {
   }
 
   void initBusinessCard() async {
-    if (this.mounted) {
-      Business bs = await businessBloc.getBusiness(0);
+    if (!mounted) return;
+    Business bs = await businessBloc.getBusiness(0);
+    setState(() {
+      if (bs != null) {
+        _businessInfo = bs;
+      }
+      _name = _businessInfo.name;
+      _phone = _businessInfo.phone;
+      _email = _businessInfo.email;
+      _address = _businessInfo.address;
+      _logo = _businessInfo.logo;
+      _website = _businessInfo.website;
+      _role = _businessInfo.role;
+      _companyName = _businessInfo.companyName;
+      _pdfLoaded = false;
+    });
 
-      setState(() {
-        if (bs != null) {
-          _businessInfo = bs;
-        } else {
-          _businessInfo.id = 0;
-          _businessInfo.name = _name;
-          _businessInfo.phone = _phone;
-          _businessInfo.email = _email;
-          _businessInfo.address = _address;
-          _businessInfo.logo = _logo;
-          _businessInfo.website = _website;
-          _businessInfo.role = _role;
-          _businessInfo.companyName = _companyName;
-        }
-
-        _pdfLoaded = false;
-      });
-
-      await businessCardMaker();
-      final dir = await getExternalStorageDirectory();
-      setState(() {
-        _pathPDF = dir.path + "/business_card.pdf";
-        _pdfLoaded = true;
-      });
-    }
+    await businessCardMaker();
+    final dir = await getExternalStorageDirectory();
+    setState(() {
+      _pathPDF = dir.path + "/business_card.pdf";
+      _pdfLoaded = true;
+    });
   }
 
   void buildPDF() async {
-    if (this.mounted) {
-      setState(() {
-        _pdfLoaded = false;
-        _businessInfo.id = 0;
-        _businessInfo.name = _name;
-        _businessInfo.phone = _phone;
-        _businessInfo.email = _email;
-        _businessInfo.address = _address;
-        _businessInfo.logo = _logo;
-        _businessInfo.website = _website;
-        _businessInfo.role = _role;
-        _businessInfo.companyName = _companyName;
-      });
+    if (!mounted) return;
 
-      await businessCardMaker();
-      final dir = await getExternalStorageDirectory();
+    setState(() {
+      _pdfLoaded = false;
+      _businessInfo.id = 0;
+      _businessInfo.name = _name;
+      _businessInfo.phone = _phone;
+      _businessInfo.email = _email;
+      _businessInfo.address = _address;
+      _businessInfo.logo = _logo;
+      _businessInfo.website = _website;
+      _businessInfo.role = _role;
+      _businessInfo.companyName = _companyName;
+    });
 
-      setState(() {
-        _pathPDF = dir.path + "/business_card.pdf";
-        _pdfLoaded = true;
-      });
-    }
+    await businessCardMaker();
+    final dir = await getExternalStorageDirectory();
+
+    setState(() {
+      _pathPDF = dir.path + "/business_card.pdf";
+      _pdfLoaded = true;
+    });
   }
 
   Future<void> businessCardMaker() async {
@@ -132,6 +134,16 @@ class _BusinessInformationState extends State<BusinessInformation> {
     const PdfColor whiteColor = PdfColor.fromInt(0xffffffff);
     const PdfColor semiWhiteColor = PdfColor.fromInt(0xfff1f1f1);
 
+    PdfImage businessLogo;
+
+    if (_businessInfo.logo.length > 0) {
+      Uint8List logo = Base64Decoder().convert(_businessInfo.logo);
+      businessLogo = PdfImage.file(
+        doc.document,
+        bytes: logo,
+      );
+    }
+
     doc.addPage(
       pw.Page(
         pageFormat: PdfPageFormat(1200, 680),
@@ -145,7 +157,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
               ),
               pw.Container(
                 height: 700,
-                padding: pw.EdgeInsets.fromLTRB(0, 240, 80, 0),
+                padding: pw.EdgeInsets.fromLTRB(0, 140, 80, 0),
                 alignment: pw.Alignment(0.0, 0.0),
                 child: pw.Row(
                   children: [
@@ -154,10 +166,14 @@ class _BusinessInformationState extends State<BusinessInformation> {
                       child: pw.Column(
                           crossAxisAlignment: pw.CrossAxisAlignment.center,
                           children: [
+                            businessLogo != null
+                                ? pw.Image(businessLogo, width: 100)
+                                : pw.SizedBox(height: 60),
+                            pw.SizedBox(height: 24),
                             pw.Text(_businessInfo.companyName,
                                 style: pw.TextStyle(
-                                    fontSize: 40, color: semiWhiteColor)),
-                            pw.SizedBox(height: 24),
+                                    fontSize: 36, color: semiWhiteColor)),
+                            pw.SizedBox(height: 36),
                             pw.RichText(
                               text: pw.TextSpan(
                                 text: _businessInfo.name.split(" ")[0],
@@ -185,41 +201,44 @@ class _BusinessInformationState extends State<BusinessInformation> {
                           ]),
                     ),
                     pw.Spacer(),
-                    pw.Column(
-                        crossAxisAlignment: pw.CrossAxisAlignment.start,
-                        children: [
-                          pw.Row(children: [
-                            pw.Image(phoneImage, height: 30),
-                            pw.SizedBox(width: 20),
-                            pw.Text(_businessInfo.phone,
-                                style: pw.TextStyle(
-                                    fontSize: 32, color: semiWhiteColor)),
+                    pw.Container(
+                      padding: pw.EdgeInsets.fromLTRB(0, 80, 0, 0),
+                      child: pw.Column(
+                          crossAxisAlignment: pw.CrossAxisAlignment.start,
+                          children: [
+                            pw.Row(children: [
+                              pw.Image(phoneImage, height: 30),
+                              pw.SizedBox(width: 20),
+                              pw.Text(_businessInfo.phone,
+                                  style: pw.TextStyle(
+                                      fontSize: 32, color: semiWhiteColor)),
+                            ]),
+                            pw.SizedBox(height: 36),
+                            pw.Row(children: [
+                              pw.Image(locationImage, height: 30),
+                              pw.SizedBox(width: 20),
+                              pw.Text(_businessInfo.address,
+                                  style: pw.TextStyle(
+                                      fontSize: 32, color: semiWhiteColor)),
+                            ]),
+                            pw.SizedBox(height: 36),
+                            pw.Row(children: [
+                              pw.Image(emailImage, height: 30),
+                              pw.SizedBox(width: 20),
+                              pw.Text(_businessInfo.email,
+                                  style: pw.TextStyle(
+                                      fontSize: 32, color: semiWhiteColor)),
+                            ]),
+                            pw.SizedBox(height: 36),
+                            pw.Row(children: [
+                              pw.Image(websiteImage, height: 30),
+                              pw.SizedBox(width: 20),
+                              pw.Text(_businessInfo.website,
+                                  style: pw.TextStyle(
+                                      fontSize: 32, color: semiWhiteColor)),
+                            ]),
                           ]),
-                          pw.SizedBox(height: 36),
-                          pw.Row(children: [
-                            pw.Image(locationImage, height: 30),
-                            pw.SizedBox(width: 20),
-                            pw.Text(_businessInfo.address,
-                                style: pw.TextStyle(
-                                    fontSize: 32, color: semiWhiteColor)),
-                          ]),
-                          pw.SizedBox(height: 36),
-                          pw.Row(children: [
-                            pw.Image(emailImage, height: 30),
-                            pw.SizedBox(width: 20),
-                            pw.Text(_businessInfo.email,
-                                style: pw.TextStyle(
-                                    fontSize: 32, color: semiWhiteColor)),
-                          ]),
-                          pw.SizedBox(height: 36),
-                          pw.Row(children: [
-                            pw.Image(websiteImage, height: 30),
-                            pw.SizedBox(width: 20),
-                            pw.Text(_businessInfo.website,
-                                style: pw.TextStyle(
-                                    fontSize: 32, color: semiWhiteColor)),
-                          ]),
-                        ]),
+                    ),
                   ],
                 ),
               ),
@@ -233,12 +252,77 @@ class _BusinessInformationState extends State<BusinessInformation> {
     file.writeAsBytesSync(doc.save());
   }
 
-  void updateBusinessInformation() {
+  void updateBusinessInformation() async {
+    if (!mounted) return;
     final formState = _formKey.currentState;
-    if (formState.validate()) {
-      formState.save();
-      businessBloc.updateBusiness(_businessInfo);
-      Navigator.pop(context);
+    formState.save();
+    final getBusinessInfo = await businessBloc.getBusiness(0);
+    if (getBusinessInfo == null) {
+      await businessBloc.addBusiness(_businessInfo);
+    } else {
+      await businessBloc.updateBusiness(_businessInfo);
+    }
+  }
+
+  Future getImageFromGallery() async {
+    if (!mounted) return;
+
+    final image = await picker.getImage(source: ImageSource.gallery);
+    File rawImage = File(image.path);
+    if (rawImage != null && rawImage.lengthSync() > 2000000) {
+      final snackBar = SnackBar(
+          content: Row(children: <Widget>[
+        Icon(
+          Icons.warning,
+          color: Colors.redAccent,
+        ),
+        Padding(
+            padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+            child: Text('Image size is too big. (Max size 2MB)'))
+      ]));
+      _scaffoldKey.currentState.showSnackBar(snackBar);
+      return;
+    }
+
+    if (rawImage != null) {
+      String base64Image = base64Encode(rawImage.readAsBytesSync());
+      setState(() {
+        _image = rawImage;
+        _businessInfo.logo = base64Image;
+        _logo = base64Image;
+      });
+      buildPDF();
+    }
+  }
+
+  Future getImageFromCamera() async {
+    if (!mounted) return;
+
+    final image = await picker.getImage(source: ImageSource.camera);
+
+    if (_image != null && _image.lengthSync() > 2000000) {
+      final snackBar = SnackBar(
+          content: Row(children: <Widget>[
+        Icon(
+          Icons.warning,
+          color: Colors.redAccent,
+        ),
+        Padding(
+            padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+            child: Text('Image size is too big. (Max size 2MB)'))
+      ]));
+      _scaffoldKey.currentState.showSnackBar(snackBar);
+      return;
+    }
+
+    if (_image != null) {
+      String base64Image = base64Encode(_image.readAsBytesSync());
+      setState(() {
+        _image = File(image.path);
+        _businessInfo.logo = base64Image;
+        _logo = base64Image;
+      });
+      buildPDF();
     }
   }
 
@@ -251,6 +335,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text('Khata',
             style: TextStyle(
@@ -278,231 +363,12 @@ class _BusinessInformationState extends State<BusinessInformation> {
               child: FutureBuilder(
                   future: businessBloc.getBusiness(0),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    Business businessItem = snapshot.data;
-                    print(snapshot.hasData);
+                    Business businessItem = Business();
                     if (snapshot.hasData) {
-                      businessItem = _businessInfo;
-                    } else {
-                      businessItem.id = 0;
-                      businessItem.name = _name;
-                      businessItem.phone = _phone;
-                      businessItem.email = _email;
-                      businessItem.address = _address;
-                      businessItem.logo = _logo;
-                      businessItem.website = _website;
-                      businessItem.role = _role;
-                      businessItem.companyName = _companyName;
+                      businessItem = snapshot.data;
+                      return businessCardForm(businessItem);
                     }
-                    return Form(
-                        key: _formKey,
-                        child: Column(
-                          children: <Widget>[
-                            Focus(
-                              child: TextFormField(
-                                decoration: InputDecoration(
-                                  labelText: 'Name *',
-                                ),
-                                initialValue: businessItem.name,
-                                keyboardType: TextInputType.text,
-                                onChanged: (String val) {
-                                  if (mounted) {
-                                    setState(() {
-                                      _name = val;
-                                    });
-                                  }
-                                },
-                                onSaved: (String val) {
-                                  if (mounted) {
-                                    setState(() {
-                                      _name = val;
-                                      _businessInfo.name = val;
-                                    });
-                                  }
-                                },
-                              ),
-                              onFocusChange: (hasFocus) {
-                                if (!hasFocus) {
-                                  buildPDF();
-                                }
-                              },
-                            ),
-                            Focus(
-                              child: TextFormField(
-                                decoration: InputDecoration(
-                                  labelText: 'Company Name *',
-                                ),
-                                initialValue: businessItem.companyName,
-                                keyboardType: TextInputType.text,
-                                onChanged: (String val) {
-                                  if (mounted) {
-                                    setState(() {
-                                      _companyName = val;
-                                    });
-                                  }
-                                },
-                                onSaved: (String val) {
-                                  if (mounted) {
-                                    setState(() {
-                                      _companyName = val;
-                                      _businessInfo.companyName = val;
-                                    });
-                                  }
-                                },
-                              ),
-                              onFocusChange: (hasFocus) {
-                                if (!hasFocus) {
-                                  buildPDF();
-                                }
-                              },
-                            ),
-                            Focus(
-                              child: TextFormField(
-                                decoration: InputDecoration(
-                                  labelText: 'Company Role *',
-                                ),
-                                initialValue: businessItem.role,
-                                keyboardType: TextInputType.text,
-                                onChanged: (String val) {
-                                  if (mounted) {
-                                    setState(() {
-                                      _role = val;
-                                    });
-                                  }
-                                },
-                                onSaved: (String val) {
-                                  if (mounted) {
-                                    setState(() {
-                                      _role = val;
-                                      _businessInfo.role = val;
-                                    });
-                                  }
-                                },
-                              ),
-                              onFocusChange: (hasFocus) {
-                                if (!hasFocus) {
-                                  buildPDF();
-                                }
-                              },
-                            ),
-                            Focus(
-                              child: TextFormField(
-                                decoration: InputDecoration(
-                                  labelText: 'Company Address',
-                                ),
-                                initialValue: businessItem.address,
-                                keyboardType: TextInputType.text,
-                                onChanged: (String val) {
-                                  if (mounted) {
-                                    setState(() {
-                                      _address = val;
-                                    });
-                                  }
-                                },
-                                onSaved: (String val) {
-                                  if (mounted) {
-                                    setState(() {
-                                      _address = val;
-                                      _businessInfo.address = val;
-                                    });
-                                  }
-                                },
-                              ),
-                              onFocusChange: (hasFocus) {
-                                if (!hasFocus) {
-                                  buildPDF();
-                                }
-                              },
-                            ),
-                            Focus(
-                              child: TextFormField(
-                                decoration: InputDecoration(
-                                  labelText: 'Phone',
-                                ),
-                                initialValue: businessItem.phone,
-                                keyboardType: TextInputType.phone,
-                                onChanged: (String val) {
-                                  if (mounted) {
-                                    setState(() {
-                                      _phone = val;
-                                    });
-                                  }
-                                },
-                                onSaved: (String val) {
-                                  if (mounted) {
-                                    setState(() {
-                                      _phone = val;
-                                      _businessInfo.phone = val;
-                                    });
-                                  }
-                                },
-                              ),
-                              onFocusChange: (hasFocus) {
-                                if (!hasFocus) {
-                                  buildPDF();
-                                }
-                              },
-                            ),
-                            Focus(
-                              child: TextFormField(
-                                keyboardType: TextInputType.emailAddress,
-                                initialValue: businessItem.email,
-                                decoration: InputDecoration(
-                                  labelText: 'Email',
-                                ),
-                                onChanged: (String val) {
-                                  if (mounted) {
-                                    setState(() {
-                                      _email = val;
-                                    });
-                                  }
-                                },
-                                onSaved: (String val) {
-                                  if (mounted) {
-                                    setState(() {
-                                      _email = val;
-                                      _businessInfo.email = val;
-                                    });
-                                  }
-                                },
-                              ),
-                              onFocusChange: (hasFocus) {
-                                if (!hasFocus) {
-                                  buildPDF();
-                                }
-                              },
-                            ),
-                            Focus(
-                              child: TextFormField(
-                                keyboardType: TextInputType.text,
-                                initialValue: businessItem.website,
-                                decoration: InputDecoration(
-                                  labelText: 'Website',
-                                ),
-                                onChanged: (String val) async {
-                                  if (mounted) {
-                                    setState(() {
-                                      _website = val;
-                                    });
-                                  }
-                                },
-                                onSaved: (String val) {
-                                  if (mounted) {
-                                    setState(() {
-                                      _website = val;
-                                      _businessInfo.website = val;
-                                    });
-                                  }
-                                },
-                              ),
-                              onFocusChange: (hasFocus) {
-                                if (!hasFocus) {
-                                  buildPDF();
-                                }
-                              },
-                            ),
-                          ],
-                        ) // Build this out in the next steps.
-                        );
+                    return CircularProgressIndicator();
                   }),
             ),
           ],
@@ -539,6 +405,283 @@ class _BusinessInformationState extends State<BusinessInformation> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget businessCardForm(Business businessItem) {
+    return Form(
+        key: _formKey,
+        child: Column(
+          children: <Widget>[
+            companyImageWidget(_logo),
+            Focus(
+              child: TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Name *',
+                ),
+                initialValue: businessItem.name,
+                keyboardType: TextInputType.text,
+                onChanged: (String val) {
+                  if (mounted) {
+                    setState(() {
+                      _name = val;
+                    });
+                  }
+                },
+                onSaved: (String val) {
+                  if (mounted) {
+                    setState(() {
+                      _name = val;
+                      _businessInfo.name = val;
+                    });
+                  }
+                },
+              ),
+              onFocusChange: (hasFocus) {
+                if (!hasFocus) {
+                  buildPDF();
+                }
+              },
+            ),
+            Focus(
+              child: TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Company Name *',
+                ),
+                initialValue: businessItem.companyName,
+                keyboardType: TextInputType.text,
+                onChanged: (String val) {
+                  if (mounted) {
+                    setState(() {
+                      _companyName = val;
+                    });
+                  }
+                },
+                onSaved: (String val) {
+                  if (mounted) {
+                    setState(() {
+                      _companyName = val;
+                      _businessInfo.companyName = val;
+                    });
+                  }
+                },
+              ),
+              onFocusChange: (hasFocus) {
+                if (!hasFocus) {
+                  buildPDF();
+                }
+              },
+            ),
+            Focus(
+              child: TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Company Role *',
+                ),
+                initialValue: businessItem.role,
+                keyboardType: TextInputType.text,
+                onChanged: (String val) {
+                  if (mounted) {
+                    setState(() {
+                      _role = val;
+                    });
+                  }
+                },
+                onSaved: (String val) {
+                  if (mounted) {
+                    setState(() {
+                      _role = val;
+                      _businessInfo.role = val;
+                    });
+                  }
+                },
+              ),
+              onFocusChange: (hasFocus) {
+                if (!hasFocus) {
+                  buildPDF();
+                }
+              },
+            ),
+            Focus(
+              child: TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Company Address',
+                ),
+                initialValue: businessItem.address,
+                keyboardType: TextInputType.text,
+                onChanged: (String val) {
+                  if (mounted) {
+                    setState(() {
+                      _address = val;
+                    });
+                  }
+                },
+                onSaved: (String val) {
+                  if (mounted) {
+                    setState(() {
+                      _address = val;
+                      _businessInfo.address = val;
+                    });
+                  }
+                },
+              ),
+              onFocusChange: (hasFocus) {
+                if (!hasFocus) {
+                  buildPDF();
+                }
+              },
+            ),
+            Focus(
+              child: TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Phone',
+                ),
+                initialValue: businessItem.phone,
+                keyboardType: TextInputType.phone,
+                onChanged: (String val) {
+                  if (mounted) {
+                    setState(() {
+                      _phone = val;
+                    });
+                  }
+                },
+                onSaved: (String val) {
+                  if (mounted) {
+                    setState(() {
+                      _phone = val;
+                      _businessInfo.phone = val;
+                    });
+                  }
+                },
+              ),
+              onFocusChange: (hasFocus) {
+                if (!hasFocus) {
+                  buildPDF();
+                }
+              },
+            ),
+            Focus(
+              child: TextFormField(
+                keyboardType: TextInputType.emailAddress,
+                initialValue: businessItem.email,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                ),
+                onChanged: (String val) {
+                  if (mounted) {
+                    setState(() {
+                      _email = val;
+                    });
+                  }
+                },
+                onSaved: (String val) {
+                  if (mounted) {
+                    setState(() {
+                      _email = val;
+                      _businessInfo.email = val;
+                    });
+                  }
+                },
+              ),
+              onFocusChange: (hasFocus) {
+                if (!hasFocus) {
+                  buildPDF();
+                }
+              },
+            ),
+            Focus(
+              child: TextFormField(
+                keyboardType: TextInputType.text,
+                initialValue: businessItem.website,
+                decoration: InputDecoration(
+                  labelText: 'Website',
+                ),
+                onChanged: (String val) async {
+                  if (mounted) {
+                    setState(() {
+                      _website = val;
+                    });
+                  }
+                },
+                onSaved: (String val) {
+                  if (mounted) {
+                    setState(() {
+                      _website = val;
+                      _businessInfo.website = val;
+                    });
+                  }
+                },
+              ),
+              onFocusChange: (hasFocus) {
+                if (!hasFocus) {
+                  buildPDF();
+                }
+              },
+            ),
+          ],
+        ) // Build this out in the next steps.
+        );
+  }
+
+  Widget companyImageWidget(String image) {
+    Uint8List companyImage;
+    if (image != null || image != "") {
+      companyImage = Base64Decoder().convert(image);
+    }
+
+    return Row(
+      children: <Widget>[
+        Center(
+          child: image == "" || image == null
+              ? Image(
+                  image: AssetImage('images/noimage_person.png'),
+                  width: 60,
+                )
+              : Image.memory(
+                  companyImage,
+                  width: 60,
+                ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(16),
+          child: FlatButton(
+            onPressed: () {
+              showUploadDialog();
+            },
+            child: Text('Upload Company Logo'),
+          ),
+        )
+      ],
+    );
+  }
+
+  void showUploadDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: Text('Upload Company Logo'),
+          children: <Widget>[
+            SimpleDialogOption(
+              child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text('Upload from Camera')),
+              onPressed: () {
+                Navigator.of(context).pop();
+                getImageFromCamera();
+              },
+            ),
+            SimpleDialogOption(
+              child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text('Upload from Gallery')),
+              onPressed: () {
+                Navigator.of(context).pop();
+                getImageFromGallery();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

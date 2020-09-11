@@ -9,9 +9,11 @@ import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
 import 'package:udharokhata/models/transaction.dart';
 
-import 'singleTransaction.dart';
-
 class EditTransaction extends StatefulWidget {
+  final Transaction transaction;
+  final Function() notifyParent;
+  EditTransaction(this.transaction, this.notifyParent, {Key key})
+      : super(key: key);
   @override
   _EditTransactionState createState() => _EditTransactionState();
 }
@@ -26,9 +28,11 @@ class _EditTransactionState extends State<EditTransaction> {
   final CustomerBloc customerBloc = CustomerBloc();
 
   String _comment;
-  int _customerId, _amount;
+  int _customerId;
+  double _amount;
   DateTime _date;
   File _attachment;
+  final picker = ImagePicker();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<AutoCompleteTextFieldState> _customerSuggestionKey =
@@ -49,38 +53,34 @@ class _EditTransactionState extends State<EditTransaction> {
   }
 
   Future getImageFromGallery() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    final attachment = await picker.getImage(source: ImageSource.gallery);
 
     setState(() {
-      _attachment = image;
+      _attachment = File(attachment.path);
     });
   }
 
   Future getImageFromCamera() async {
-    var image = await ImagePicker.pickImage(source: ImageSource.camera);
+    final attachment = await picker.getImage(source: ImageSource.camera);
 
     setState(() {
-      _attachment = image;
+      _attachment = File(attachment.path);
     });
   }
 
   @override
   void didChangeDependencies() {
-    final EditTransactionScreenArguments args =
-        ModalRoute.of(context).settings.arguments;
-    Transaction argTransaction = args.transaction;
-    _customerId = argTransaction.uid;
-    _transType = argTransaction.ttype;
-    _date = argTransaction.date;
+    Transaction transaction = widget.transaction;
+    _customerId = transaction.uid;
+    _transType = transaction.ttype;
+    _date = transaction.date;
 
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    final EditTransactionScreenArguments args =
-        ModalRoute.of(context).settings.arguments;
-    Transaction argTransaction = args.transaction;
+    Transaction argTransaction = widget.transaction;
 
     return FutureBuilder(
         future: customerBloc.getCustomers(),
@@ -230,14 +230,14 @@ class _EditTransactionState extends State<EditTransaction> {
                               return 'Please insert amount.';
                             }
 
-                            final isDigitsOnly = int.tryParse(input);
+                            final isDigitsOnly = double.tryParse(input) != null;
                             if (isDigitsOnly == null) {
                               return 'Input needs to be valid number.';
                             }
                             return null;
                           },
                           keyboardType: TextInputType.number,
-                          onSaved: (input) => _amount = int.parse(input),
+                          onSaved: (input) => _amount = double.parse(input),
                         ),
                         TextFormField(
                           initialValue: argTransaction.comment,
@@ -399,7 +399,7 @@ class _EditTransactionState extends State<EditTransaction> {
         transaction.uid = _customerId;
         transactionBloc.updateTransaction(transaction);
       }
-
+      widget.notifyParent();
       Navigator.pop(context);
     }
   }

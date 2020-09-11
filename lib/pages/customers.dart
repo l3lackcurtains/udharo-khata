@@ -13,12 +13,6 @@ import 'package:udharokhata/models/customer.dart';
 import 'package:udharokhata/pages/addCustomer.dart';
 import 'package:udharokhata/pages/singleCustomer.dart';
 
-class SingleCustomerScreenArguments {
-  final int customerId;
-
-  SingleCustomerScreenArguments(this.customerId);
-}
-
 class Customers extends StatefulWidget {
   @override
   _CustomersState createState() => _CustomersState();
@@ -33,6 +27,10 @@ class _CustomersState extends State<Customers> {
 
   bool _absorbing = false;
 
+  refresh() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -46,7 +44,7 @@ class _CustomersState extends State<Customers> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AddCustomer()),
+                MaterialPageRoute(builder: (context) => AddCustomer(refresh)),
               );
             },
             icon: Icon(Icons.add),
@@ -220,12 +218,7 @@ class _CustomersState extends State<Customers> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => SingleCustomer(),
-                            settings: RouteSettings(
-                              arguments: SingleCustomerScreenArguments(
-                                customer.id,
-                              ),
-                            ),
+                            builder: (context) => SingleCustomer(customer.id),
                           ),
                         );
                       },
