@@ -37,9 +37,9 @@ Future<Uint8List> generateCustomerTransactionPdf(int customerId) async {
   businessInfo.role = "";
   businessInfo.companyName = "";
 
-  List<Business> businesses = await businessBloc.getBusinesss();
-  if (businesses.length > 0) {
-    businessInfo = businesses[0];
+  Business business = await businessBloc.getBusiness(0);
+  if (business != null) {
+    businessInfo = business;
   }
 
   final invoice = Invoice(
@@ -189,10 +189,6 @@ class Invoice {
                     height: 72,
                     child: _logo != null ? pw.Image(_logo) : pw.Container(),
                   ),
-                  // pw.Container(
-                  //   color: baseColor,
-                  //   padding: pw.EdgeInsets.only(top: 3),
-                  // ),
                 ],
               ),
             ),

@@ -1,17 +1,27 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:udharokhata/blocs/businessBloc.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
+import 'package:udharokhata/models/business.dart';
 import 'package:udharokhata/models/customer.dart';
 
-Future<Uint8List> generateCustomerPdf(PdfPageFormat pageFormat) async {
+Future<Uint8List> generateCustomerPdf() async {
+  PdfPageFormat pageFormat = PdfPageFormat.a4;
+
   final CustomerBloc customerBloc = CustomerBloc();
   final TransactionBloc transactionBloc = TransactionBloc();
+  final BusinessBloc businessBloc = BusinessBloc();
+
   List<Customer> customersList = await customerBloc.getCustomers();
+
   List<Map<String, dynamic>> customers = [];
+
   customersList.forEach((c) async {
     double amt = await transactionBloc.getCustomerTransactionsTotal(c.id);
     Map<String, dynamic> customer = {
@@ -24,12 +34,26 @@ Future<Uint8List> generateCustomerPdf(PdfPageFormat pageFormat) async {
     customers.add(customer);
   });
 
+  Business businessInfo = Business();
+
+  businessInfo.id = 0;
+  businessInfo.name = "";
+  businessInfo.phone = "";
+  businessInfo.email = "";
+  businessInfo.address = "";
+  businessInfo.logo = "";
+  businessInfo.website = "";
+  businessInfo.role = "";
+  businessInfo.companyName = "";
+
+  Business business = await businessBloc.getBusiness(0);
+  if (business != null) {
+    businessInfo = business;
+  }
+
   final invoice = CustomersList(
     customers: customers,
-    companyName: 'Swagat dalmoth udhyog',
-    companyAddress: '54 rue de Rivoli\n75001 Paris, France',
-    companyInfo: 'Tel: (+977)9824119696',
-    tax: .15,
+    businessInfo: businessInfo,
     baseColor: PdfColors.teal,
     accentColor: PdfColors.purple800,
   );
@@ -40,21 +64,13 @@ Future<Uint8List> generateCustomerPdf(PdfPageFormat pageFormat) async {
 class CustomersList {
   CustomersList({
     this.customers,
-    this.companyName,
-    this.companyAddress,
-    this.invoiceNumber,
-    this.tax,
-    this.companyInfo,
+    this.businessInfo,
     this.baseColor,
     this.accentColor,
   });
 
   final List<Map<String, dynamic>> customers;
-  final String companyName;
-  final String companyAddress;
-  final String invoiceNumber;
-  final double tax;
-  final String companyInfo;
+  final Business businessInfo;
   final PdfColor baseColor;
   final PdfColor accentColor;
 
@@ -63,6 +79,10 @@ class CustomersList {
 
   PdfColor get _baseTextColor =>
       baseColor.luminance < 0.5 ? _lightColor : _darkColor;
+
+  PdfColor get _accentTextColor =>
+      baseColor.luminance < 0.5 ? _lightColor : _darkColor;
+
   double get _total => customers.length > 0
       ? customers.map((p) => p['amount']).reduce((a, b) => a + b)
       : 0;
@@ -79,12 +99,13 @@ class CustomersList {
     final font2 = await rootBundle.load('fonts/Poppins/Poppins-Regular.ttf');
     final font3 = await rootBundle.load('fonts/Poppins/Poppins-Regular.ttf');
 
-    _logo = PdfImage.file(
-      doc.document,
-      bytes: (await rootBundle.load('images/google_logo.png'))
-          .buffer
-          .asUint8List(),
-    );
+    if (businessInfo.logo.length > 0) {
+      Uint8List logo = Base64Decoder().convert(businessInfo.logo);
+      _logo = PdfImage.file(
+        doc.document,
+        bytes: logo,
+      );
+    }
 
     // Add page to the PDF
     doc.addPage(
@@ -121,14 +142,38 @@ class CustomersList {
               child: pw.Column(
                 children: [
                   pw.Container(
-                    height: 60,
+                    height: 40,
+                    padding: pw.EdgeInsets.only(left: 20),
                     alignment: pw.Alignment.centerLeft,
                     child: pw.Text(
                       'CUSTOMERS',
                       style: pw.TextStyle(
                         color: baseColor,
                         fontWeight: pw.FontWeight.bold,
-                        fontSize: 40,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                  pw.Container(
+                    decoration: pw.BoxDecoration(
+                      borderRadius: 2,
+                      color: accentColor,
+                    ),
+                    padding: pw.EdgeInsets.only(
+                        left: 40, top: 10, bottom: 10, right: 20),
+                    alignment: pw.Alignment.centerLeft,
+                    height: 40,
+                    child: pw.DefaultTextStyle(
+                      style: pw.TextStyle(
+                        color: _accentTextColor,
+                        fontSize: 12,
+                      ),
+                      child: pw.GridView(
+                        crossAxisCount: 2,
+                        children: [
+                          pw.Text('Date:'),
+                          pw.Text(_formatDate(DateTime.now()).split(",")[0]),
+                        ],
                       ),
                     ),
                   ),
@@ -141,22 +186,16 @@ class CustomersList {
                 children: [
                   pw.Container(
                     alignment: pw.Alignment.topRight,
-                    padding: const pw.EdgeInsets.only(bottom: 8, left: 30),
+                    padding: pw.EdgeInsets.only(bottom: 8, left: 0),
                     height: 72,
-                    child: _logo != null ? pw.Image(_logo) : pw.PdfLogo(),
+                    child: _logo != null ? pw.Image(_logo) : pw.Container(),
                   ),
-                  // pw.Container(
-                  //   color: baseColor,
-                  //   padding: pw.EdgeInsets.only(top: 3),
-                  // ),
                 ],
               ),
             ),
           ],
         ),
-        context.pageNumber > 1
-            ? pw.SizedBox(height: 20)
-            : pw.SizedBox(height: 0)
+        (context.pageNumber > 1) ? pw.SizedBox(height: 20) : pw.Container()
       ],
     );
   }
@@ -166,17 +205,16 @@ class CustomersList {
       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
       crossAxisAlignment: pw.CrossAxisAlignment.end,
       children: [
-        pw.Container(
-          height: 20,
-          width: 100,
-          child: pw.BarcodeWidget(
-            barcode: pw.Barcode.pdf417(),
-            data: 'CustomersList# $invoiceNumber',
+        pw.Text(
+          'PDF generated by Udharo Khata',
+          style: pw.TextStyle(
+            fontSize: 12,
+            color: PdfColors.grey,
           ),
         ),
         pw.Text(
-          'Page ${context.pageNumber}/${context.pagesCount}',
-          style: const pw.TextStyle(
+          'Page ${context.pageNumber} of ${context.pagesCount}',
+          style: pw.TextStyle(
             fontSize: 12,
             color: PdfColors.grey,
           ),
@@ -241,33 +279,81 @@ class CustomersList {
 
   pw.Widget _contentHeader(pw.Context context) {
     return pw.Row(
-      mainAxisAlignment: pw.MainAxisAlignment.end,
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        pw.Container(
-          padding: pw.EdgeInsets.fromLTRB(0, 20, 0, 20),
-          child: pw.RichText(
-              text: pw.TextSpan(
-                  text: '$companyName\n',
-                  style: pw.TextStyle(
-                    color: _darkColor,
-                    fontWeight: pw.FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                  children: [
-                const pw.TextSpan(
-                  text: '\n',
-                  style: pw.TextStyle(
-                    fontSize: 5,
-                  ),
+        pw.Expanded(
+          child: pw.Container(
+            margin: pw.EdgeInsets.symmetric(horizontal: 20),
+            height: 70,
+            child: pw.FittedBox(
+              child: pw.Text(
+                'Total: ${_formatCurrency(_grandTotal)}',
+                style: pw.TextStyle(
+                  color: baseColor,
+                  fontStyle: pw.FontStyle.italic,
                 ),
-                pw.TextSpan(
-                  text: companyAddress,
-                  style: pw.TextStyle(
-                    fontWeight: pw.FontWeight.normal,
-                    fontSize: 10,
-                  ),
-                ),
-              ])),
+              ),
+            ),
+          ),
+        ),
+        pw.Expanded(
+          child: pw.Row(
+            children: [
+              pw.SizedBox(width: 120),
+              pw.Container(
+                height: 80,
+                child: pw.RichText(
+                    text: pw.TextSpan(
+                        text: '${businessInfo.companyName}\n',
+                        style: pw.TextStyle(
+                          color: _darkColor,
+                          fontWeight: pw.FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                        children: [
+                      pw.TextSpan(
+                        text: '\n',
+                        style: pw.TextStyle(
+                          fontSize: 5,
+                        ),
+                      ),
+                      pw.TextSpan(
+                        text: businessInfo.address,
+                        style: pw.TextStyle(
+                          fontWeight: pw.FontWeight.normal,
+                          fontSize: 10,
+                        ),
+                      ),
+                      pw.TextSpan(
+                        text: '\n',
+                        style: pw.TextStyle(
+                          fontSize: 5,
+                        ),
+                      ),
+                      pw.TextSpan(
+                        text: businessInfo.phone,
+                        style: pw.TextStyle(
+                          fontWeight: pw.FontWeight.normal,
+                          fontSize: 10,
+                        ),
+                      ),
+                      pw.TextSpan(
+                        text: '\n',
+                        style: pw.TextStyle(
+                          fontSize: 5,
+                        ),
+                      ),
+                      pw.TextSpan(
+                        text: businessInfo.email,
+                        style: pw.TextStyle(
+                          fontWeight: pw.FontWeight.normal,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ])),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -281,26 +367,7 @@ class CustomersList {
           flex: 2,
           child: pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Container(
-                margin: const pw.EdgeInsets.only(top: 20, bottom: 8),
-                child: pw.Text(
-                  'Generated by:',
-                  style: pw.TextStyle(
-                    color: baseColor,
-                    fontWeight: pw.FontWeight.bold,
-                  ),
-                ),
-              ),
-              pw.Text(
-                "Udharo Khata",
-                style: const pw.TextStyle(
-                  fontSize: 8,
-                  lineSpacing: 5,
-                  color: _darkColor,
-                ),
-              ),
-            ],
+            children: [],
           ),
         ),
         pw.Expanded(
@@ -349,10 +416,10 @@ class CustomersList {
       cellHeight: 40,
       cellAlignments: {
         0: pw.Alignment.centerLeft,
-        1: pw.Alignment.centerLeft,
-        2: pw.Alignment.centerRight,
+        1: pw.Alignment.center,
+        2: pw.Alignment.center,
         3: pw.Alignment.center,
-        4: pw.Alignment.centerRight,
+        4: pw.Alignment.center,
       },
       headerStyle: pw.TextStyle(
         color: _baseTextColor,
@@ -392,4 +459,9 @@ class CustomersList {
 
 String _formatCurrency(double amount) {
   return '${amount.toStringAsFixed(2)}\$';
+}
+
+String _formatDate(DateTime date) {
+  final format = DateFormat.yMd('en_US');
+  return format.format(date);
 }

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:udharokhata/helpers/googleDrive.dart';
 import 'package:udharokhata/main.dart';
@@ -8,8 +9,40 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
+  bool _loading = true;
+  @override
+  void initState() {
+    super.initState();
+    _handleStartScreen();
+  }
+
+  void _handleStartScreen() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+
+    if (await _auth.currentUser() != null) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) {
+            return MyHomePage();
+          },
+        ),
+      );
+    } else {
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_loading) {
+      return Container(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
     return Scaffold(
       body: Container(
         color: Colors.white,

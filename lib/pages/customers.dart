@@ -5,7 +5,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:pdf/pdf.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
 import 'package:udharokhata/helpers/generateCustomersPdf.dart';
@@ -69,7 +68,7 @@ class _CustomersState extends State<Customers> {
     setState(() {
       _absorbing = true;
     });
-    Uint8List pdf = await generateCustomerPdf(PdfPageFormat.a4);
+    Uint8List pdf = await generateCustomerPdf();
     final dir = await getExternalStorageDirectory();
     final file = File(dir.path + "/report.pdf");
     await file.writeAsBytes(pdf);
