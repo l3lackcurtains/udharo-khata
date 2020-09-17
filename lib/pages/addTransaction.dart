@@ -5,6 +5,7 @@ import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
 import 'package:udharokhata/models/customer.dart';
@@ -13,14 +14,14 @@ import 'package:udharokhata/models/transaction.dart';
 class AddTransaction extends StatefulWidget {
   final Function() notifyParent;
   final Customer customer;
-  AddTransaction(this.customer, this.notifyParent, {Key key}) : super(key: key);
+  final String transType;
+  AddTransaction(this.customer, this.transType, this.notifyParent, {Key key})
+      : super(key: key);
   @override
   _AddTransactionState createState() => _AddTransactionState();
 }
 
 class _AddTransactionState extends State<AddTransaction> {
-  // Transaction type
-  // 0: credit 1: received
   String _transType = "credit";
   AutoCompleteTextField searchTextField;
 
@@ -39,6 +40,23 @@ class _AddTransactionState extends State<AddTransaction> {
   final GlobalKey<AutoCompleteTextFieldState> _customerSuggestionKey =
       GlobalKey();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    String dateNow = DateFormat("yMMMMd").format(_date);
+    setState(() {
+      _transType = widget.transType;
+      _customerId = widget.customer.id;
+      _customerName = widget.customer.name;
+
+      if (_transType == "credit") {
+        _comment = "Credit given on " + dateNow;
+      } else if (_transType == "payment") {
+        _comment = "Payment received from on " + dateNow;
+      }
+    });
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -71,9 +89,6 @@ class _AddTransactionState extends State<AddTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    _customerId = widget.customer.id;
-    _customerName = widget.customer.name;
-
     return FutureBuilder(
         future: customerBloc.getCustomers(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -98,7 +113,7 @@ class _AddTransactionState extends State<AddTransaction> {
                 onPressed: () {
                   addTransaction();
                 },
-                icon: Icon(Icons.add),
+                icon: Icon(Icons.check),
                 label: Text('Add Transaction'),
               ),
               body: SingleChildScrollView(
@@ -165,8 +180,8 @@ class _AddTransactionState extends State<AddTransaction> {
                                           EdgeInsets.fromLTRB(4, 16, 4, 16),
                                       child: Text(_customerName,
                                           style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20)))
+                                              fontWeight: FontWeight.normal,
+                                              fontSize: 18)))
                                 ])
                               : searchTextField = AutoCompleteTextField(
                                   key: _customerSuggestionKey,
@@ -210,6 +225,7 @@ class _AddTransactionState extends State<AddTransaction> {
                                   },
                                 ),
                           TextFormField(
+                            autofocus: true,
                             decoration: InputDecoration(
                               icon: Icon(Icons.monetization_on),
                               hintText: 'How much is the amount?',
@@ -232,6 +248,7 @@ class _AddTransactionState extends State<AddTransaction> {
                             onSaved: (input) => _amount = double.parse(input),
                           ),
                           TextFormField(
+                            initialValue: _comment,
                             decoration: InputDecoration(
                               icon: Icon(Icons.comment),
                               hintText: 'Write comment about the transaction.',

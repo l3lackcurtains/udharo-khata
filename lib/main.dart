@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
         title: 'Khata',
         theme: ThemeData(
             primarySwatch: Colors.purple,
-            primaryColor: Colors.deepPurple,
+            primaryColor: Color(0xFF192a56),
             fontFamily: 'Roboto'),
         home: SignIn());
   }

@@ -61,7 +61,7 @@ class _AddCustomerState extends State<AddCustomer> {
         onPressed: () {
           addCustomer();
         },
-        icon: Icon(Icons.add),
+        icon: Icon(Icons.check),
         label: Text('Add Customer'),
       ),
       body: Container(

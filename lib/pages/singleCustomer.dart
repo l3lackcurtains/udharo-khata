@@ -213,41 +213,102 @@ class _SingleCustomerState extends State<SingleCustomer> {
                           ],
                         ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          FlatButton.icon(
-                            onPressed: () {},
-                            icon: Icon(Icons.share,
-                                size: 20.0, color: Colors.green),
-                            label: Text("Share"),
-                          ),
-                          FlatButton.icon(
-                            onPressed: () {
-                              generatePdf();
-                            },
-                            icon: Icon(Icons.picture_as_pdf,
-                                size: 20.0, color: Colors.blue),
-                            label: Text("Export"),
-                          )
-                        ],
+                      Container(
+                        padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              alignment: Alignment.centerLeft,
+                              child: Chip(
+                                  backgroundColor: Colors.green.shade100,
+                                  label: getCustomerTransactionsTotalWidget(
+                                      widget.customerId)),
+                            ),
+                            Row(
+                              children: [
+                                FlatButton.icon(
+                                  onPressed: () {},
+                                  icon: Icon(Icons.share,
+                                      size: 20.0, color: Colors.green),
+                                  label: Text("Share"),
+                                ),
+                                FlatButton.icon(
+                                  onPressed: () {
+                                    generatePdf();
+                                  },
+                                  icon: Icon(Icons.picture_as_pdf,
+                                      size: 20.0, color: Colors.blue),
+                                  label: Text("Export"),
+                                )
+                              ],
+                            )
+                          ],
+                        ),
                       ),
                       Expanded(
                           child: getCustomerTransactions(widget.customerId))
                     ],
                   ),
-                  floatingActionButton: FloatingActionButton.extended(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              AddTransaction(customer, refresh),
-                        ),
-                      );
-                    },
-                    icon: Icon(Icons.add),
-                    label: Text('Add Transaction'),
+                  bottomNavigationBar: BottomAppBar(
+                    child: Container(
+                      decoration: BoxDecoration(color: Colors.white10),
+                      height: 50,
+                      padding: EdgeInsets.all(0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          Expanded(
+                            child: Container(
+                              color: Colors.redAccent,
+                              child: FlatButton.icon(
+                                icon: Icon(
+                                  Icons.arrow_upward,
+                                ),
+                                padding: EdgeInsets.all(16),
+                                onPressed: () {
+                                  String transType = "credit";
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AddTransaction(
+                                          customer, transType, refresh),
+                                    ),
+                                  );
+                                },
+                                label: Text(
+                                  "Credit Given",
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              color: Colors.greenAccent,
+                              child: FlatButton.icon(
+                                icon: Icon(
+                                  Icons.arrow_downward,
+                                ),
+                                padding: EdgeInsets.all(16),
+                                onPressed: () {
+                                  String transType = "payment";
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AddTransaction(
+                                          customer, transType, refresh),
+                                    ),
+                                  );
+                                },
+                                label: Text("Payment Received",
+                                    style: TextStyle(color: Colors.black)),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
                 _absorbing
@@ -286,19 +347,22 @@ class _SingleCustomerState extends State<SingleCustomer> {
                   ? Icon(
                       Icons.arrow_upward,
                       color: Colors.green.shade900,
-                      size: 16.0,
+                      size: 18.0,
                     )
                   : Icon(
                       Icons.arrow_downward,
                       color: Colors.orange.shade900,
-                      size: 16.0,
+                      size: 18.0,
                     ),
               Padding(
-                padding: EdgeInsets.fromLTRB(4, 0, 0, 0),
+                padding: EdgeInsets.fromLTRB(4, 2, 4, 2),
                 child: Text(
                   ttype.toUpperCase(),
                   style: TextStyle(
-                      color: Colors.black38, fontSize: 10, letterSpacing: 0.6),
+                      color: Colors.black38,
+                      fontSize: 12,
+                      letterSpacing: 0.3,
+                      fontWeight: FontWeight.w800),
                 ),
               )
             ]);
@@ -315,27 +379,6 @@ class _SingleCustomerState extends State<SingleCustomer> {
           if (snapshot.hasData && snapshot.data.length != 0) {
             return Column(
               children: <Widget>[
-                Container(
-                  decoration: BoxDecoration(color: Colors.grey.shade200),
-                  padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
-                  child: Row(
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Icon(Icons.history,
-                              color: Colors.black54, size: 16.0),
-                          Padding(
-                              padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
-                              child: Text('History')),
-                        ],
-                      ),
-                      Spacer(),
-                      Chip(
-                          backgroundColor: Colors.green.shade100,
-                          label: getCustomerTransactionsTotalWidget(cid))
-                    ],
-                  ),
-                ),
                 Expanded(
                   child: ListView.builder(
                       padding: EdgeInsets.fromLTRB(0, 16, 0, 60),
