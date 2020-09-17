@@ -136,7 +136,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
                   body: Column(
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                        padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
@@ -214,7 +214,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                        padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:udharokhata/helpers/firebaseBackup.dart';
 
 class Backup extends StatefulWidget {
@@ -7,15 +9,30 @@ class Backup extends StatefulWidget {
 }
 
 class _BackupState extends State<Backup> {
-  Future<List<dynamic>> _backupList;
+  DateTime _lastBackup;
   @override
   void initState() {
     super.initState();
+    getLastBackupInfo();
+  }
+
+  void getLastBackupInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('last_backup', DateTime.now().toString());
+
+    String lastBackupDate = prefs.getString("last_backup");
+
+    if (lastBackupDate != null) {
+      setState(() {
+        _lastBackup = DateTime.parse(lastBackupDate);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Khata',
             style: TextStyle(
@@ -27,43 +44,46 @@ class _BackupState extends State<Backup> {
         backgroundColor: Colors.grey.shade100,
       ),
       body: Container(
+        padding: EdgeInsets.all(24),
         child: Column(
           children: <Widget>[
-            Row(
+            Image.asset(
+              "images/data-copy.jpg",
+              width: 300,
+            ),
+            Column(
               children: <Widget>[
-                RaisedButton(
+                FlatButton.icon(
+                  icon: Icon(Icons.restore),
                   onPressed: () {
                     FirebaseBackup().restoreAllData();
                   },
-                  child: Text("Restore Now."),
+                  label: Text("Restore Now"),
                 ),
-                RaisedButton(
-                  color: Colors.red,
+                SizedBox(
+                  height: 24,
+                ),
+                FlatButton.icon(
+                  icon: Icon(Icons.restore),
+                  color: Colors.blue,
                   onPressed: () {
                     FirebaseBackup().backupAllData();
                   },
-                  child: Text("Backup to Firebase"),
+                  label: Text("Backup to Firebase"),
                 ),
+                SizedBox(
+                  height: 24,
+                ),
+                Text("We backup your data every weekend"),
+                SizedBox(
+                  height: 24,
+                ),
+                _lastBackup != null
+                    ? Text(
+                        "Last backup on ${DateFormat('MMM d, yyyy').format(_lastBackup)}")
+                    : Text("No backups")
               ],
             ),
-            Expanded(
-              child: FutureBuilder<List<dynamic>>(
-                  future:
-                      _backupList, // a previously-obtained Future<String> or null
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      if (snapshot.data.length == 0) return Container();
-                      return Column(
-                          children: snapshot.data.map((item) {
-                        return InkWell(
-                            child: Container(
-                                padding: EdgeInsets.all(8),
-                                child: Text(item['name'])));
-                      }).toList());
-                    }
-                    return Container();
-                  }),
-            )
           ],
         ),
       ),

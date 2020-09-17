@@ -1,12 +1,15 @@
+import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/material.dart';
 import 'package:udharokhata/pages/customers.dart';
 import 'package:udharokhata/pages/settings.dart';
+import 'package:udharokhata/services/autoBackup.dart';
 import 'package:udharokhata/services/loadBusinessInfo.dart';
 
 import 'pages/signin.dart';
 
 void main() {
   runApp(MyApp());
+  BackgroundFetch.registerHeadlessTask(autoBackupData);
 }
 
 class MyApp extends StatelessWidget {
@@ -38,11 +41,28 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    updateBusinessInfo();
+    loadBusinessInfo();
+    initPlatformState();
   }
 
-  updateBusinessInfo() {
-    loadBusinessInfo();
+  Future<void> initPlatformState() async {
+    if (!mounted) return;
+    BackgroundFetch.configure(
+        BackgroundFetchConfig(
+            minimumFetchInterval: 1,
+            stopOnTerminate: false,
+            enableHeadless: false,
+            requiresBatteryNotLow: false,
+            requiresCharging: false,
+            requiresStorageNotLow: false,
+            requiresDeviceIdle: false,
+            requiredNetworkType: NetworkType.NONE), (String taskId) async {
+      BackgroundFetch.finish(taskId);
+    }).then((int status) {
+      print('[BackgroundFetch] configure success: $status');
+    }).catchError((e) {
+      print('[BackgroundFetch] configure ERROR: $e');
+    });
   }
 
   @override

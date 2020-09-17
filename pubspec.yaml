@@ -33,7 +33,9 @@ dependencies:
   open_file: ^3.0.1
   share: ^0.6.5
   flutter_pdfview: ^1.0.3+3
-
+  cron: ^0.2.3
+  background_fetch: ^0.5.1
+  shared_preferences: ^0.5.10
   
 dev_dependencies:
   flutter_test:
@@ -63,6 +65,7 @@ flutter:
     - images/share.png
     - images/backup.png
     - images/business.png
+    - images/data-copy.jpg
     - images/cv/email.png
     - images/cv/phone.png
     - images/cv/location.png
