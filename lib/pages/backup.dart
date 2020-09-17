@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:udharokhata/helpers/googleDrive.dart';
+import 'package:udharokhata/helpers/firebaseBackup.dart';
 
 class Backup extends StatefulWidget {
   @override
@@ -11,26 +11,6 @@ class _BackupState extends State<Backup> {
   @override
   void initState() {
     super.initState();
-    _getBackupList();
-  }
-
-  void _getBackupList() {
-    setState(() {
-      _backupList = GoogleClient().listGoogleDriveFiles();
-    });
-  }
-
-  void backupData() async {
-    // var trans = await TransactionBloc().getTransactions();
-    // var transJson = trans[0].toDatabaseJson();
-
-    // print(transJson);
-
-    GoogleClient().uploadFileToGoogleDrive();
-  }
-
-  void restoreData() async {
-    GoogleClient().downloadGoogleDriveFile();
   }
 
   @override
@@ -53,15 +33,16 @@ class _BackupState extends State<Backup> {
               children: <Widget>[
                 RaisedButton(
                   onPressed: () {
-                    backupData();
-                  },
-                  child: Text("Backup Now."),
-                ),
-                RaisedButton(
-                  onPressed: () {
-                    restoreData();
+                    FirebaseBackup().restoreAllData();
                   },
                   child: Text("Restore Now."),
+                ),
+                RaisedButton(
+                  color: Colors.red,
+                  onPressed: () {
+                    FirebaseBackup().backupAllData();
+                  },
+                  child: Text("Backup to Firebase"),
                 ),
               ],
             ),

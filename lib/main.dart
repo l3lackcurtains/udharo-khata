@@ -15,8 +15,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: 'Khata',
         theme: ThemeData(
-            primarySwatch: Colors.purple,
             primaryColor: Color(0xFF192a56),
+            accentColor: Color(0xFFe74c3c),
             fontFamily: 'Roboto'),
         home: SignIn());
   }
