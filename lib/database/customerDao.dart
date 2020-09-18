@@ -17,18 +17,17 @@ class CustomerDao {
     final db = await dbProvider.database;
 
     List<Map<String, dynamic>> result;
-    if (query != null) {
-      if (query.isNotEmpty)
-        result = await db.query(
-          customerTABLE,
-          columns: columns,
-          where: 'name LIKE ?',
-          whereArgs: ["%$query%"],
-        );
-    } else {
-      result = await db.query(customerTABLE, columns: columns);
-    }
 
+    if (query == null || query == "") {
+      result = await db.query(customerTABLE, columns: columns);
+    } else {
+      result = await db.query(
+        customerTABLE,
+        columns: columns,
+        where: 'name LIKE ?',
+        whereArgs: ["%$query%"],
+      );
+    }
     List<Customer> customers = result.isNotEmpty
         ? result.map((item) => Customer.fromDatabaseJson(item)).toList()
         : [];

@@ -5,8 +5,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
+import 'package:udharokhata/database/customerRepo.dart';
 import 'package:udharokhata/helpers/generateCustomersPdf.dart';
 import 'package:udharokhata/models/customer.dart';
 import 'package:udharokhata/pages/addCustomer.dart';
@@ -18,13 +18,34 @@ class Customers extends StatefulWidget {
 }
 
 class _CustomersState extends State<Customers> {
-  final CustomerBloc customerBloc = CustomerBloc();
   final TransactionBloc transactionBloc = TransactionBloc();
+  final _customerRepository = CustomerRepository();
 
   final TextEditingController _searchInputController =
       new TextEditingController();
 
   bool _absorbing = false;
+  String _searchText = "";
+
+  Future<List<Customer>> customersList;
+  @override
+  void initState() {
+    super.initState();
+    loadCustomersList();
+  }
+
+  void loadCustomersList({String query}) async {
+    Future<List<Customer>> searchedCustomers;
+    if (query == null) {
+      searchedCustomers = _customerRepository.getAllCustomers();
+    } else {
+      searchedCustomers = _customerRepository.getAllCustomers(query: query);
+    }
+    setState(() {
+      customersList = searchedCustomers;
+      _searchText = query;
+    });
+  }
 
   refresh() {
     setState(() {});
@@ -37,7 +58,66 @@ class _CustomersState extends State<Customers> {
         Scaffold(
           body: Container(
             decoration: BoxDecoration(color: Colors.white),
-            child: getCustomersList(),
+            child: Column(
+              children: [
+                Container(
+                  alignment: Alignment.center,
+                  height: 140,
+                  decoration:
+                      BoxDecoration(color: Theme.of(context).primaryColor),
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            IconButton(
+                              icon: Icon(Icons.picture_as_pdf),
+                              color: Colors.red,
+                              onPressed: () async {
+                                generatePdf();
+                              },
+                            )
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                        child: Card(
+                          elevation: 6,
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(16, 4, 16, 4),
+                            child: TextField(
+                                controller: _searchInputController,
+                                decoration: InputDecoration(
+                                  labelText: 'Search Customers',
+                                  suffixIcon: _searchText == ""
+                                      ? Icon(Icons.search)
+                                      : IconButton(
+                                          icon: Icon(Icons.close),
+                                          onPressed: () {
+                                            _searchInputController.clear();
+                                            loadCustomersList();
+                                          },
+                                        ),
+                                  border: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                ),
+                                onChanged: (text) {
+                                  loadCustomersList(query: text);
+                                }),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: getCustomersList(),
+                ),
+              ],
+            ),
           ),
           floatingActionButton: FloatingActionButton.extended(
             onPressed: () {
@@ -80,71 +160,11 @@ class _CustomersState extends State<Customers> {
   }
 
   Widget getCustomersList() {
-    return Column(
-      children: <Widget>[
-        Container(
-          decoration: BoxDecoration(color: Colors.grey.shade100),
-          padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              IconButton(
-                icon: Icon(Icons.picture_as_pdf),
-                color: Colors.red,
-                onPressed: () async {
-                  generatePdf();
-                },
-              )
-            ],
-          ),
-        ),
-        Container(
-          decoration: BoxDecoration(color: Colors.grey.shade100),
-          padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
-          child: TextField(
-            controller: _searchInputController,
-            decoration: InputDecoration(
-              hintText: 'Search Customer',
-              contentPadding: EdgeInsets.fromLTRB(8, 12, 8, 12),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  width: 0,
-                  style: BorderStyle.none,
-                ),
-              ),
-              suffixIcon: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _searchInputController.clear();
-                    });
-                  },
-                  icon: Icon(
-                    Icons.clear,
-                    size: 16,
-                    color: _searchInputController.text.length > 0
-                        ? Colors.grey.shade600
-                        : Colors.transparent,
-                  )),
-              filled: true,
-              fillColor: Colors.white,
-            ),
-            onChanged: (text) {
-              setState(() {
-                print(text);
-              });
-            },
-          ),
-        ),
-        Expanded(
-          child: FutureBuilder(
-              future: customerBloc.getCustomers(),
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                return getCustomerCard(snapshot);
-              }),
-        ),
-      ],
-    );
+    return FutureBuilder<List<Customer>>(
+        future: customersList,
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          return getCustomerCard(snapshot);
+        });
   }
 
   Widget getCustomerTransactionsTotalWidget(int cid) {
