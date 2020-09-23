@@ -1,10 +1,11 @@
 import 'dart:async';
 
-import 'package:udharokhata/database/customerDb.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:udharokhata/database/database.dart';
 import 'package:udharokhata/models/customer.dart';
 
 class CustomerDao {
-  final dbProvider = CustomerDatabaseProvider.dbProvider;
+  final dbProvider = DatabaseProvider.dbProvider;
 
   Future<int> createCustomer(Customer customer) async {
     final db = await dbProvider.database;
@@ -18,14 +19,25 @@ class CustomerDao {
 
     List<Map<String, dynamic>> result;
 
+    // get Business ID
+    final prefs = await SharedPreferences.getInstance();
+    int selectedBusinessId = prefs.getInt('selected_business') != null
+        ? prefs.getInt('selected_business')
+        : 0;
+
     if (query == null || query == "") {
-      result = await db.query(customerTABLE, columns: columns);
+      result = await db.query(
+        customerTABLE,
+        columns: columns,
+        where: 'businessId = ?',
+        whereArgs: [selectedBusinessId],
+      );
     } else {
       result = await db.query(
         customerTABLE,
         columns: columns,
-        where: 'name LIKE ?',
-        whereArgs: ["%$query%"],
+        where: 'businessId = ? AND name LIKE ?',
+        whereArgs: [selectedBusinessId, "%$query%"],
       );
     }
     List<Customer> customers = result.isNotEmpty
@@ -45,11 +57,8 @@ class CustomerDao {
 
   Future<int> updateCustomer(Customer customer) async {
     final db = await dbProvider.database;
-
     var result = await db.update(customerTABLE, customer.toDatabaseJson(),
         where: "id = ?", whereArgs: [customer.id]);
-    print(customer.name);
-
     return result;
   }
 
@@ -57,7 +66,6 @@ class CustomerDao {
     final db = await dbProvider.database;
     var result =
         await db.delete(customerTABLE, where: 'id = ?', whereArgs: [id]);
-
     return result;
   }
 }

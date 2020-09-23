@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/models/customer.dart';
 
@@ -179,7 +180,7 @@ class _AddCustomerState extends State<AddCustomer> {
     );
   }
 
-  void addCustomer() {
+  void addCustomer() async {
     final formState = _formKey.currentState;
 
     if (formState.validate()) {
@@ -205,6 +206,12 @@ class _AddCustomerState extends State<AddCustomer> {
       customer.phone = _phone;
       customer.address = _address;
       customer.image = null;
+
+      // Associate current business
+      final prefs = await SharedPreferences.getInstance();
+      int selectedBusinessId = prefs.getInt('selected_business');
+
+      customer.businessId = selectedBusinessId;
 
       // check image and its size (1MB)
       if (_image != null) {

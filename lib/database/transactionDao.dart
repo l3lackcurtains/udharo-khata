@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:udharokhata/database/transactionDb.dart';
+import 'package:udharokhata/database/database.dart';
 import 'package:udharokhata/models/transaction.dart';
 
 class TransactionDao {
-  final dbProvider = TransactionDatabaseProvider.dbProvider;
+  final dbProvider = DatabaseProvider.dbProvider;
 
   Future<int> createTransaction(Transaction transaction) async {
     final db = await dbProvider.database;
@@ -56,7 +56,6 @@ class TransactionDao {
 
   Future<double> getCustomerTransactionsTotal(int cid) async {
     final db = await dbProvider.database;
-
     List<Map> result =
         await db.query(transactionTABLE, where: 'uid = ?', whereArgs: [cid]);
 

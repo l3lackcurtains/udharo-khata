@@ -2,6 +2,7 @@ import 'package:udharokhata/models/customer.dart';
 
 class Transaction {
   int id;
+  int businessId;
   int uid;
   String ttype;
   double amount;
@@ -12,6 +13,7 @@ class Transaction {
 
   Transaction(
       {this.id,
+      this.businessId,
       this.uid,
       this.ttype,
       this.amount,
@@ -23,6 +25,7 @@ class Transaction {
   factory Transaction.fromDatabaseJson(Map<String, dynamic> data) =>
       Transaction(
           id: data['id'],
+          businessId: data['businessId'],
           uid: data['uid'],
           ttype: data['ttype'],
           amount: data['amount'],
@@ -32,6 +35,7 @@ class Transaction {
 
   Map<String, dynamic> toDatabaseJson() => {
         'id': this.id,
+        'businessId': this.businessId,
         'uid': this.uid,
         'ttype': this.ttype,
         'amount': this.amount,

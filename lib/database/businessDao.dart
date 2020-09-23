@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:udharokhata/database/businessDb.dart';
+import 'package:udharokhata/database/database.dart';
 import 'package:udharokhata/models/business.dart';
 
 class BusinessDao {
-  final dbProvider = BusinessDatabaseProvider.dbProvider;
+  final dbProvider = DatabaseProvider.dbProvider;
 
   Future<int> createBusiness(Business business) async {
     final db = await dbProvider.database;
@@ -49,8 +49,6 @@ class BusinessDao {
 
     var result = await db.update(businessTABLE, business.toDatabaseJson(),
         where: "id = ?", whereArgs: [business.id]);
-    print(business.name);
-
     return result;
   }
 

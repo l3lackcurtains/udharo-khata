@@ -92,7 +92,7 @@ class _CustomersState extends State<Customers> {
                                 controller: _searchInputController,
                                 decoration: InputDecoration(
                                   labelText: 'Search Customers',
-                                  suffixIcon: _searchText == ""
+                                  suffixIcon: _searchText == null
                                       ? Icon(Icons.search)
                                       : IconButton(
                                           icon: Icon(Icons.close),

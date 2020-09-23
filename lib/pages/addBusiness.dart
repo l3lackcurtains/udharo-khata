@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:udharokhata/blocs/businessBloc.dart';
 import 'package:udharokhata/helpers/stateNotifier.dart';
 import 'package:udharokhata/models/business.dart';
+import 'package:udharokhata/pages/deleteBusiness.dart';
 
 class AddBusiness extends StatefulWidget {
   final Function() notifyParent;
@@ -57,6 +58,25 @@ class _AddBusinessState extends State<AddBusiness> {
         iconTheme: IconThemeData(
           color: Colors.black, //change your color here
         ),
+        actions: <Widget>[
+          FlatButton.icon(
+            label: Text(
+              "Delete Company",
+              style: TextStyle(fontSize: 12),
+            ),
+            icon: Icon(Icons.delete, size: 20.0, color: Colors.red),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DeleteBusiness(
+                    widget.notifyParent,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {

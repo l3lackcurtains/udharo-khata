@@ -163,7 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           Text(
                             business.companyName,
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: 13,
                               color: Colors.blueGrey,
                               fontWeight: FontWeight.bold,
                             ),
