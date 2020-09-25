@@ -37,6 +37,7 @@ dependencies:
   background_fetch: ^0.5.1
   shared_preferences: ^0.5.10
   provider: ^4.3.2+2
+  back_button_interceptor: ^4.3.1
   
 dev_dependencies:
   flutter_test:

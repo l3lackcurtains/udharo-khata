@@ -13,6 +13,7 @@ import 'package:udharokhata/pages/addCustomer.dart';
 import 'package:udharokhata/pages/singleCustomer.dart';
 
 class Customers extends StatefulWidget {
+  Customers({Key key}) : super(key: key);
   @override
   _CustomersState createState() => _CustomersState();
 }
@@ -45,10 +46,6 @@ class _CustomersState extends State<Customers> {
       customersList = searchedCustomers;
       _searchText = query;
     });
-  }
-
-  refresh() {
-    setState(() {});
   }
 
   @override
@@ -123,7 +120,7 @@ class _CustomersState extends State<Customers> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AddCustomer(refresh)),
+                MaterialPageRoute(builder: (context) => AddCustomer()),
               );
             },
             icon: Icon(Icons.add),
@@ -310,5 +307,10 @@ class _CustomersState extends State<Customers> {
     } else {
       return Container();
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

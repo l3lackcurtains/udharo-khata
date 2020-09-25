@@ -10,13 +10,12 @@ import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
 import 'package:udharokhata/models/customer.dart';
 import 'package:udharokhata/models/transaction.dart';
+import 'package:udharokhata/pages/singleCustomer.dart';
 
 class AddTransaction extends StatefulWidget {
-  final Function() notifyParent;
   final Customer customer;
   final String transType;
-  AddTransaction(this.customer, this.transType, this.notifyParent, {Key key})
-      : super(key: key);
+  AddTransaction(this.customer, this.transType, {Key key}) : super(key: key);
   @override
   _AddTransactionState createState() => _AddTransactionState();
 }
@@ -71,20 +70,18 @@ class _AddTransactionState extends State<AddTransaction> {
       });
   }
 
-  Future getImageFromGallery() async {
-    var attachment = await picker.getImage(source: ImageSource.gallery);
-
-    setState(() {
-      _attachment = File(attachment.path);
-    });
-  }
-
-  Future getImageFromCamera() async {
-    var attachment = await picker.getImage(source: ImageSource.camera);
-
-    setState(() {
-      _attachment = File(attachment.path);
-    });
+  Future getImageFrom(String from) async {
+    var image;
+    if (from == 'camera') {
+      image = await picker.getImage(source: ImageSource.camera);
+    } else {
+      image = await picker.getImage(source: ImageSource.gallery);
+    }
+    if (image != null) {
+      setState(() {
+        _attachment = File(image.path);
+      });
+    }
   }
 
   @override
@@ -97,7 +94,7 @@ class _AddTransactionState extends State<AddTransaction> {
 
             return Scaffold(
               key: _scaffoldKey,
-              resizeToAvoidBottomPadding: false,
+              backgroundColor: Colors.white,
               appBar: AppBar(
                 elevation: 0.0,
                 backgroundColor: Colors.transparent,
@@ -118,6 +115,7 @@ class _AddTransactionState extends State<AddTransaction> {
               ),
               body: SingleChildScrollView(
                 child: Container(
+                    margin: EdgeInsets.fromLTRB(0, 0, 0, 48),
                     padding: EdgeInsets.all(20),
                     child: Form(
                       key: _formKey,
@@ -322,7 +320,7 @@ class _AddTransactionState extends State<AddTransaction> {
                   child: Text('Upload from Camera')),
               onPressed: () {
                 Navigator.of(context).pop();
-                getImageFromCamera();
+                getImageFrom('camera');
               },
             ),
             SimpleDialogOption(
@@ -331,7 +329,7 @@ class _AddTransactionState extends State<AddTransaction> {
                   child: Text('Upload from Gallery')),
               onPressed: () {
                 Navigator.of(context).pop();
-                getImageFromGallery();
+                getImageFrom('gallery');
               },
             ),
           ],
@@ -340,7 +338,7 @@ class _AddTransactionState extends State<AddTransaction> {
     );
   }
 
-  void addTransaction() {
+  void addTransaction() async {
     final formState = _formKey.currentState;
 
     if (formState.validate()) {
@@ -389,10 +387,20 @@ class _AddTransactionState extends State<AddTransaction> {
 
       if (_customerId != null) {
         transaction.uid = _customerId;
-        transactionBloc.addTransaction(transaction);
+        await transactionBloc.addTransaction(transaction);
       }
-      widget.notifyParent();
-      Navigator.pop(context);
+      Navigator.of(context).pop();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SingleCustomer(_customerId),
+        ),
+      );
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

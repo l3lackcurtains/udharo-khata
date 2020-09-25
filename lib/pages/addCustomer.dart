@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
+import 'package:udharokhata/main.dart';
 import 'package:udharokhata/models/customer.dart';
 
 class AddCustomer extends StatefulWidget {
-  final Function() notifyParent;
-  AddCustomer(this.notifyParent, {Key key}) : super(key: key);
+  AddCustomer({Key key}) : super(key: key);
   @override
   _AddCustomerState createState() => _AddCustomerState();
 }
@@ -26,27 +26,25 @@ class _AddCustomerState extends State<AddCustomer> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  Future getImageFromGallery() async {
-    var image = await picker.getImage(source: ImageSource.gallery);
-
-    setState(() {
-      _image = File(image.path);
-    });
-  }
-
-  Future getImageFromCamera() async {
-    var image = await picker.getImage(source: ImageSource.camera);
-
-    setState(() {
-      _image = File(image.path);
-    });
+  Future getImageFrom(String from) async {
+    var image;
+    if (from == 'camera') {
+      image = await picker.getImage(source: ImageSource.camera);
+    } else {
+      image = await picker.getImage(source: ImageSource.gallery);
+    }
+    if (image != null) {
+      setState(() {
+        _image = File(image.path);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      resizeToAvoidBottomPadding: false,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0.0,
         backgroundColor: Colors.transparent,
@@ -65,60 +63,62 @@ class _AddCustomerState extends State<AddCustomer> {
         icon: Icon(Icons.check),
         label: Text('Add Customer'),
       ),
-      body: Container(
-          decoration: BoxDecoration(color: Colors.white),
-          padding: EdgeInsets.all(20),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: <Widget>[
-                customerImageWidget(),
-                TextFormField(
-                  decoration: InputDecoration(
-                    icon: Icon(Icons.person),
-                    hintText: 'What is your customer name?',
-                    labelText: 'Name *',
+      body: SingleChildScrollView(
+        child: Container(
+            margin: EdgeInsets.fromLTRB(0, 0, 0, 48),
+            padding: EdgeInsets.all(20),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  customerImageWidget(),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      icon: Icon(Icons.person),
+                      hintText: 'What is your customer name?',
+                      labelText: 'Name *',
+                    ),
+                    autovalidate: false,
+                    validator: (input) {
+                      if (input.isEmpty) {
+                        return 'Please type customer name';
+                      }
+                      return null;
+                    },
+                    onSaved: (input) => _name = input,
                   ),
-                  autovalidate: false,
-                  validator: (input) {
-                    if (input.isEmpty) {
-                      return 'Please type customer name';
-                    }
-                    return null;
-                  },
-                  onSaved: (input) => _name = input,
-                ),
-                TextFormField(
-                  decoration: InputDecoration(
-                    icon: Icon(Icons.call_missed_outgoing),
-                    hintText: 'Contact Number of customer.',
-                    labelText: 'Phone Number *',
+                  TextFormField(
+                    decoration: InputDecoration(
+                      icon: Icon(Icons.call_missed_outgoing),
+                      hintText: 'Contact Number of customer.',
+                      labelText: 'Phone Number *',
+                    ),
+                    autovalidate: false,
+                    validator: (input) {
+                      if (input.isEmpty) {
+                        return 'Please type customer phone number';
+                      }
+                      return null;
+                    },
+                    onSaved: (input) => _phone = input,
                   ),
-                  autovalidate: false,
-                  validator: (input) {
-                    if (input.isEmpty) {
-                      return 'Please type customer phone number';
-                    }
-                    return null;
-                  },
-                  onSaved: (input) => _phone = input,
-                ),
-                TextFormField(
-                  decoration: InputDecoration(
-                    icon: Icon(Icons.location_city),
-                    hintText: 'Where your customer resides.',
-                    labelText: 'Physical Address',
+                  TextFormField(
+                    decoration: InputDecoration(
+                      icon: Icon(Icons.location_city),
+                      hintText: 'Where your customer resides.',
+                      labelText: 'Physical Address',
+                    ),
+                    autovalidate: false,
+                    validator: null,
+                    onSaved: (input) => _address = input,
                   ),
-                  autovalidate: false,
-                  validator: null,
-                  onSaved: (input) => _address = input,
-                ),
-                Padding(
-                  padding: EdgeInsets.all(36),
-                ),
-              ],
-            ),
-          )),
+                  Padding(
+                    padding: EdgeInsets.all(36),
+                  ),
+                ],
+              ),
+            )),
+      ),
     );
   }
 
@@ -162,7 +162,7 @@ class _AddCustomerState extends State<AddCustomer> {
                   child: Text('Upload from Camera')),
               onPressed: () {
                 Navigator.of(context).pop();
-                getImageFromCamera();
+                getImageFrom('camera');
               },
             ),
             SimpleDialogOption(
@@ -171,7 +171,7 @@ class _AddCustomerState extends State<AddCustomer> {
                   child: Text('Upload from Gallery')),
               onPressed: () {
                 Navigator.of(context).pop();
-                getImageFromGallery();
+                getImageFrom('gallery');
               },
             ),
           ],
@@ -219,9 +219,20 @@ class _AddCustomerState extends State<AddCustomer> {
         customer.image = base64Image;
       }
 
-      customerBloc.addCustomer(customer);
-      widget.notifyParent();
-      Navigator.pop(context);
+      await customerBloc.addCustomer(customer);
+
+      Navigator.of(context).pop();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MyHomePage(),
+        ),
+      );
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -53,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Business> _businesses = [];
   Business _selectedBusiness;
 
-  final List<Widget> _widgetOptions = [
+  List<Widget> _widgetOptions = [
     Customers(),
     Settings(),
   ];
@@ -61,13 +62,15 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    BackButtonInterceptor.add(myInterceptor);
     loadBusinessInfo();
     initPlatformState();
     getAllBusinesses();
   }
 
-  refresh() {
-    getAllBusinesses();
+  bool myInterceptor(bool stopDefaultButtonEvent, RouteInfo info) {
+    print("BACK BUTTON!");
+    return false;
   }
 
   void getAllBusinesses() async {
@@ -110,10 +113,16 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
+  void dispose() {
+    BackButtonInterceptor.remove(myInterceptor);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Khata',
+        title: Text('Khata',
             style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -139,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AddBusiness(refresh),
+                      builder: (context) => AddBusiness(),
                     ),
                   );
                 }

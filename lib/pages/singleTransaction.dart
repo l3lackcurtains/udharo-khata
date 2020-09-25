@@ -6,14 +6,13 @@ import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
 import 'package:udharokhata/models/customer.dart';
 import 'package:udharokhata/models/transaction.dart';
+import 'package:udharokhata/pages/singleCustomer.dart';
 
 import 'editTransaction.dart';
 
 class SingleTransaction extends StatefulWidget {
   final int transactionId;
-  final Function() notifyParent;
-  SingleTransaction(this.transactionId, this.notifyParent, {Key key})
-      : super(key: key);
+  SingleTransaction(this.transactionId, {Key key}) : super(key: key);
   @override
   _SingleTransactionState createState() => _SingleTransactionState();
 }
@@ -21,11 +20,6 @@ class SingleTransaction extends StatefulWidget {
 class _SingleTransactionState extends State<SingleTransaction> {
   final TransactionBloc transactionBloc = TransactionBloc();
   final CustomerBloc customerBloc = CustomerBloc();
-
-  refresh() {
-    setState(() {});
-    widget.notifyParent();
-  }
 
   void _showDeleteDialog(transaction) {
     showDialog(
@@ -54,6 +48,12 @@ class _SingleTransactionState extends State<SingleTransaction> {
                 transactionBloc.deleteTransactionById(transaction.id);
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SingleCustomer(transaction.uid),
+                  ),
+                );
               },
             ),
           ],
@@ -93,8 +93,7 @@ class _SingleTransactionState extends State<SingleTransaction> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                EditTransaction(transaction, refresh),
+                            builder: (context) => EditTransaction(transaction),
                           ),
                         );
                       },
@@ -233,5 +232,10 @@ class _SingleTransactionState extends State<SingleTransaction> {
             child: Text(""),
           );
         });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

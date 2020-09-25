@@ -89,4 +89,9 @@ class _BackupState extends State<Backup> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 }

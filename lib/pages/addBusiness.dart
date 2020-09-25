@@ -8,9 +8,10 @@ import 'package:udharokhata/helpers/stateNotifier.dart';
 import 'package:udharokhata/models/business.dart';
 import 'package:udharokhata/pages/deleteBusiness.dart';
 
+import '../main.dart';
+
 class AddBusiness extends StatefulWidget {
-  final Function() notifyParent;
-  AddBusiness(this.notifyParent, {Key key}) : super(key: key);
+  AddBusiness({Key key}) : super(key: key);
   @override
   _AddBusinessState createState() => _AddBusinessState();
 }
@@ -47,7 +48,7 @@ class _AddBusinessState extends State<AddBusiness> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      resizeToAvoidBottomPadding: false,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0.0,
         backgroundColor: Colors.transparent,
@@ -69,9 +70,7 @@ class _AddBusinessState extends State<AddBusiness> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DeleteBusiness(
-                    widget.notifyParent,
-                  ),
+                  builder: (context) => DeleteBusiness(),
                 ),
               );
             },
@@ -85,35 +84,37 @@ class _AddBusinessState extends State<AddBusiness> {
         icon: Icon(Icons.check),
         label: Text('Add Company'),
       ),
-      body: Container(
-          decoration: BoxDecoration(color: Colors.white),
-          padding: EdgeInsets.all(20),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: <Widget>[
-                customerImageWidget(),
-                TextFormField(
-                  decoration: InputDecoration(
-                    icon: Icon(Icons.person),
-                    hintText: 'What is your company name?',
-                    labelText: 'Company Name *',
+      body: SingleChildScrollView(
+        child: Container(
+            margin: EdgeInsets.fromLTRB(0, 0, 0, 48),
+            padding: EdgeInsets.all(20),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  customerImageWidget(),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      icon: Icon(Icons.person),
+                      hintText: 'What is your company name?',
+                      labelText: 'Company Name *',
+                    ),
+                    autovalidate: false,
+                    validator: (input) {
+                      if (input.isEmpty) {
+                        return 'Please type customer name';
+                      }
+                      return null;
+                    },
+                    onSaved: (input) => _companyName = input,
                   ),
-                  autovalidate: false,
-                  validator: (input) {
-                    if (input.isEmpty) {
-                      return 'Please type customer name';
-                    }
-                    return null;
-                  },
-                  onSaved: (input) => _companyName = input,
-                ),
-                Padding(
-                  padding: EdgeInsets.all(36),
-                ),
-              ],
-            ),
-          )),
+                  Padding(
+                    padding: EdgeInsets.all(36),
+                  ),
+                ],
+              ),
+            )),
+      ),
     );
   }
 
@@ -211,8 +212,18 @@ class _AddBusinessState extends State<AddBusiness> {
 
       await _businessBloc.addBusiness(_business);
       changeSelectedBusiness(context, _business.id);
-      widget.notifyParent();
-      Navigator.pop(context);
+      Navigator.of(context).pop();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MyHomePage(),
+        ),
+      );
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

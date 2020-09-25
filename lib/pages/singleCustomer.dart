@@ -9,6 +9,7 @@ import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
 import 'package:udharokhata/helpers/conversion.dart';
 import 'package:udharokhata/helpers/generateCustomerTransaction.dart';
+import 'package:udharokhata/main.dart';
 import 'package:udharokhata/models/customer.dart';
 import 'package:udharokhata/models/transaction.dart';
 import 'package:udharokhata/pages/singleTransaction.dart';
@@ -27,12 +28,7 @@ class SingleCustomer extends StatefulWidget {
 class _SingleCustomerState extends State<SingleCustomer> {
   final CustomerBloc customerBloc = CustomerBloc();
   final TransactionBloc transactionBloc = TransactionBloc();
-
   bool _absorbing = false;
-
-  refresh() {
-    setState(() {});
-  }
 
   void _showDeleteDialog(customer) {
     showDialog(
@@ -60,7 +56,12 @@ class _SingleCustomerState extends State<SingleCustomer> {
               onPressed: () {
                 customerBloc.deleteCustomerById(customer.id);
                 Navigator.of(context).pop();
-                Navigator.of(context).pop();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MyHomePage(),
+                  ),
+                );
               },
             ),
           ],
@@ -118,7 +119,6 @@ class _SingleCustomerState extends State<SingleCustomer> {
                               MaterialPageRoute(
                                 builder: (context) => EditCustomer(
                                   customer,
-                                  refresh,
                                 ),
                               ),
                             );
@@ -271,8 +271,8 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => AddTransaction(
-                                          customer, transType, refresh),
+                                      builder: (context) =>
+                                          AddTransaction(customer, transType),
                                     ),
                                   );
                                 },
@@ -296,8 +296,8 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => AddTransaction(
-                                          customer, transType, refresh),
+                                      builder: (context) =>
+                                          AddTransaction(customer, transType),
                                     ),
                                   );
                                 },
@@ -392,8 +392,8 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => SingleTransaction(
-                                        transaction.id, refresh),
+                                    builder: (context) =>
+                                        SingleTransaction(transaction.id),
                                   ),
                                 );
                               },
@@ -511,5 +511,10 @@ class _SingleCustomerState extends State<SingleCustomer> {
           }
           return Container();
         });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

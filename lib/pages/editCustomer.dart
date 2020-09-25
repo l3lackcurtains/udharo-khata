@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/models/customer.dart';
+import 'package:udharokhata/pages/singleCustomer.dart';
 
 class EditCustomer extends StatefulWidget {
   final Customer customer;
-  final Function() notifyParent;
-  EditCustomer(this.customer, this.notifyParent, {Key key}) : super(key: key);
+  EditCustomer(this.customer, {Key key}) : super(key: key);
   @override
   _EditCustomerState createState() => _EditCustomerState();
 }
@@ -27,20 +27,18 @@ class _EditCustomerState extends State<EditCustomer> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  Future getImageFromGallery() async {
-    final image = await picker.getImage(source: ImageSource.gallery);
-
-    setState(() {
-      _image = File(image.path);
-    });
-  }
-
-  Future getImageFromCamera() async {
-    final image = await picker.getImage(source: ImageSource.camera);
-
-    setState(() {
-      _image = File(image.path);
-    });
+  Future getImageFrom(String from) async {
+    var image;
+    if (from == 'camera') {
+      image = await picker.getImage(source: ImageSource.camera);
+    } else {
+      image = await picker.getImage(source: ImageSource.gallery);
+    }
+    if (image != null) {
+      setState(() {
+        _image = File(image.path);
+      });
+    }
   }
 
   @override
@@ -49,7 +47,7 @@ class _EditCustomerState extends State<EditCustomer> {
 
     return Scaffold(
       key: _scaffoldKey,
-      resizeToAvoidBottomPadding: false,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0.0,
         backgroundColor: Colors.transparent,
@@ -63,66 +61,68 @@ class _EditCustomerState extends State<EditCustomer> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          updateCustomer(customer.id);
+          updateCustomer(customer);
         },
         icon: Icon(Icons.check),
         label: Text('Update Customer'),
       ),
-      body: Container(
-          decoration: BoxDecoration(color: Colors.white),
-          padding: EdgeInsets.all(20),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: <Widget>[
-                customerImageWidget(customer.image),
-                TextFormField(
-                  initialValue: customer.name,
-                  decoration: InputDecoration(
-                    icon: Icon(Icons.person),
-                    hintText: 'What is your customer name?',
-                    labelText: 'Name *',
+      body: SingleChildScrollView(
+        child: Container(
+            margin: EdgeInsets.fromLTRB(0, 0, 0, 48),
+            padding: EdgeInsets.all(20),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  customerImageWidget(customer.image),
+                  TextFormField(
+                    initialValue: customer.name,
+                    decoration: InputDecoration(
+                      icon: Icon(Icons.person),
+                      hintText: 'What is your customer name?',
+                      labelText: 'Name *',
+                    ),
+                    autovalidate: false,
+                    validator: (input) {
+                      if (input.isEmpty) {
+                        return 'Please type customer name';
+                      }
+                      return null;
+                    },
+                    onSaved: (input) => _name = input,
                   ),
-                  autovalidate: false,
-                  validator: (input) {
-                    if (input.isEmpty) {
-                      return 'Please type customer name';
-                    }
-                    return null;
-                  },
-                  onSaved: (input) => _name = input,
-                ),
-                TextFormField(
-                  initialValue: customer.phone,
-                  decoration: InputDecoration(
-                    icon: Icon(Icons.call_missed_outgoing),
-                    hintText: 'Contact Number of customer.',
-                    labelText: 'Phone Number *',
-                  ),
-                  autovalidate: false,
-                  validator: (input) {
-                    if (input.isEmpty) {
-                      return 'Please type customer phone number';
-                    }
+                  TextFormField(
+                    initialValue: customer.phone,
+                    decoration: InputDecoration(
+                      icon: Icon(Icons.call_missed_outgoing),
+                      hintText: 'Contact Number of customer.',
+                      labelText: 'Phone Number *',
+                    ),
+                    autovalidate: false,
+                    validator: (input) {
+                      if (input.isEmpty) {
+                        return 'Please type customer phone number';
+                      }
 
-                    return null;
-                  },
-                  onSaved: (input) => _phone = input,
-                ),
-                TextFormField(
-                  initialValue: customer.address,
-                  decoration: InputDecoration(
-                    icon: Icon(Icons.location_city),
-                    hintText: 'Where your customer resides.',
-                    labelText: 'Physical Address',
+                      return null;
+                    },
+                    onSaved: (input) => _phone = input,
                   ),
-                  autovalidate: false,
-                  validator: null,
-                  onSaved: (input) => _address = input,
-                ),
-              ],
-            ),
-          )),
+                  TextFormField(
+                    initialValue: customer.address,
+                    decoration: InputDecoration(
+                      icon: Icon(Icons.location_city),
+                      hintText: 'Where your customer resides.',
+                      labelText: 'Physical Address',
+                    ),
+                    autovalidate: false,
+                    validator: null,
+                    onSaved: (input) => _address = input,
+                  ),
+                ],
+              ),
+            )),
+      ),
     );
   }
 
@@ -176,7 +176,7 @@ class _EditCustomerState extends State<EditCustomer> {
                   child: Text('Upload from Camera')),
               onPressed: () {
                 Navigator.of(context).pop();
-                getImageFromCamera();
+                getImageFrom('camera');
               },
             ),
             SimpleDialogOption(
@@ -185,7 +185,7 @@ class _EditCustomerState extends State<EditCustomer> {
                   child: Text('Upload from Gallery')),
               onPressed: () {
                 Navigator.of(context).pop();
-                getImageFromGallery();
+                getImageFrom('gallery');
               },
             ),
           ],
@@ -194,7 +194,7 @@ class _EditCustomerState extends State<EditCustomer> {
     );
   }
 
-  void updateCustomer(int id) {
+  void updateCustomer(Customer customer) async {
     final formState = _formKey.currentState;
 
     if (formState.validate()) {
@@ -214,7 +214,6 @@ class _EditCustomerState extends State<EditCustomer> {
         return;
       }
 
-      customer.id = id;
       customer.name = _name;
       customer.phone = _phone;
       customer.address = _address;
@@ -223,9 +222,19 @@ class _EditCustomerState extends State<EditCustomer> {
         String base64Image = base64Encode(_image.readAsBytesSync());
         customer.image = base64Image;
       }
-      customerBloc.updateCustomer(customer);
-      widget.notifyParent();
-      Navigator.pop(context);
+      await customerBloc.updateCustomer(customer);
+      Navigator.of(context).pop();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SingleCustomer(customer.id),
+        ),
+      );
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

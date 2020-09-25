@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:udharokhata/blocs/businessBloc.dart';
 import 'package:udharokhata/models/business.dart';
+import 'package:udharokhata/pages/addBusiness.dart';
 
 class DeleteBusiness extends StatefulWidget {
-  final Function() notifyParent;
-  DeleteBusiness(this.notifyParent, {Key key}) : super(key: key);
+  DeleteBusiness({Key key}) : super(key: key);
   @override
   _DeleteBusinessState createState() => _DeleteBusinessState();
 }
@@ -96,7 +96,17 @@ class _DeleteBusinessState extends State<DeleteBusiness> {
   void deleteCompany() async {
     int id = _businesses[_radioValue].id;
     await _businessBloc.deleteBusinessById(id);
-    widget.notifyParent();
-    Navigator.pop(context);
+    Navigator.of(context).pop();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddBusiness(),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }
