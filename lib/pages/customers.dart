@@ -13,7 +13,8 @@ import 'package:udharokhata/pages/addCustomer.dart';
 import 'package:udharokhata/pages/singleCustomer.dart';
 
 class Customers extends StatefulWidget {
-  Customers({Key key}) : super(key: key);
+  final bool reload;
+  Customers(this.reload, {Key key}) : super(key: key);
   @override
   _CustomersState createState() => _CustomersState();
 }
@@ -50,6 +51,10 @@ class _CustomersState extends State<Customers> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.reload) {
+      loadCustomersList();
+    }
+
     return Stack(
       children: [
         Scaffold(

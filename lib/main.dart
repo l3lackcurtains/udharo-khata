@@ -53,11 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   List<Business> _businesses = [];
   Business _selectedBusiness;
-
-  List<Widget> _widgetOptions = [
-    Customers(),
-    Settings(),
-  ];
+  bool _reload = false;
 
   @override
   void initState() {
@@ -69,7 +65,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   bool myInterceptor(bool stopDefaultButtonEvent, RouteInfo info) {
-    print("BACK BUTTON!");
+    setState(() {
+      _reload = true;
+    });
     return false;
   }
 
@@ -206,7 +204,10 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+        child: [
+          Customers(_reload),
+          Settings(),
+        ].elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
