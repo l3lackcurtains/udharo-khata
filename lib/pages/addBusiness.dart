@@ -182,7 +182,7 @@ class _AddBusinessState extends State<AddBusiness> {
     if (formState.validate()) {
       formState.save();
 
-      // More Validation
+      // check image and its size (1MB)
       if (_logo != null && _logo.lengthSync() > 2000000) {
         final snackBar = SnackBar(
             content: Row(children: <Widget>[
@@ -199,9 +199,14 @@ class _AddBusinessState extends State<AddBusiness> {
       }
 
       _business.companyName = _companyName;
-      _business.logo = null;
+      _business.name = "";
+      _business.phone = "";
+      _business.email = "";
+      _business.address = "";
+      _business.logo = "";
+      _business.website = "";
+      _business.role = "";
 
-      // check image and its size (1MB)
       if (_logo != null) {
         String base64Image = base64Encode(_logo.readAsBytesSync());
         _business.logo = base64Image;

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:back_button_interceptor/back_button_interceptor.dart';
@@ -59,7 +60,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     BackButtonInterceptor.add(myInterceptor);
-    loadBusinessInfo();
     initPlatformState();
     getAllBusinesses();
   }
@@ -68,13 +68,17 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _reload = true;
     });
+    getAllBusinesses();
     return false;
   }
 
   void getAllBusinesses() async {
     List<Business> businesses = await businessBloc.getBusinesss();
+    if (businesses.length == 0) {
+      await loadBusinessInfo(context);
+    }
     final prefs = await SharedPreferences.getInstance();
-    int selectedBusinessId = prefs.getInt('selected_business');
+    int selectedBusinessId = prefs.getInt('selected_business') ?? 0;
     Business selectedBusiness;
     businesses.forEach((business) {
       if (business.id == selectedBusinessId) {
@@ -83,7 +87,6 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     businesses.add(null);
-
     setState(() {
       _businesses = businesses;
       _selectedBusiness = selectedBusiness;
@@ -226,6 +229,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      _reload = false;
     });
   }
 }

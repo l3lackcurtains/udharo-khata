@@ -251,9 +251,10 @@ class _CustomersState extends State<Customers> {
                                 tag: customer.id,
                                 child: Padding(
                                   padding: EdgeInsets.fromLTRB(0, 4, 12, 4),
-                                  child: customerImage != null
+                                  child: customerImage != null &&
+                                          customerImage.length > 0
                                       ? CircleAvatar(
-                                          radius: 24.0,
+                                          radius: 24,
                                           child: ClipOval(
                                               child: Image.memory(customerImage,
                                                   height: 48,

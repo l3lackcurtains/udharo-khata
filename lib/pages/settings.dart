@@ -31,6 +31,7 @@ class _SettingsState extends State<Settings> {
                   child: Image(
                     image: AssetImage('images/google_logo.png'),
                     height: 40,
+                    width: 40,
                   ),
                 ),
                 Container(
@@ -61,6 +62,8 @@ class _SettingsState extends State<Settings> {
                   leading: Image.asset(
                     "images/business.png",
                     width: 30,
+                    height: 30,
+                    scale: 1.0,
                   ),
                   title: Text('Business Information'),
                   subtitle: Text("Setup your business informations."),
@@ -79,6 +82,8 @@ class _SettingsState extends State<Settings> {
                   leading: Image.asset(
                     "images/backup.png",
                     width: 30,
+                    height: 30,
+                    scale: 1.0,
                   ),
                   title: Text('Backup'),
                   subtitle: Text("Back up your udharo khata data"),
@@ -93,6 +98,8 @@ class _SettingsState extends State<Settings> {
                   leading: Image.asset(
                     "images/share.png",
                     width: 30,
+                    height: 30,
+                    scale: 1.0,
                   ),
                   title: Text('Share'),
                   subtitle: Text("Spread the words of flutter blog crumet"),
