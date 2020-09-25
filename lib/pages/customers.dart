@@ -5,23 +5,24 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
-import 'package:udharokhata/database/customerRepo.dart';
 import 'package:udharokhata/helpers/generateCustomersPdf.dart';
+import 'package:udharokhata/helpers/stateNotifier.dart';
 import 'package:udharokhata/models/customer.dart';
 import 'package:udharokhata/pages/addCustomer.dart';
 import 'package:udharokhata/pages/singleCustomer.dart';
 
 class Customers extends StatefulWidget {
-  final bool reload;
-  Customers(this.reload, {Key key}) : super(key: key);
+  Customers({Key key}) : super(key: key);
   @override
   _CustomersState createState() => _CustomersState();
 }
 
 class _CustomersState extends State<Customers> {
   final TransactionBloc transactionBloc = TransactionBloc();
-  final _customerRepository = CustomerRepository();
+  final _customerBloc = CustomerBloc();
 
   final TextEditingController _searchInputController =
       new TextEditingController();
@@ -33,28 +34,10 @@ class _CustomersState extends State<Customers> {
   @override
   void initState() {
     super.initState();
-    loadCustomersList();
-  }
-
-  void loadCustomersList({String query}) async {
-    Future<List<Customer>> searchedCustomers;
-    if (query == null) {
-      searchedCustomers = _customerRepository.getAllCustomers();
-    } else {
-      searchedCustomers = _customerRepository.getAllCustomers(query: query);
-    }
-    setState(() {
-      customersList = searchedCustomers;
-      _searchText = query;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.reload) {
-      loadCustomersList();
-    }
-
     return Stack(
       children: [
         Scaffold(
@@ -100,14 +83,15 @@ class _CustomersState extends State<Customers> {
                                           icon: Icon(Icons.close),
                                           onPressed: () {
                                             _searchInputController.clear();
-                                            loadCustomersList();
                                           },
                                         ),
                                   border: InputBorder.none,
                                   focusedBorder: InputBorder.none,
                                 ),
                                 onChanged: (text) {
-                                  loadCustomersList(query: text);
+                                  setState(() {
+                                    _searchText = text;
+                                  });
                                 }),
                           ),
                         ),
@@ -162,11 +146,13 @@ class _CustomersState extends State<Customers> {
   }
 
   Widget getCustomersList() {
-    return FutureBuilder<List<Customer>>(
-        future: customersList,
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          return getCustomerCard(snapshot);
-        });
+    return Consumer<AppStateNotifier>(builder: (context, provider, child) {
+      return FutureBuilder(
+          future: _customerBloc.getCustomers(query: _searchText),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            return getCustomerCard(snapshot);
+          });
+    });
   }
 
   Widget getCustomerTransactionsTotalWidget(int cid) {

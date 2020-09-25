@@ -19,16 +19,18 @@ class FirebaseBackup {
     List<Customer> customersList = await customerBloc.getCustomers();
     List<TransactionModel.Transaction> transactionsList =
         await transactionBloc.getTransactions();
-    Business businessInfo = await businessBloc.getBusiness(0);
+    List<Business> businessInfoList = await businessBloc.getBusinesss();
 
-    firestoreInstance
-        .collection("udharoKhata")
-        .document(firebaseUser.uid)
-        .collection("business")
-        .document(businessInfo.id.toString())
-        .setData(businessInfo.toDatabaseJson())
-        .then((value) {
-      print("Backed up business Info.");
+    businessInfoList.forEach((businessInfo) {
+      firestoreInstance
+          .collection("udharoKhata")
+          .document(firebaseUser.uid)
+          .collection("business")
+          .document(businessInfo.id.toString())
+          .setData(businessInfo.toDatabaseJson())
+          .then((value) {
+        print("Backed up business Info.");
+      });
     });
 
     customersList.forEach((customer) {
@@ -61,6 +63,12 @@ class FirebaseBackup {
     List<Customer> customersList = await customerBloc.getCustomers();
     List<TransactionModel.Transaction> transactionsList =
         await transactionBloc.getTransactions();
+    List<Business> businessInfoList = await businessBloc.getBusinesss();
+    // Delete all businesses
+    businessInfoList.forEach((business) async {
+      await businessBloc.deleteBusinessById(business.id);
+    });
+
     // Delete all customers
     customersList.forEach((customer) async {
       await customerBloc.deleteCustomerById(customer.id);
@@ -79,7 +87,7 @@ class FirebaseBackup {
         .then((querySnapshot) {
       querySnapshot.documents.forEach((result) async {
         Business business = Business.fromDatabaseJson(result.data);
-        await businessBloc.updateBusiness(business);
+        await businessBloc.addBusiness(business);
       });
       print("Business restored");
     });

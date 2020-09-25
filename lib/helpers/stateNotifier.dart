@@ -21,5 +21,6 @@ Future<Null> changeSelectedBusiness(BuildContext context, int id) async {
   final prefs = await SharedPreferences.getInstance();
   final key = 'selected_business';
   await prefs.setInt(key, id);
+
   Provider.of<AppStateNotifier>(context, listen: false).updateBusiness(id);
 }

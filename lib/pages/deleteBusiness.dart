@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:udharokhata/blocs/businessBloc.dart';
+import 'package:udharokhata/helpers/stateNotifier.dart';
+import 'package:udharokhata/main.dart';
 import 'package:udharokhata/models/business.dart';
-import 'package:udharokhata/pages/addBusiness.dart';
 
 class DeleteBusiness extends StatefulWidget {
   DeleteBusiness({Key key}) : super(key: key);
@@ -95,12 +96,15 @@ class _DeleteBusinessState extends State<DeleteBusiness> {
 
   void deleteCompany() async {
     int id = _businesses[_radioValue].id;
+    if (id == 0) return;
     await _businessBloc.deleteBusinessById(id);
+    changeSelectedBusiness(context, 0);
+    Navigator.of(context).pop();
     Navigator.of(context).pop();
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => AddBusiness(),
+        builder: (context) => MyHomePage(),
       ),
     );
   }

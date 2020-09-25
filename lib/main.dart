@@ -54,7 +54,6 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   List<Business> _businesses = [];
   Business _selectedBusiness;
-  bool _reload = false;
 
   @override
   void initState() {
@@ -65,9 +64,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   bool myInterceptor(bool stopDefaultButtonEvent, RouteInfo info) {
-    setState(() {
-      _reload = true;
-    });
     getAllBusinesses();
     return false;
   }
@@ -77,6 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (businesses.length == 0) {
       await loadBusinessInfo(context);
     }
+    businesses = await businessBloc.getBusinesss();
     final prefs = await SharedPreferences.getInstance();
     int selectedBusinessId = prefs.getInt('selected_business') ?? 0;
     Business selectedBusiness;
@@ -208,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: [
-          Customers(_reload),
+          Customers(),
           Settings(),
         ].elementAt(_selectedIndex),
       ),
@@ -229,7 +226,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      _reload = false;
     });
   }
 }

@@ -56,11 +56,15 @@ class _BusinessInformationState extends State<BusinessInformation> {
     if (businessz != null) {
       setState(() {
         _businessInfo = businessz;
-        _pdfLoaded = false;
       });
     }
 
-    buildPDF();
+    setState(() {
+      _pdfLoaded = false;
+    });
+
+    await businessCardMaker();
+
     final dir = await getExternalStorageDirectory();
     setState(() {
       _pathPDF = dir.path + "/business_card.pdf";
@@ -171,7 +175,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
                                 children: <pw.TextSpan>[
                                   pw.TextSpan(
                                       text: _businessInfo.name.length > 0
-                                          ? _businessInfo.name.split(" ")[1]
+                                          ? " ${_businessInfo.name.split(" ")[1]}"
                                           : "",
                                       style: pw.TextStyle(
                                         fontSize: 54,
@@ -254,12 +258,13 @@ class _BusinessInformationState extends State<BusinessInformation> {
   void updateBusinessInformation() async {
     if (!mounted) return;
     final formState = _formKey.currentState;
-    formState.save();
-    final getBusinessInfo = await businessBloc.getBusiness(0);
-    if (getBusinessInfo == null) {
-      await businessBloc.addBusiness(_businessInfo);
-    } else {
-      await businessBloc.updateBusiness(_businessInfo);
+    if (formState.validate()) {
+      final getBusinessInfo = await businessBloc.getBusiness(0);
+      if (getBusinessInfo == null) {
+        await businessBloc.addBusiness(_businessInfo);
+      } else {
+        await businessBloc.updateBusiness(_businessInfo);
+      }
     }
   }
 

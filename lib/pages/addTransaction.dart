@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
 import 'package:udharokhata/models/customer.dart';
@@ -374,6 +375,11 @@ class _AddTransactionState extends State<AddTransaction> {
         _scaffoldKey.currentState.showSnackBar(snackBar);
         return;
       }
+
+      final prefs = await SharedPreferences.getInstance();
+      int selectedBusinessId = prefs.getInt('selected_business');
+
+      transaction.businessId = selectedBusinessId;
 
       transaction.ttype = _transType;
       transaction.amount = _amount;
