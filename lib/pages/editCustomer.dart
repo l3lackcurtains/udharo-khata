@@ -61,12 +61,12 @@ class _EditCustomerState extends State<EditCustomer> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          updateCustomer(customer);
-        },
-        icon: Icon(Icons.check),
-        label: Text(AppLocalizations.of(context).translate('editCustomer')),
-      ),
+          onPressed: () {
+            updateCustomer(customer);
+          },
+          icon: Icon(Icons.check),
+          label: Text(AppLocalizations.of(context).translate('editCustomer')),
+          heroTag: "payment"),
       body: SingleChildScrollView(
         child: Container(
             margin: EdgeInsets.fromLTRB(0, 0, 0, 48),

@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
 import 'package:udharokhata/helpers/appLocalizations.dart';
+import 'package:udharokhata/helpers/conversion.dart';
 import 'package:udharokhata/models/transaction.dart';
 import 'package:udharokhata/pages/singleTransaction.dart';
 
@@ -224,7 +225,7 @@ class _EditTransactionState extends State<EditTransaction> {
                             },
                           ),
                           TextFormField(
-                            initialValue: argTransaction.amount.toString(),
+                            initialValue: amountFormat(argTransaction.amount),
                             decoration: InputDecoration(
                               icon: Icon(Icons.monetization_on),
                               hintText: AppLocalizations.of(context)

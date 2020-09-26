@@ -28,3 +28,7 @@ String convertNumberToMonth(int monthNum) {
   }
   return "";
 }
+
+String amountFormat(double n) {
+  return "Rs. " + n.toString().replaceAll(RegExp(r"([.]*0)(?!.*\d)"), "");
+}

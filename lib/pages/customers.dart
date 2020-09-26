@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
 import 'package:udharokhata/helpers/appLocalizations.dart';
+import 'package:udharokhata/helpers/conversion.dart';
 import 'package:udharokhata/helpers/generateCustomersPdf.dart';
 import 'package:udharokhata/helpers/stateNotifier.dart';
 import 'package:udharokhata/models/customer.dart';
@@ -56,8 +57,10 @@ class _CustomersState extends State<Customers> {
                       Container(
                         padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
+                            Container(
+                                child: getBusinessTransactionsTotalWidget()),
                             IconButton(
                               icon: Icon(Icons.picture_as_pdf),
                               color: Colors.red,
@@ -79,7 +82,7 @@ class _CustomersState extends State<Customers> {
                                 decoration: InputDecoration(
                                   labelText: AppLocalizations.of(context)
                                       .translate('searchCustomers'),
-                                  suffixIcon: _searchText == null
+                                  suffixIcon: _searchText == ""
                                       ? Icon(Icons.search)
                                       : IconButton(
                                           icon: Icon(Icons.close),
@@ -164,30 +167,20 @@ class _CustomersState extends State<Customers> {
           if (snapshot.hasData) {
             double total = snapshot.data;
             if (total == 0) return Container();
-            bool neg = false;
             String ttype = "payment";
             if (total.isNegative) {
-              neg = true;
               ttype = "credit";
             }
             return Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 Row(children: <Widget>[
-                  Text(total.abs().toString(),
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  neg
-                      ? Icon(
-                          Icons.arrow_upward,
-                          color: Colors.green.shade900,
-                          size: 16.0,
-                        )
-                      : Icon(
-                          Icons.arrow_downward,
-                          color: Colors.orange.shade900,
-                          size: 16.0,
-                        ),
+                  Text(amountFormat(total.abs()),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color:
+                              ttype == 'payment' ? Colors.black : Colors.red)),
                 ]),
                 Padding(
                   padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
@@ -237,30 +230,27 @@ class _CustomersState extends State<Customers> {
                         padding: EdgeInsets.fromLTRB(0, 8, 4, 8),
                         child: Row(
                           children: <Widget>[
-                            Hero(
-                                tag: customer.id,
-                                child: Padding(
-                                  padding: EdgeInsets.fromLTRB(0, 4, 12, 4),
-                                  child: customerImage != null &&
-                                          customerImage.length > 0
-                                      ? CircleAvatar(
-                                          radius: 24,
-                                          child: ClipOval(
-                                              child: Image.memory(customerImage,
-                                                  height: 48,
-                                                  width: 48,
-                                                  fit: BoxFit.cover)),
-                                          backgroundColor: Colors.transparent,
-                                        )
-                                      : CircleAvatar(
-                                          backgroundColor:
-                                              Colors.purple.shade500,
-                                          radius: 24,
-                                          child: Icon(Icons.person,
-                                              color: Colors.purple.shade100,
-                                              size: 24.0),
-                                        ),
-                                )),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(0, 4, 12, 4),
+                              child: customerImage != null &&
+                                      customerImage.length > 0
+                                  ? CircleAvatar(
+                                      radius: 24,
+                                      child: ClipOval(
+                                          child: Image.memory(customerImage,
+                                              height: 48,
+                                              width: 48,
+                                              fit: BoxFit.cover)),
+                                      backgroundColor: Colors.transparent,
+                                    )
+                                  : CircleAvatar(
+                                      backgroundColor: Colors.purple.shade500,
+                                      radius: 24,
+                                      child: Icon(Icons.person,
+                                          color: Colors.purple.shade100,
+                                          size: 24.0),
+                                    ),
+                            ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
@@ -273,11 +263,17 @@ class _CustomersState extends State<Customers> {
                                     Icon(
                                       Icons.phone,
                                       color: Colors.brown.shade600,
-                                      size: 16.0,
+                                      size: 12.0,
                                     ),
                                     Padding(
                                       padding: EdgeInsets.fromLTRB(8, 4, 4, 4),
-                                      child: Text(customer.phone),
+                                      child: Text(
+                                        customer.phone,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.normal,
+                                            color: Colors.black54,
+                                            fontSize: 12),
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -303,6 +299,34 @@ class _CustomersState extends State<Customers> {
     } else {
       return Container();
     }
+  }
+
+  Widget getBusinessTransactionsTotalWidget() {
+    int bid = Provider.of<AppStateNotifier>(context).selectedBusiness;
+    if (bid == null) return Container();
+    return FutureBuilder(
+        future: transactionBloc.getBusinessTransactionsTotal(bid),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.hasData) {
+            double total = snapshot.data;
+
+            String ttype = "payment";
+            if (total.isNegative) {
+              ttype = "credit";
+            }
+
+            return Row(children: <Widget>[
+              Text(amountFormat(total.abs()),
+                  style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                      color:
+                          ttype == 'payment' ? Color(0xFFE3E3E3) : Colors.red)),
+            ]);
+          }
+
+          return Container();
+        });
   }
 
   @override

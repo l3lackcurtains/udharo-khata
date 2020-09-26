@@ -26,12 +26,11 @@ class CustomerDao {
         : 0;
 
     if (query == null || query == "") {
-      result = await db.query(
-        customerTABLE,
-        columns: columns,
-        where: 'businessId = ?',
-        whereArgs: [selectedBusinessId],
-      );
+      result = await db.query(customerTABLE,
+          columns: columns,
+          where: 'businessId = ?',
+          whereArgs: [selectedBusinessId],
+          orderBy: 'id DESC');
     } else {
       result = await db.query(
         customerTABLE,

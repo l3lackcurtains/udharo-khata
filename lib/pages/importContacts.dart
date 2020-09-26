@@ -33,7 +33,6 @@ class _ImportContactsState extends State<ImportContacts> {
   void initState() {
     super.initState();
     _askPermissions();
-    _loadContacts();
   }
 
   _loadContacts() async {
@@ -101,6 +100,10 @@ class _ImportContactsState extends State<ImportContacts> {
           await openAppSettings();
         }
       }
+    }
+
+    if (_hasPermission) {
+      _loadContacts();
     }
   }
 

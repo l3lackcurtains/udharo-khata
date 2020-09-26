@@ -28,7 +28,7 @@
   "uploadFromGallery": "Upload from Gallery",
   "imageSizeError": "Image size is too big. (Max size 2MB)",
   "deleteText": "Delete",
-  "closeText": "Delete",
+  "closeText": "Close",
   "deleteCustomer": "Delete Customer",
   "deleteCustomerLabel": "Deleting action will remove all the transactions associated with the current customer.",
   "shareText": "Share",

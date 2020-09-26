@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
 import 'package:udharokhata/helpers/appLocalizations.dart';
+import 'package:udharokhata/helpers/conversion.dart';
 import 'package:udharokhata/models/customer.dart';
 import 'package:udharokhata/models/transaction.dart';
 import 'package:udharokhata/pages/singleCustomer.dart';
@@ -26,7 +27,6 @@ class _SingleTransactionState extends State<SingleTransaction> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        // return object of type Dialog
         return AlertDialog(
           title:
               Text(AppLocalizations.of(context).translate('deleteTransaction')),
@@ -147,7 +147,9 @@ class _SingleTransactionState extends State<SingleTransaction> {
                                           )),
                                   Padding(
                                       padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
-                                      child: Text(transaction.amount.toString(),
+                                      child: Text(
+                                          amountFormat(
+                                              transaction.amount.abs()),
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 14)))

@@ -28,6 +28,12 @@ class TransactionBloc {
     return transaction;
   }
 
+  getBusinessTransactionsTotal(int id) async {
+    final double total =
+        await _transactionRepository.getBusinessTransactionsTotal(id);
+    return total;
+  }
+
   getCustomerTransactionsTotal(int id) async {
     final double total =
         await _transactionRepository.getCustomerTransactionsTotal(id);

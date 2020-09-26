@@ -94,14 +94,14 @@ class _SingleCustomerState extends State<SingleCustomer> {
             Customer customer = snapshot.data;
 
             Uint8List customerImage;
-            if (customer.image != null) {
+            if (customer.image != null && customer.image != "") {
               customerImage = Base64Decoder().convert(customer.image);
             }
 
             return Stack(
               children: [
                 Scaffold(
-                  resizeToAvoidBottomPadding: false,
+                  resizeToAvoidBottomPadding: true,
                   appBar: AppBar(
                       elevation: 0.0,
                       backgroundColor: Colors.transparent,
@@ -141,29 +141,26 @@ class _SingleCustomerState extends State<SingleCustomer> {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                            Hero(
-                                tag: widget.customerId,
-                                child: Padding(
-                                  padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
-                                  child: customerImage != null
-                                      ? CircleAvatar(
-                                          radius: 40.0,
-                                          child: ClipOval(
-                                              child: Image.memory(customerImage,
-                                                  height: 80,
-                                                  width: 80,
-                                                  fit: BoxFit.cover)),
-                                          backgroundColor: Colors.transparent,
-                                        )
-                                      : CircleAvatar(
-                                          backgroundColor:
-                                              Colors.purple.shade500,
-                                          radius: 40,
-                                          child: Icon(Icons.person,
-                                              color: Colors.purple.shade100,
-                                              size: 40.0),
-                                        ),
-                                )),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
+                              child: customerImage != null
+                                  ? CircleAvatar(
+                                      radius: 40.0,
+                                      child: ClipOval(
+                                          child: Image.memory(customerImage,
+                                              height: 80,
+                                              width: 80,
+                                              fit: BoxFit.cover)),
+                                      backgroundColor: Colors.transparent,
+                                    )
+                                  : CircleAvatar(
+                                      backgroundColor: Colors.purple.shade500,
+                                      radius: 40,
+                                      child: Icon(Icons.person,
+                                          color: Colors.purple.shade100,
+                                          size: 40.0),
+                                    ),
+                            ),
                             Padding(
                               padding: EdgeInsets.fromLTRB(8, 12, 8, 8),
                               child: Column(
@@ -221,10 +218,8 @@ class _SingleCustomerState extends State<SingleCustomer> {
                           children: [
                             Container(
                               alignment: Alignment.centerLeft,
-                              child: Chip(
-                                  backgroundColor: Colors.green.shade100,
-                                  label: getCustomerTransactionsTotalWidget(
-                                      widget.customerId)),
+                              child: getCustomerTransactionsTotalWidget(
+                                  widget.customerId),
                             ),
                             Row(
                               children: [
@@ -253,67 +248,57 @@ class _SingleCustomerState extends State<SingleCustomer> {
                           child: getCustomerTransactions(widget.customerId))
                     ],
                   ),
-                  bottomNavigationBar: BottomAppBar(
-                    child: Container(
-                      decoration: BoxDecoration(color: Colors.white10),
-                      height: 50,
-                      padding: EdgeInsets.all(0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          Expanded(
-                            child: Container(
-                              color: Colors.redAccent,
-                              child: FlatButton.icon(
-                                icon: Icon(
-                                  Icons.arrow_upward,
-                                ),
-                                padding: EdgeInsets.all(16),
-                                onPressed: () {
-                                  String transType = "credit";
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          AddTransaction(customer, transType),
-                                    ),
-                                  );
-                                },
-                                label: Text(
-                                  AppLocalizations.of(context)
-                                      .translate('creditGiven'),
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                              ),
+                  floatingActionButtonLocation:
+                      FloatingActionButtonLocation.centerDocked,
+                  floatingActionButton: Container(
+                    padding: EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        FloatingActionButton.extended(
+                            icon: Icon(
+                              Icons.arrow_upward,
+                              size: 18,
                             ),
-                          ),
-                          Expanded(
-                            child: Container(
-                              color: Colors.greenAccent,
-                              child: FlatButton.icon(
-                                icon: Icon(
-                                  Icons.arrow_downward,
+                            backgroundColor: Colors.red.shade800,
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      AddTransaction(customer, "credit"),
                                 ),
-                                padding: EdgeInsets.all(16),
-                                onPressed: () {
-                                  String transType = "payment";
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          AddTransaction(customer, transType),
-                                    ),
-                                  );
-                                },
-                                label: Text(
-                                    AppLocalizations.of(context)
-                                        .translate('paymentReceived'),
-                                    style: TextStyle(color: Colors.black)),
-                              ),
+                              );
+                            },
+                            label: Text(
+                              AppLocalizations.of(context)
+                                  .translate('creditGiven'),
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 14),
                             ),
-                          ),
-                        ],
-                      ),
+                            heroTag: "credit"),
+                        FloatingActionButton.extended(
+                            icon: Icon(
+                              Icons.arrow_downward,
+                              size: 18,
+                            ),
+                            backgroundColor: Colors.green.shade800,
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      AddTransaction(customer, "payment"),
+                                ),
+                              );
+                            },
+                            label: Text(
+                                AppLocalizations.of(context)
+                                    .translate('paymentReceived'),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 14)),
+                            heroTag: "payment"),
+                      ],
                     ),
                   ),
                 ),
@@ -340,40 +325,35 @@ class _SingleCustomerState extends State<SingleCustomer> {
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
             double total = snapshot.data;
-            bool neg = false;
             String ttype = "payment";
             if (total.isNegative) {
-              neg = true;
               ttype = "credit";
             }
-            return Row(children: <Widget>[
-              Text(total.abs().toString(),
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              neg
-                  ? Icon(
-                      Icons.arrow_upward,
-                      color: Colors.green.shade900,
-                      size: 18.0,
-                    )
-                  : Icon(
-                      Icons.arrow_downward,
-                      color: Colors.orange.shade900,
-                      size: 18.0,
-                    ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(4, 2, 4, 2),
-                child: Text(
-                  ttype == "credit"
-                      ? AppLocalizations.of(context).translate('given')
-                      : AppLocalizations.of(context).translate('received'),
-                  style: TextStyle(
-                      color: Colors.black38,
-                      fontSize: 12,
-                      letterSpacing: 0.3,
-                      fontWeight: FontWeight.w800),
-                ),
-              )
-            ]);
+            if (total == 0) return Container();
+            return Chip(
+              backgroundColor: Colors.teal.shade100,
+              label: Row(mainAxisAlignment: MainAxisAlignment.end, children: <
+                  Widget>[
+                Text(amountFormat(total.abs()),
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: ttype == 'payment' ? Colors.black : Colors.red)),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(4, 6, 4, 2),
+                  child: Text(
+                    ttype == "credit"
+                        ? AppLocalizations.of(context).translate('given')
+                        : AppLocalizations.of(context).translate('received'),
+                    style: TextStyle(
+                        color: Colors.black38,
+                        fontSize: 12,
+                        letterSpacing: 0.3,
+                        fontWeight: FontWeight.w800),
+                  ),
+                )
+              ]),
+            );
           }
 
           return Container();
@@ -410,7 +390,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-                                    Padding(
+                                    Container(
                                       padding: EdgeInsets.fromLTRB(0, 0, 16, 0),
                                       child: CircleAvatar(
                                         backgroundColor: Colors.grey.shade200,
@@ -457,52 +437,63 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                               softWrap: true,
                                               textAlign: TextAlign.left,
                                               style: TextStyle(
-                                                  color: Colors.black87),
+                                                  color: Colors.black87,
+                                                  fontWeight: FontWeight.normal,
+                                                  fontSize: 13),
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: <Widget>[
-                                        Row(children: <Widget>[
-                                          Text(
-                                              transaction.amount
-                                                  .abs()
-                                                  .toString(),
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16)),
-                                          transaction.ttype == 'payment'
-                                              ? Icon(
-                                                  Icons.arrow_downward,
-                                                  color: Colors.orange.shade900,
-                                                  size: 16.0,
-                                                )
-                                              : Icon(
-                                                  Icons.arrow_upward,
-                                                  color: Colors.green.shade900,
-                                                  size: 16.0,
+                                    ConstrainedBox(
+                                      constraints: new BoxConstraints(
+                                        minWidth: 80,
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            children: <Widget>[
+                                              Row(children: <Widget>[
+                                                Text(
+                                                    amountFormat(transaction
+                                                        .amount
+                                                        .abs()),
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 16,
+                                                        color:
+                                                            transaction.ttype ==
+                                                                    'payment'
+                                                                ? Colors.black
+                                                                : Colors.red)),
+                                              ]),
+                                              Padding(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    0, 4, 0, 0),
+                                                child: Text(
+                                                  transaction.ttype == "credit"
+                                                      ? AppLocalizations.of(
+                                                              context)
+                                                          .translate('given')
+                                                      : AppLocalizations.of(
+                                                              context)
+                                                          .translate(
+                                                              'received'),
+                                                  style: TextStyle(
+                                                      color: Colors.black38,
+                                                      fontSize: 10,
+                                                      letterSpacing: 0.6),
                                                 ),
-                                        ]),
-                                        Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(0, 4, 0, 0),
-                                          child: Text(
-                                            transaction.ttype == "credit"
-                                                ? AppLocalizations.of(context)
-                                                    .translate('given')
-                                                : AppLocalizations.of(context)
-                                                    .translate('received'),
-                                            style: TextStyle(
-                                                color: Colors.black38,
-                                                fontSize: 10,
-                                                letterSpacing: 0.6),
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),

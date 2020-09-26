@@ -109,13 +109,13 @@ class _AddTransactionState extends State<AddTransaction> {
                 ),
               ),
               floatingActionButton: FloatingActionButton.extended(
-                onPressed: () {
-                  addTransaction();
-                },
-                icon: Icon(Icons.check),
-                label: Text(
-                    AppLocalizations.of(context).translate('addTransaction')),
-              ),
+                  onPressed: () {
+                    addTransaction();
+                  },
+                  icon: Icon(Icons.check),
+                  label: Text(
+                      AppLocalizations.of(context).translate('addTransaction')),
+                  heroTag: _transType),
               body: SingleChildScrollView(
                 child: Container(
                     margin: EdgeInsets.fromLTRB(0, 0, 0, 48),

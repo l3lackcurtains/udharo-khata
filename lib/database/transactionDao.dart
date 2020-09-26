@@ -77,6 +77,29 @@ class TransactionDao {
     return totalTransaction;
   }
 
+  Future<double> getBusinessTransactionsTotal(int bid) async {
+    final db = await dbProvider.database;
+    List<Map> result = await db
+        .query(transactionTABLE, where: 'businessId = ?', whereArgs: [bid]);
+
+    List<Transaction> transactions = result.isNotEmpty
+        ? result.map((item) => Transaction.fromDatabaseJson(item)).toList()
+        : [];
+
+    double totalTransaction = 0;
+    transactions.forEach((trans) {
+      if (trans.ttype == 'payment') {
+        totalTransaction +=
+            totalTransaction + trans.amount != null ? trans.amount : 0;
+      } else {
+        totalTransaction -=
+            totalTransaction + trans.amount != null ? trans.amount : 0;
+      }
+    });
+
+    return totalTransaction;
+  }
+
   Future<int> updateTransaction(Transaction transaction) async {
     final db = await dbProvider.database;
     var result = await db.update(transactionTABLE, transaction.toDatabaseJson(),
