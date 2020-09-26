@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:udharokhata/blocs/businessBloc.dart';
+import 'package:udharokhata/helpers/appLocalizations.dart';
 import 'package:udharokhata/helpers/stateNotifier.dart';
 import 'package:udharokhata/models/business.dart';
 import 'package:udharokhata/pages/deleteBusiness.dart';
@@ -53,7 +54,7 @@ class _AddBusinessState extends State<AddBusiness> {
         elevation: 0.0,
         backgroundColor: Colors.transparent,
         title: Text(
-          'Add Company',
+          AppLocalizations.of(context).translate('addCompany'),
           style: TextStyle(color: Colors.black),
         ),
         iconTheme: IconThemeData(
@@ -62,7 +63,7 @@ class _AddBusinessState extends State<AddBusiness> {
         actions: <Widget>[
           FlatButton.icon(
             label: Text(
-              "Delete Company",
+              AppLocalizations.of(context).translate('deleteCompany'),
               style: TextStyle(fontSize: 12),
             ),
             icon: Icon(Icons.delete, size: 20.0, color: Colors.red),
@@ -82,7 +83,7 @@ class _AddBusinessState extends State<AddBusiness> {
           addCompany();
         },
         icon: Icon(Icons.check),
-        label: Text('Add Company'),
+        label: Text(AppLocalizations.of(context).translate('addCompany')),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -96,13 +97,16 @@ class _AddBusinessState extends State<AddBusiness> {
                   TextFormField(
                     decoration: InputDecoration(
                       icon: Icon(Icons.person),
-                      hintText: 'What is your company name?',
-                      labelText: 'Company Name *',
+                      hintText: AppLocalizations.of(context)
+                          .translate('companyNameLabelMeta'),
+                      labelText: AppLocalizations.of(context)
+                          .translate('companyNameLabel'),
                     ),
                     autovalidate: false,
                     validator: (input) {
                       if (input.isEmpty) {
-                        return 'Please type customer name';
+                        return AppLocalizations.of(context)
+                            .translate('companyNameLabelError');
                       }
                       return null;
                     },
@@ -138,7 +142,8 @@ class _AddBusinessState extends State<AddBusiness> {
             onPressed: () {
               showUploadDialog();
             },
-            child: Text('Upload Company Logo'),
+            child: Text(
+                AppLocalizations.of(context).translate('companyImageLabel')),
           ),
         )
       ],
@@ -150,12 +155,14 @@ class _AddBusinessState extends State<AddBusiness> {
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
-          title: Text('Upload Customer Image'),
+          title:
+              Text(AppLocalizations.of(context).translate('companyImageLabel')),
           children: <Widget>[
             SimpleDialogOption(
               child: Padding(
                   padding: EdgeInsets.all(8),
-                  child: Text('Upload from Camera')),
+                  child: Text(AppLocalizations.of(context)
+                      .translate('uploadFromCamera'))),
               onPressed: () {
                 Navigator.of(context).pop();
                 getImageFromCamera();
@@ -164,7 +171,8 @@ class _AddBusinessState extends State<AddBusiness> {
             SimpleDialogOption(
               child: Padding(
                   padding: EdgeInsets.all(8),
-                  child: Text('Upload from Gallery')),
+                  child: Text(AppLocalizations.of(context)
+                      .translate('uploadFromGallery'))),
               onPressed: () {
                 Navigator.of(context).pop();
                 getImageFromGallery();
@@ -192,7 +200,8 @@ class _AddBusinessState extends State<AddBusiness> {
           ),
           Padding(
               padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
-              child: Text('Image size is too big. (Max size 2MB)'))
+              child: Text(
+                  AppLocalizations.of(context).translate('imageSizeError')))
         ]));
         _scaffoldKey.currentState.showSnackBar(snackBar);
         return;

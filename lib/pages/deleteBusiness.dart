@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:udharokhata/blocs/businessBloc.dart';
+import 'package:udharokhata/helpers/appLocalizations.dart';
 import 'package:udharokhata/helpers/stateNotifier.dart';
 import 'package:udharokhata/main.dart';
 import 'package:udharokhata/models/business.dart';
@@ -43,7 +44,7 @@ class _DeleteBusinessState extends State<DeleteBusiness> {
         elevation: 0.0,
         backgroundColor: Colors.transparent,
         title: Text(
-          'Delete Company',
+          AppLocalizations.of(context).translate('deleteCompany'),
           style: TextStyle(color: Colors.black),
         ),
         iconTheme: IconThemeData(
@@ -57,7 +58,7 @@ class _DeleteBusinessState extends State<DeleteBusiness> {
         icon: Icon(
           Icons.check,
         ),
-        label: Text('Delete Company'),
+        label: Text(AppLocalizations.of(context).translate('deleteCompany')),
       ),
       body: Container(
         decoration: BoxDecoration(color: Colors.white),

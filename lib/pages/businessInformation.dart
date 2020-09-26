@@ -320,12 +320,16 @@ class _BusinessInformationState extends State<BusinessInformation> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('Khata',
+        title: Text(AppLocalizations.of(context).translate('businessInfo'),
             style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
-                fontSize: 24,
+                fontSize: 18,
                 fontFamily: 'Poppins')),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         elevation: 0,
         backgroundColor: Colors.grey.shade100,
       ),
