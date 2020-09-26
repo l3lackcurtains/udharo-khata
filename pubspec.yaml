@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   cupertino_icons: ^0.1.2
   sqflite: ^1.1.0
@@ -40,9 +42,9 @@ dependencies:
   back_button_interceptor: ^4.3.1
   
 dev_dependencies:
+  intl_translation: ^0.17.1
   flutter_test:
     sdk: flutter
-
 flutter:
   uses-material-design: true
   fonts:
@@ -58,6 +60,8 @@ flutter:
         - asset: fonts/Quicksand/Quicksand-Bold.ttf
           weight: 700
   assets:
+    - assets/i18n/en.json
+    - assets/i18n/ne.json
     - images/no_image.jpg
     - images/noimage_person.png
     - images/google_logo.png

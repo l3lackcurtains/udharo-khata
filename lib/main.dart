@@ -4,18 +4,21 @@ import 'dart:convert';
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:udharokhata/helpers/stateNotifier.dart';
 import 'package:udharokhata/pages/customers.dart';
 import 'package:udharokhata/pages/settings.dart';
 import 'package:udharokhata/services/autoBackup.dart';
-import 'package:udharokhata/services/loadBusinessInfo.dart';
 
 import 'blocs/businessBloc.dart';
+import 'helpers/appLocalizations.dart';
+import 'helpers/stateNotifier.dart';
 import 'models/business.dart';
 import 'pages/addBusiness.dart';
 import 'pages/signin.dart';
+import 'services/loadBusinessInfo.dart';
 
 void main() {
   runApp(
@@ -33,11 +36,18 @@ class MyApp extends StatelessWidget {
     return Consumer<AppStateNotifier>(builder: (context, appState, child) {
       return MaterialApp(
         title: 'Khata',
+        supportedLocales: AppLocalizations.delegate.supportedLocales,
+        localizationsDelegates: [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
         theme: ThemeData(
             primaryColor: Color(0xFF192a56),
             accentColor: Color(0xFFe74c3c),
             fontFamily: 'Roboto'),
         home: SignIn(),
+        locale: Locale(appState.appLocale),
       );
     });
   }
@@ -58,6 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    getTheLocale();
     BackButtonInterceptor.add(myInterceptor);
     initPlatformState();
     getAllBusinesses();
@@ -70,6 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void getAllBusinesses() async {
     List<Business> businesses = await businessBloc.getBusinesss();
+
     if (businesses.length == 0) {
       await loadBusinessInfo(context);
     }
@@ -88,6 +100,10 @@ class _MyHomePageState extends State<MyHomePage> {
       _businesses = businesses;
       _selectedBusiness = selectedBusiness;
     });
+  }
+
+  void getTheLocale() async {
+    await fetchLocale(context);
   }
 
   Future<void> initPlatformState() async {
@@ -120,7 +136,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Khata',
+        title: Text(AppLocalizations.of(context).translate('title'),
             style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,

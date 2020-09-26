@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:share/share.dart';
+import 'package:udharokhata/helpers/stateNotifier.dart';
 import 'package:udharokhata/pages/backup.dart';
 import 'package:udharokhata/pages/businessInformation.dart';
 
@@ -87,6 +89,27 @@ class _SettingsState extends State<Settings> {
                   ),
                   title: Text('Backup'),
                   subtitle: Text("Back up your udharo khata data"),
+                ),
+              ),
+              ListTile(
+                leading: Image.asset(
+                  "images/backup.png",
+                  width: 30,
+                  height: 30,
+                  scale: 1.0,
+                ),
+                title: Text('language'),
+                subtitle: Text("Choose your app language"),
+                trailing: DropdownButton<String>(
+                  value: Provider.of<AppStateNotifier>(context).appLocale,
+                  onChanged: (String newValue) async {
+                    await changeLanguage(context, newValue);
+                  },
+                  items: <String>["en", "ne"]
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                        value: value, child: Text(value));
+                  }).toList(),
                 ),
               ),
               InkWell(

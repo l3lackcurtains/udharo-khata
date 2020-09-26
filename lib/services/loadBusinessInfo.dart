@@ -1,11 +1,9 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:udharokhata/blocs/businessBloc.dart';
 import 'package:udharokhata/helpers/stateNotifier.dart';
 import 'package:udharokhata/models/business.dart';
 
-Future<void> loadBusinessInfo(
-  BuildContext context,
-) async {
+Future<void> loadBusinessInfo(BuildContext context) async {
   Business _businessInfo = Business();
   final BusinessBloc businessBloc = BusinessBloc();
   _businessInfo.id = 0;
