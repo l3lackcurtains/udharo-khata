@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
+import 'package:udharokhata/helpers/appLocalizations.dart';
 import 'package:udharokhata/helpers/stateNotifier.dart';
 import 'package:udharokhata/pages/backup.dart';
 import 'package:udharokhata/pages/businessInformation.dart';
@@ -38,9 +39,9 @@ class _SettingsState extends State<Settings> {
                 ),
                 Container(
                   alignment: Alignment.center,
-                  padding: EdgeInsets.fromLTRB(0, 10, 0, 20),
+                  padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
                   child: Text(
-                    "Udharo Khata \n Small business credit management app",
+                    AppLocalizations.of(context).translate('appInfo'),
                     textAlign: TextAlign.center,
                     style: TextStyle(height: 1.6, color: Colors.white70),
                   ),
@@ -67,8 +68,10 @@ class _SettingsState extends State<Settings> {
                     height: 30,
                     scale: 1.0,
                   ),
-                  title: Text('Business Information'),
-                  subtitle: Text("Setup your business informations."),
+                  title: Text(
+                      AppLocalizations.of(context).translate('businessInfo')),
+                  subtitle: Text(AppLocalizations.of(context)
+                      .translate('businessInfoMeta')),
                 ),
               ),
               InkWell(
@@ -87,8 +90,10 @@ class _SettingsState extends State<Settings> {
                     height: 30,
                     scale: 1.0,
                   ),
-                  title: Text('Backup'),
-                  subtitle: Text("Back up your udharo khata data"),
+                  title: Text(
+                      AppLocalizations.of(context).translate('backupInfo')),
+                  subtitle: Text(
+                      AppLocalizations.of(context).translate('backupInfoMeta')),
                 ),
               ),
               ListTile(
@@ -98,8 +103,10 @@ class _SettingsState extends State<Settings> {
                   height: 30,
                   scale: 1.0,
                 ),
-                title: Text('language'),
-                subtitle: Text("Choose app language"),
+                title: Text(
+                    AppLocalizations.of(context).translate('languageInfo')),
+                subtitle: Text(
+                    AppLocalizations.of(context).translate('languageInfoMeta')),
                 trailing: DropdownButton<String>(
                   value: Provider.of<AppStateNotifier>(context).appLocale,
                   onChanged: (String newValue) async {
@@ -124,8 +131,10 @@ class _SettingsState extends State<Settings> {
                     height: 30,
                     scale: 1.0,
                   ),
-                  title: Text('Share'),
-                  subtitle: Text("Spread the words of flutter blog crumet"),
+                  title:
+                      Text(AppLocalizations.of(context).translate('shareInfo')),
+                  subtitle: Text(
+                      AppLocalizations.of(context).translate('shareInfoMeta')),
                 ),
               ),
             ],

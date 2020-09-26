@@ -13,6 +13,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:udharokhata/blocs/businessBloc.dart';
 import 'package:udharokhata/database/businessRepo.dart';
+import 'package:udharokhata/helpers/appLocalizations.dart';
 import 'package:udharokhata/models/business.dart';
 
 class BusinessInformation extends StatefulWidget {
@@ -292,7 +293,8 @@ class _BusinessInformationState extends State<BusinessInformation> {
         ),
         Padding(
             padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
-            child: Text('Image size is too big. (Max size 2MB)'))
+            child:
+                Text(AppLocalizations.of(context).translate('imageSizeError')))
       ]));
       _scaffoldKey.currentState.showSnackBar(snackBar);
       return;
@@ -368,7 +370,8 @@ class _BusinessInformationState extends State<BusinessInformation> {
                   onPressed: () {
                     updateBusinessInformation();
                   },
-                  child: Text("Save"),
+                  child: Text(
+                      AppLocalizations.of(context).translate('saveCompany')),
                 ),
               ),
               SizedBox(
@@ -379,7 +382,8 @@ class _BusinessInformationState extends State<BusinessInformation> {
                   onPressed: () {
                     downloadPdf();
                   },
-                  child: Text("Download Card"),
+                  child: Text(
+                      AppLocalizations.of(context).translate('downloadCard')),
                 ),
               ),
             ],
@@ -398,13 +402,16 @@ class _BusinessInformationState extends State<BusinessInformation> {
             Focus(
               child: TextFormField(
                 decoration: InputDecoration(
-                  labelText: 'Company Name',
-                ),
+                    labelText: AppLocalizations.of(context)
+                        .translate('companyNameLabel'),
+                    hintText: AppLocalizations.of(context)
+                        .translate('companyNameLabelMeta')),
                 initialValue: businessItem.companyName,
                 keyboardType: TextInputType.text,
                 validator: (value) {
                   if (value.isEmpty) {
-                    return 'Company Name mustn\'t be empty. ';
+                    return AppLocalizations.of(context)
+                        .translate('companyNameError');
                   }
                   return null;
                 },
@@ -425,8 +432,10 @@ class _BusinessInformationState extends State<BusinessInformation> {
             Focus(
               child: TextFormField(
                 decoration: InputDecoration(
-                  labelText: 'Your Name',
-                ),
+                    labelText:
+                        AppLocalizations.of(context).translate('userNameLabel'),
+                    hintText: AppLocalizations.of(context)
+                        .translate('userNameLabelMeta')),
                 initialValue: businessItem.name,
                 keyboardType: TextInputType.text,
                 onChanged: (String val) {
@@ -446,8 +455,10 @@ class _BusinessInformationState extends State<BusinessInformation> {
             Focus(
               child: TextFormField(
                 decoration: InputDecoration(
-                  labelText: 'Your Company Role',
-                ),
+                    labelText:
+                        AppLocalizations.of(context).translate('userRoleLabel'),
+                    hintText: AppLocalizations.of(context)
+                        .translate('userRoleLabelMeta')),
                 initialValue: businessItem.role,
                 keyboardType: TextInputType.text,
                 onChanged: (String val) {
@@ -467,8 +478,10 @@ class _BusinessInformationState extends State<BusinessInformation> {
             Focus(
               child: TextFormField(
                 decoration: InputDecoration(
-                  labelText: 'Company Address',
-                ),
+                    labelText: AppLocalizations.of(context)
+                        .translate('companyAddressLabel'),
+                    hintText: AppLocalizations.of(context)
+                        .translate('companyAddressLabelMeta')),
                 initialValue: businessItem.address,
                 keyboardType: TextInputType.text,
                 onChanged: (String val) {
@@ -488,8 +501,10 @@ class _BusinessInformationState extends State<BusinessInformation> {
             Focus(
               child: TextFormField(
                 decoration: InputDecoration(
-                  labelText: 'Phone',
-                ),
+                    labelText: AppLocalizations.of(context)
+                        .translate('companyPhoneLabel'),
+                    hintText: AppLocalizations.of(context)
+                        .translate('companyPhoneLabelMeta')),
                 initialValue: businessItem.phone,
                 keyboardType: TextInputType.phone,
                 onChanged: (String val) {
@@ -511,8 +526,10 @@ class _BusinessInformationState extends State<BusinessInformation> {
                 keyboardType: TextInputType.emailAddress,
                 initialValue: businessItem.email,
                 decoration: InputDecoration(
-                  labelText: 'Email',
-                ),
+                    labelText: AppLocalizations.of(context)
+                        .translate('companyEmailLabel'),
+                    hintText: AppLocalizations.of(context)
+                        .translate('companyEmailLabelMeta')),
                 onChanged: (String val) {
                   if (mounted) {
                     setState(() {
@@ -532,8 +549,10 @@ class _BusinessInformationState extends State<BusinessInformation> {
                 keyboardType: TextInputType.text,
                 initialValue: businessItem.website,
                 decoration: InputDecoration(
-                  labelText: 'Website',
-                ),
+                    labelText: AppLocalizations.of(context)
+                        .translate('companyWebsiteLabel'),
+                    hintText: AppLocalizations.of(context)
+                        .translate('companyWebsiteLabelMeta')),
                 onChanged: (String val) async {
                   if (mounted) {
                     setState(() {
@@ -555,7 +574,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
 
   Widget companyImageWidget() {
     Uint8List companyImage;
-    if (_businessInfo.logo != null) {
+    if (_businessInfo.logo.length > 0) {
       companyImage = Base64Decoder().convert(_businessInfo.logo);
     }
     return Row(
@@ -577,7 +596,8 @@ class _BusinessInformationState extends State<BusinessInformation> {
             onPressed: () {
               showUploadDialog();
             },
-            child: Text('Upload Company Logo'),
+            child: Text(
+                AppLocalizations.of(context).translate('companyImageLabel')),
           ),
         )
       ],
@@ -589,12 +609,14 @@ class _BusinessInformationState extends State<BusinessInformation> {
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
-          title: Text('Upload Company Logo'),
+          title:
+              Text(AppLocalizations.of(context).translate('companyImageLabel')),
           children: <Widget>[
             SimpleDialogOption(
               child: Padding(
                   padding: EdgeInsets.all(8),
-                  child: Text('Upload from Camera')),
+                  child: Text(AppLocalizations.of(context)
+                      .translate('uploadFromCamera'))),
               onPressed: () {
                 Navigator.of(context).pop();
                 getImageFrom('camera');
@@ -603,7 +625,8 @@ class _BusinessInformationState extends State<BusinessInformation> {
             SimpleDialogOption(
               child: Padding(
                   padding: EdgeInsets.all(8),
-                  child: Text('Upload from Gallery')),
+                  child: Text(AppLocalizations.of(context)
+                      .translate('uploadFromGallery'))),
               onPressed: () {
                 Navigator.of(context).pop();
                 getImageFrom('gallery');

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
+import 'package:udharokhata/helpers/appLocalizations.dart';
 import 'package:udharokhata/models/customer.dart';
 import 'package:udharokhata/models/transaction.dart';
 import 'package:udharokhata/pages/singleCustomer.dart';
@@ -27,13 +28,14 @@ class _SingleTransactionState extends State<SingleTransaction> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: Text("Delete transaction"),
+          title:
+              Text(AppLocalizations.of(context).translate('deleteTransaction')),
           content: Text(
-              "Deleting action will remove all the transactions associated with the current transaction."),
+              AppLocalizations.of(context).translate('deleteTransactionLabel')),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             FlatButton(
-              child: Text("Close"),
+              child: Text(AppLocalizations.of(context).translate('closeText')),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -41,7 +43,7 @@ class _SingleTransactionState extends State<SingleTransaction> {
             RaisedButton(
               color: Colors.red,
               child: Text(
-                "Delete",
+                AppLocalizations.of(context).translate('deleteText'),
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
@@ -122,7 +124,9 @@ class _SingleTransactionState extends State<SingleTransaction> {
                                 children: <Widget>[
                                   transaction.ttype == 'credit'
                                       ? Chip(
-                                          label: Text('Credit Given'),
+                                          label: Text(
+                                              AppLocalizations.of(context)
+                                                  .translate('creditGiven')),
                                           backgroundColor:
                                               Colors.orange.shade100,
                                           avatar: Icon(
@@ -131,7 +135,9 @@ class _SingleTransactionState extends State<SingleTransaction> {
                                             size: 20.0,
                                           ))
                                       : Chip(
-                                          label: Text('Payment Received'),
+                                          label: Text(AppLocalizations.of(
+                                                  context)
+                                              .translate('paymentReceived')),
                                           backgroundColor:
                                               Colors.orange.shade100,
                                           avatar: Icon(

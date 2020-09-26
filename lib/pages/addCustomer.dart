@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
+import 'package:udharokhata/helpers/appLocalizations.dart';
 import 'package:udharokhata/main.dart';
 import 'package:udharokhata/models/customer.dart';
 import 'package:udharokhata/pages/importContacts.dart';
@@ -50,7 +51,7 @@ class _AddCustomerState extends State<AddCustomer> {
         elevation: 0.0,
         backgroundColor: Colors.transparent,
         title: Text(
-          'Add Customer',
+          AppLocalizations.of(context).translate('addCustomer'),
           style: TextStyle(color: Colors.black),
         ),
         iconTheme: IconThemeData(
@@ -59,7 +60,7 @@ class _AddCustomerState extends State<AddCustomer> {
         actions: <Widget>[
           FlatButton.icon(
             label: Text(
-              "Import Contacts",
+              AppLocalizations.of(context).translate('importContacts'),
               style: TextStyle(fontSize: 12),
             ),
             icon: Icon(Icons.control_point, size: 20.0, color: Colors.blue),
@@ -79,7 +80,7 @@ class _AddCustomerState extends State<AddCustomer> {
           addCustomer();
         },
         icon: Icon(Icons.check),
-        label: Text('Add Customer'),
+        label: Text(AppLocalizations.of(context).translate('addCustomer')),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -93,13 +94,16 @@ class _AddCustomerState extends State<AddCustomer> {
                   TextFormField(
                     decoration: InputDecoration(
                       icon: Icon(Icons.person),
-                      hintText: 'What is your customer name?',
-                      labelText: 'Name *',
+                      hintText: AppLocalizations.of(context)
+                          .translate('customerNameLabelMeta'),
+                      labelText: AppLocalizations.of(context)
+                          .translate('customerNameLabel'),
                     ),
                     autovalidate: false,
                     validator: (input) {
                       if (input.isEmpty) {
-                        return 'Please type customer name';
+                        return AppLocalizations.of(context)
+                            .translate('customerNameError');
                       }
                       return null;
                     },
@@ -108,13 +112,16 @@ class _AddCustomerState extends State<AddCustomer> {
                   TextFormField(
                     decoration: InputDecoration(
                       icon: Icon(Icons.call_missed_outgoing),
-                      hintText: 'Contact Number of customer.',
-                      labelText: 'Phone Number *',
+                      hintText: AppLocalizations.of(context)
+                          .translate('customerPhoneLabelMeta'),
+                      labelText: AppLocalizations.of(context)
+                          .translate('customerPhoneLabel'),
                     ),
                     autovalidate: false,
                     validator: (input) {
                       if (input.isEmpty) {
-                        return 'Please type customer phone number';
+                        return AppLocalizations.of(context)
+                            .translate('customerPhoneError');
                       }
                       return null;
                     },
@@ -123,8 +130,10 @@ class _AddCustomerState extends State<AddCustomer> {
                   TextFormField(
                     decoration: InputDecoration(
                       icon: Icon(Icons.location_city),
-                      hintText: 'Where your customer resides.',
-                      labelText: 'Physical Address',
+                      hintText: AppLocalizations.of(context)
+                          .translate('customerAddressLabelMeta'),
+                      labelText: AppLocalizations.of(context)
+                          .translate('customerAddressLabel'),
                     ),
                     autovalidate: false,
                     validator: null,
@@ -160,7 +169,8 @@ class _AddCustomerState extends State<AddCustomer> {
             onPressed: () {
               showUploadDialog();
             },
-            child: Text('Upload Customer Image'),
+            child: Text(
+                AppLocalizations.of(context).translate('customerImageLabel')),
           ),
         )
       ],
@@ -172,12 +182,14 @@ class _AddCustomerState extends State<AddCustomer> {
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
-          title: Text('Upload Customer Image'),
+          title: Text(
+              AppLocalizations.of(context).translate('customerImageLabel')),
           children: <Widget>[
             SimpleDialogOption(
               child: Padding(
                   padding: EdgeInsets.all(8),
-                  child: Text('Upload from Camera')),
+                  child: Text(AppLocalizations.of(context)
+                      .translate('uploadFromCamera'))),
               onPressed: () {
                 Navigator.of(context).pop();
                 getImageFrom('camera');
@@ -186,7 +198,8 @@ class _AddCustomerState extends State<AddCustomer> {
             SimpleDialogOption(
               child: Padding(
                   padding: EdgeInsets.all(8),
-                  child: Text('Upload from Gallery')),
+                  child: Text(AppLocalizations.of(context)
+                      .translate('uploadFromGallery'))),
               onPressed: () {
                 Navigator.of(context).pop();
                 getImageFrom('gallery');
@@ -214,7 +227,8 @@ class _AddCustomerState extends State<AddCustomer> {
           ),
           Padding(
               padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
-              child: Text('Image size is too big. (Max size 2MB)'))
+              child: Text(
+                  AppLocalizations.of(context).translate('imageSizeError')))
         ]));
         _scaffoldKey.currentState.showSnackBar(snackBar);
         return;

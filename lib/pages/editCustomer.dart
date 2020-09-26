@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
+import 'package:udharokhata/helpers/appLocalizations.dart';
 import 'package:udharokhata/models/customer.dart';
 import 'package:udharokhata/pages/singleCustomer.dart';
 
@@ -52,7 +53,7 @@ class _EditCustomerState extends State<EditCustomer> {
         elevation: 0.0,
         backgroundColor: Colors.transparent,
         title: Text(
-          'Edit Customer',
+          AppLocalizations.of(context).translate('editCustomer'),
           style: TextStyle(color: Colors.black),
         ),
         iconTheme: IconThemeData(
@@ -64,7 +65,7 @@ class _EditCustomerState extends State<EditCustomer> {
           updateCustomer(customer);
         },
         icon: Icon(Icons.check),
-        label: Text('Update Customer'),
+        label: Text(AppLocalizations.of(context).translate('editCustomer')),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -79,13 +80,16 @@ class _EditCustomerState extends State<EditCustomer> {
                     initialValue: customer.name,
                     decoration: InputDecoration(
                       icon: Icon(Icons.person),
-                      hintText: 'What is your customer name?',
-                      labelText: 'Name *',
+                      hintText: AppLocalizations.of(context)
+                          .translate('customerNameLabelMeta'),
+                      labelText: AppLocalizations.of(context)
+                          .translate('customerNameLabel'),
                     ),
                     autovalidate: false,
                     validator: (input) {
                       if (input.isEmpty) {
-                        return 'Please type customer name';
+                        return AppLocalizations.of(context)
+                            .translate('customerNameError');
                       }
                       return null;
                     },
@@ -95,15 +99,17 @@ class _EditCustomerState extends State<EditCustomer> {
                     initialValue: customer.phone,
                     decoration: InputDecoration(
                       icon: Icon(Icons.call_missed_outgoing),
-                      hintText: 'Contact Number of customer.',
-                      labelText: 'Phone Number *',
+                      hintText: AppLocalizations.of(context)
+                          .translate('customerPhoneLabelMeta'),
+                      labelText: AppLocalizations.of(context)
+                          .translate('customerPhoneLabel'),
                     ),
                     autovalidate: false,
                     validator: (input) {
                       if (input.isEmpty) {
-                        return 'Please type customer phone number';
+                        return AppLocalizations.of(context)
+                            .translate('customerPhoneError');
                       }
-
                       return null;
                     },
                     onSaved: (input) => _phone = input,
@@ -112,12 +118,17 @@ class _EditCustomerState extends State<EditCustomer> {
                     initialValue: customer.address,
                     decoration: InputDecoration(
                       icon: Icon(Icons.location_city),
-                      hintText: 'Where your customer resides.',
-                      labelText: 'Physical Address',
+                      hintText: AppLocalizations.of(context)
+                          .translate('customerAddressLabelMeta'),
+                      labelText: AppLocalizations.of(context)
+                          .translate('customerAddressLabel'),
                     ),
                     autovalidate: false,
                     validator: null,
                     onSaved: (input) => _address = input,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(36),
                   ),
                 ],
               ),
@@ -156,7 +167,8 @@ class _EditCustomerState extends State<EditCustomer> {
             onPressed: () {
               showUploadDialog();
             },
-            child: Text('Upload Customer Image'),
+            child: Text(
+                AppLocalizations.of(context).translate('customerImageLabel')),
           ),
         )
       ],
@@ -168,12 +180,14 @@ class _EditCustomerState extends State<EditCustomer> {
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
-          title: Text('Upload Customer Image'),
+          title: Text(
+              AppLocalizations.of(context).translate('customerImageLabel')),
           children: <Widget>[
             SimpleDialogOption(
               child: Padding(
                   padding: EdgeInsets.all(8),
-                  child: Text('Upload from Camera')),
+                  child: Text(AppLocalizations.of(context)
+                      .translate('uploadFromCamera'))),
               onPressed: () {
                 Navigator.of(context).pop();
                 getImageFrom('camera');
@@ -182,7 +196,8 @@ class _EditCustomerState extends State<EditCustomer> {
             SimpleDialogOption(
               child: Padding(
                   padding: EdgeInsets.all(8),
-                  child: Text('Upload from Gallery')),
+                  child: Text(AppLocalizations.of(context)
+                      .translate('uploadFromGallery'))),
               onPressed: () {
                 Navigator.of(context).pop();
                 getImageFrom('gallery');
@@ -208,7 +223,8 @@ class _EditCustomerState extends State<EditCustomer> {
           ),
           Padding(
               padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
-              child: Text('Image size is too big. (Max size 2MB)'))
+              child: Text(
+                  AppLocalizations.of(context).translate('imageSizeError')))
         ]));
         _scaffoldKey.currentState.showSnackBar(snackBar);
         return;

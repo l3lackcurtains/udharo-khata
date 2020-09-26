@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
+import 'package:udharokhata/helpers/appLocalizations.dart';
 import 'package:udharokhata/models/customer.dart';
 import 'package:udharokhata/models/transaction.dart';
 import 'package:udharokhata/pages/singleCustomer.dart';
@@ -53,7 +54,7 @@ class _AddTransactionState extends State<AddTransaction> {
       if (_transType == "credit") {
         _comment = "Credit given on " + dateNow;
       } else if (_transType == "payment") {
-        _comment = "Payment received from on " + dateNow;
+        _comment = "Payment received on " + dateNow;
       }
     });
   }
@@ -100,7 +101,7 @@ class _AddTransactionState extends State<AddTransaction> {
                 elevation: 0.0,
                 backgroundColor: Colors.transparent,
                 title: Text(
-                  'Add Transaction',
+                  AppLocalizations.of(context).translate('addTransaction'),
                   style: TextStyle(color: Colors.black),
                 ),
                 iconTheme: IconThemeData(
@@ -112,7 +113,8 @@ class _AddTransactionState extends State<AddTransaction> {
                   addTransaction();
                 },
                 icon: Icon(Icons.check),
-                label: Text('Add Transaction'),
+                label: Text(
+                    AppLocalizations.of(context).translate('addTransaction')),
               ),
               body: SingleChildScrollView(
                 child: Container(
@@ -139,7 +141,8 @@ class _AddTransactionState extends State<AddTransaction> {
                                           size: 16.0,
                                         ),
                                       ),
-                                      label: Text('Credit Given'),
+                                      label: Text(AppLocalizations.of(context)
+                                          .translate('creditGiven')),
                                       onPressed: () {
                                         setState(() {
                                           _transType = "credit";
@@ -162,7 +165,8 @@ class _AddTransactionState extends State<AddTransaction> {
                                           size: 16.0,
                                         ),
                                       ),
-                                      label: Text('Payment Received'),
+                                      label: Text(AppLocalizations.of(context)
+                                          .translate('paymentReceived')),
                                       onPressed: () {
                                         setState(() {
                                           _transType = "payment";
@@ -188,8 +192,10 @@ class _AddTransactionState extends State<AddTransaction> {
                                   suggestions: customers,
                                   decoration: InputDecoration(
                                     icon: Icon(Icons.person),
-                                    hintText: 'What is your customer name?',
-                                    labelText: 'Customer Name *',
+                                    hintText: AppLocalizations.of(context)
+                                        .translate('customerNameLabelMeta'),
+                                    labelText: AppLocalizations.of(context)
+                                        .translate('customerNameLabel'),
                                   ),
                                   itemFilter: (item, query) {
                                     _customerName = query;
@@ -227,19 +233,23 @@ class _AddTransactionState extends State<AddTransaction> {
                             autofocus: true,
                             decoration: InputDecoration(
                               icon: Icon(Icons.monetization_on),
-                              hintText: 'How much is the amount?',
-                              labelText: 'Amount',
+                              hintText: AppLocalizations.of(context)
+                                  .translate('transactionAmountLabelMeta'),
+                              labelText: AppLocalizations.of(context)
+                                  .translate('transactionAmountLabel'),
                             ),
                             autovalidate: false,
                             validator: (input) {
                               if (input.isEmpty) {
-                                return 'Please insert amount.';
+                                return AppLocalizations.of(context)
+                                    .translate('transactionAmountLabelError');
                               }
 
                               final isDigitsOnly =
                                   double.tryParse(input) != null;
                               if (isDigitsOnly == null) {
-                                return 'Input needs to be valid number.';
+                                return AppLocalizations.of(context)
+                                    .translate('transactionAmountErrorNumber');
                               }
                               return null;
                             },
@@ -250,8 +260,10 @@ class _AddTransactionState extends State<AddTransaction> {
                             initialValue: _comment,
                             decoration: InputDecoration(
                               icon: Icon(Icons.comment),
-                              hintText: 'Write comment about the transaction.',
-                              labelText: 'Comment *',
+                              hintText: AppLocalizations.of(context)
+                                  .translate('transactionCommentLabelMeta'),
+                              labelText: AppLocalizations.of(context)
+                                  .translate('transactionCommentLabel'),
                             ),
                             autovalidate: false,
                             maxLines: 3,
@@ -289,7 +301,7 @@ class _AddTransactionState extends State<AddTransaction> {
         Expanded(
           child: _attachment == null
               ? Image(
-                  image: AssetImage('images/no_image.jpg'),
+                  image: AssetImage('assets/images/no_image.jpg'),
                 )
               : Image.file(
                   _attachment,
@@ -301,7 +313,8 @@ class _AddTransactionState extends State<AddTransaction> {
             onPressed: () {
               showUploadDialog();
             },
-            child: Text('Upload Attachment Image'),
+            child: Text(AppLocalizations.of(context)
+                .translate('transactionImageLabel')),
           ),
         )
       ],
@@ -313,12 +326,16 @@ class _AddTransactionState extends State<AddTransaction> {
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
-          title: Text('Upload Attachment Image'),
+          title: Text(
+              AppLocalizations.of(context).translate('transactionImageLabel')),
           children: <Widget>[
             SimpleDialogOption(
               child: Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Text('Upload from Camera')),
+                padding: EdgeInsets.all(8),
+                child: Text(
+                  AppLocalizations.of(context).translate('uploadFromCamera'),
+                ),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
                 getImageFrom('camera');
@@ -327,7 +344,8 @@ class _AddTransactionState extends State<AddTransaction> {
             SimpleDialogOption(
               child: Padding(
                   padding: EdgeInsets.all(8),
-                  child: Text('Upload from Gallery')),
+                  child: Text(AppLocalizations.of(context)
+                      .translate('uploadFromGallery'))),
               onPressed: () {
                 Navigator.of(context).pop();
                 getImageFrom('gallery');
@@ -354,7 +372,8 @@ class _AddTransactionState extends State<AddTransaction> {
           ),
           Padding(
               padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
-              child: Text('Select a valid customer.'))
+              child: Text(AppLocalizations.of(context)
+                  .translate('customerSelectionLabel')))
         ]));
         _scaffoldKey.currentState.showSnackBar(snackBar);
         return;
@@ -370,7 +389,8 @@ class _AddTransactionState extends State<AddTransaction> {
           ),
           Padding(
               padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
-              child: Text('Image size is too big. (Max size 2MB)'))
+              child: Text(
+                  AppLocalizations.of(context).translate('imageSizeError')))
         ]));
         _scaffoldKey.currentState.showSnackBar(snackBar);
         return;

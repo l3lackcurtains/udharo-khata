@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key key}) : super(key: key);
+  MyHomePage({Key key}) : super(key: key);
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -173,7 +173,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   return DropdownMenuItem<Business>(
                     value: business,
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                      padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
                       child: Row(
                         children: [
                           business.logo != null
@@ -206,7 +206,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           color: Colors.redAccent,
                         ),
                         Text(
-                          "Add/Remove Company",
+                          AppLocalizations.of(context)
+                              .translate('addRemoveBusiness'),
                           style: TextStyle(
                               fontSize: 12,
                               color: Colors.redAccent,
@@ -226,11 +227,14 @@ class _MyHomePageState extends State<MyHomePage> {
         ].elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
+          items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-                icon: Icon(Icons.people), title: Text('Customers')),
+                icon: Icon(Icons.people),
+                title:
+                    Text(AppLocalizations.of(context).translate('customers'))),
             BottomNavigationBarItem(
-                icon: Icon(Icons.menu), title: Text('More')),
+                icon: Icon(Icons.menu),
+                title: Text(AppLocalizations.of(context).translate('more'))),
           ],
           currentIndex: _selectedIndex,
           fixedColor: Colors.deepPurple,

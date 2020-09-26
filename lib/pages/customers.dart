@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
+import 'package:udharokhata/helpers/appLocalizations.dart';
 import 'package:udharokhata/helpers/generateCustomersPdf.dart';
 import 'package:udharokhata/helpers/stateNotifier.dart';
 import 'package:udharokhata/models/customer.dart';
@@ -76,7 +77,8 @@ class _CustomersState extends State<Customers> {
                             child: TextField(
                                 controller: _searchInputController,
                                 decoration: InputDecoration(
-                                  labelText: 'Search Customers',
+                                  labelText: AppLocalizations.of(context)
+                                      .translate('searchCustomers'),
                                   suffixIcon: _searchText == null
                                       ? Icon(Icons.search)
                                       : IconButton(
@@ -113,7 +115,7 @@ class _CustomersState extends State<Customers> {
               );
             },
             icon: Icon(Icons.add),
-            label: Text('Add Customer'),
+            label: Text(AppLocalizations.of(context).translate('addCustomer')),
           ),
         ),
         _absorbing

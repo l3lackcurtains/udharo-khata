@@ -7,6 +7,7 @@ import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
+import 'package:udharokhata/helpers/appLocalizations.dart';
 import 'package:udharokhata/helpers/conversion.dart';
 import 'package:udharokhata/helpers/generateCustomerTransaction.dart';
 import 'package:udharokhata/main.dart';
@@ -36,13 +37,13 @@ class _SingleCustomerState extends State<SingleCustomer> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: Text("Delete " + customer.name),
+          title: Text(AppLocalizations.of(context).translate('deleteCustomer')),
           content: Text(
-              "Deleting action will remove all the transactions associated with the current customer."),
+              AppLocalizations.of(context).translate('deleteCustomerLabel')),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             FlatButton(
-              child: Text("Close"),
+              child: Text(AppLocalizations.of(context).translate('closeText')),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -50,7 +51,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
             RaisedButton(
               color: Colors.red,
               child: Text(
-                "Delete",
+                AppLocalizations.of(context).translate('deleteText'),
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
@@ -231,7 +232,8 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                   onPressed: () {},
                                   icon: Icon(Icons.share,
                                       size: 20.0, color: Colors.green),
-                                  label: Text("Share"),
+                                  label: Text(AppLocalizations.of(context)
+                                      .translate('shareText')),
                                 ),
                                 FlatButton.icon(
                                   onPressed: () {
@@ -239,7 +241,8 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                   },
                                   icon: Icon(Icons.picture_as_pdf,
                                       size: 20.0, color: Colors.blue),
-                                  label: Text("Export"),
+                                  label: Text(AppLocalizations.of(context)
+                                      .translate('exportText')),
                                 )
                               ],
                             )
@@ -277,7 +280,8 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                   );
                                 },
                                 label: Text(
-                                  "Credit Given",
+                                  AppLocalizations.of(context)
+                                      .translate('creditGiven'),
                                   style: TextStyle(color: Colors.black),
                                 ),
                               ),
@@ -301,7 +305,9 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                     ),
                                   );
                                 },
-                                label: Text("Payment Received",
+                                label: Text(
+                                    AppLocalizations.of(context)
+                                        .translate('paymentReceived'),
                                     style: TextStyle(color: Colors.black)),
                               ),
                             ),
@@ -357,7 +363,9 @@ class _SingleCustomerState extends State<SingleCustomer> {
               Padding(
                 padding: EdgeInsets.fromLTRB(4, 2, 4, 2),
                 child: Text(
-                  ttype.toUpperCase(),
+                  ttype == "credit"
+                      ? AppLocalizations.of(context).translate('given')
+                      : AppLocalizations.of(context).translate('received'),
                   style: TextStyle(
                       color: Colors.black38,
                       fontSize: 12,
@@ -483,7 +491,11 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                           padding:
                                               EdgeInsets.fromLTRB(0, 4, 0, 0),
                                           child: Text(
-                                            transaction.ttype.toUpperCase(),
+                                            transaction.ttype == "credit"
+                                                ? AppLocalizations.of(context)
+                                                    .translate('given')
+                                                : AppLocalizations.of(context)
+                                                    .translate('received'),
                                             style: TextStyle(
                                                 color: Colors.black38,
                                                 fontSize: 10,
