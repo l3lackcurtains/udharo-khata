@@ -192,7 +192,9 @@ class _CustomersState extends State<Customers> {
                 Padding(
                   padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
                   child: Text(
-                    ttype.toUpperCase(),
+                    ttype == "credit"
+                        ? AppLocalizations.of(context).translate('given')
+                        : AppLocalizations.of(context).translate('received'),
                     style: TextStyle(
                         color: Colors.black38,
                         fontSize: 10,
