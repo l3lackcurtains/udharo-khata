@@ -138,7 +138,7 @@ class _EditCustomerState extends State<EditCustomer> {
           child: _image == null
               ? customerImage == null
                   ? Image(
-                      image: AssetImage('images/noimage_person.png'),
+                      image: AssetImage('assets/images/noimage_person.png'),
                       width: 60,
                     )
                   : Image.memory(

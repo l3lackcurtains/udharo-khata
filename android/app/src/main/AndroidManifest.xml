@@ -45,4 +45,5 @@
             android:value="2" />
     </application>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />  
 </manifest>

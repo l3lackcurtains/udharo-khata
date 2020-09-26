@@ -124,7 +124,7 @@ class _AddBusinessState extends State<AddBusiness> {
         Center(
           child: _logo == null
               ? Image(
-                  image: AssetImage('images/noimage_person.png'),
+                  image: AssetImage('assets/images/noimage_person.png'),
                   width: 60,
                 )
               : Image.file(

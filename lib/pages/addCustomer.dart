@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/main.dart';
 import 'package:udharokhata/models/customer.dart';
+import 'package:udharokhata/pages/importContacts.dart';
 
 class AddCustomer extends StatefulWidget {
   AddCustomer({Key key}) : super(key: key);
@@ -55,6 +56,23 @@ class _AddCustomerState extends State<AddCustomer> {
         iconTheme: IconThemeData(
           color: Colors.black, //change your color here
         ),
+        actions: <Widget>[
+          FlatButton.icon(
+            label: Text(
+              "Import Contacts",
+              style: TextStyle(fontSize: 12),
+            ),
+            icon: Icon(Icons.control_point, size: 20.0, color: Colors.blue),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ImportContacts(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
@@ -128,7 +146,7 @@ class _AddCustomerState extends State<AddCustomer> {
         Center(
           child: _image == null
               ? Image(
-                  image: AssetImage('images/noimage_person.png'),
+                  image: AssetImage('assets/images/noimage_person.png'),
                   width: 60,
                 )
               : Image.file(

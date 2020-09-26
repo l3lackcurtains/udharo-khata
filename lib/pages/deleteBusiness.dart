@@ -49,16 +49,6 @@ class _DeleteBusinessState extends State<DeleteBusiness> {
         iconTheme: IconThemeData(
           color: Colors.black, //change your color here
         ),
-        actions: <Widget>[
-          FlatButton.icon(
-            label: Text(
-              "Delete Companies",
-              style: TextStyle(fontSize: 12),
-            ),
-            icon: Icon(Icons.delete, size: 20.0, color: Colors.red),
-            onPressed: () {},
-          ),
-        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {

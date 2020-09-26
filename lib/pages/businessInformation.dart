@@ -92,30 +92,33 @@ class _BusinessInformationState extends State<BusinessInformation> {
     final doc = pw.Document();
     final PdfImage backgroundImage = PdfImage.file(
       doc.document,
-      bytes: (await rootBundle.load('images/cv_template.png'))
+      bytes: (await rootBundle.load('assets/images/cv_template.png'))
           .buffer
           .asUint8List(),
     );
     final PdfImage phoneImage = PdfImage.file(
       doc.document,
-      bytes:
-          (await rootBundle.load('images/cv/phone.png')).buffer.asUint8List(),
+      bytes: (await rootBundle.load('assets/images/cv/phone.png'))
+          .buffer
+          .asUint8List(),
     );
     final PdfImage emailImage = PdfImage.file(
       doc.document,
-      bytes:
-          (await rootBundle.load('images/cv/email.png')).buffer.asUint8List(),
+      bytes: (await rootBundle.load('assets/images/cv/email.png'))
+          .buffer
+          .asUint8List(),
     );
     final PdfImage locationImage = PdfImage.file(
       doc.document,
-      bytes: (await rootBundle.load('images/cv/location.png'))
+      bytes: (await rootBundle.load('assets/images/cv/location.png'))
           .buffer
           .asUint8List(),
     );
     final PdfImage websiteImage = PdfImage.file(
       doc.document,
-      bytes:
-          (await rootBundle.load('images/cv/website.png')).buffer.asUint8List(),
+      bytes: (await rootBundle.load('assets/images/cv/website.png'))
+          .buffer
+          .asUint8List(),
     );
     const PdfColor whiteColor = PdfColor.fromInt(0xffffffff);
     const PdfColor semiWhiteColor = PdfColor.fromInt(0xfff1f1f1);
@@ -560,7 +563,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
         Center(
           child: companyImage == null
               ? Image(
-                  image: AssetImage('images/noimage_person.png'),
+                  image: AssetImage('assets/images/noimage_person.png'),
                   width: 60,
                 )
               : Image.memory(

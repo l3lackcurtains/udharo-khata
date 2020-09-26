@@ -93,9 +93,9 @@ class Invoice {
     // Create a PDF document.
     final doc = pw.Document();
 
-    final font1 = await rootBundle.load('fonts/Poppins/Poppins-Regular.ttf');
-    final font2 = await rootBundle.load('fonts/Poppins/Poppins-Regular.ttf');
-    final font3 = await rootBundle.load('fonts/Poppins/Poppins-Regular.ttf');
+    final font1 = await rootBundle.load('assets/fonts/Poppins/Poppins-Regular.ttf');
+    final font2 = await rootBundle.load('assets/fonts/Poppins/Poppins-Regular.ttf');
+    final font3 = await rootBundle.load('assets/fonts/Poppins/Poppins-Regular.ttf');
 
     if (businessInfo.logo.length > 0) {
       Uint8List logo = Base64Decoder().convert(businessInfo.logo);

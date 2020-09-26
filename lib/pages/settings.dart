@@ -31,7 +31,7 @@ class _SettingsState extends State<Settings> {
                   alignment: Alignment.center,
                   padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
                   child: Image(
-                    image: AssetImage('images/google_logo.png'),
+                    image: AssetImage('assets/images/google_logo.png'),
                     height: 40,
                     width: 40,
                   ),
@@ -62,7 +62,7 @@ class _SettingsState extends State<Settings> {
                 },
                 child: ListTile(
                   leading: Image.asset(
-                    "images/business.png",
+                    "assets/images/business.png",
                     width: 30,
                     height: 30,
                     scale: 1.0,
@@ -82,7 +82,7 @@ class _SettingsState extends State<Settings> {
                 },
                 child: ListTile(
                   leading: Image.asset(
-                    "images/backup.png",
+                    "assets/images/backup.png",
                     width: 30,
                     height: 30,
                     scale: 1.0,
@@ -93,13 +93,13 @@ class _SettingsState extends State<Settings> {
               ),
               ListTile(
                 leading: Image.asset(
-                  "images/backup.png",
+                  "assets/images/lang.png",
                   width: 30,
                   height: 30,
                   scale: 1.0,
                 ),
                 title: Text('language'),
-                subtitle: Text("Choose your app language"),
+                subtitle: Text("Choose app language"),
                 trailing: DropdownButton<String>(
                   value: Provider.of<AppStateNotifier>(context).appLocale,
                   onChanged: (String newValue) async {
@@ -119,7 +119,7 @@ class _SettingsState extends State<Settings> {
                 },
                 child: ListTile(
                   leading: Image.asset(
-                    "images/share.png",
+                    "assets/images/share.png",
                     width: 30,
                     height: 30,
                     scale: 1.0,

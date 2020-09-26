@@ -40,6 +40,9 @@ dependencies:
   shared_preferences: ^0.5.10
   provider: ^4.3.2+2
   back_button_interceptor: ^4.3.1
+  contacts_service: ^0.4.6
+  permission_handler: ^5.0.1+1
+  flutter_platform_widgets: ^0.60.2
   
 dev_dependencies:
   intl_translation: ^0.17.1
@@ -50,27 +53,28 @@ flutter:
   fonts:
     - family: Poppins
       fonts:
-        - asset: fonts/Poppins/Poppins-Regular.ttf
-        - asset: fonts/Poppins/Poppins-Bold.ttf
+        - asset: assets/fonts/Poppins/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins/Poppins-Bold.ttf
           weight: 700
 
     - family: Quicksand
       fonts:
-        - asset: fonts/Quicksand/Quicksand-Regular.ttf
-        - asset: fonts/Quicksand/Quicksand-Bold.ttf
+        - asset: assets/fonts/Quicksand/Quicksand-Regular.ttf
+        - asset: assets/fonts/Quicksand/Quicksand-Bold.ttf
           weight: 700
   assets:
     - assets/i18n/en.json
     - assets/i18n/ne.json
-    - images/no_image.jpg
-    - images/noimage_person.png
-    - images/google_logo.png
-    - images/cv_template.png
-    - images/share.png
-    - images/backup.png
-    - images/business.png
-    - images/data-copy.jpg
-    - images/cv/email.png
-    - images/cv/phone.png
-    - images/cv/location.png
-    - images/cv/website.png
+    - assets/images/no_image.jpg
+    - assets/images/noimage_person.png
+    - assets/images/google_logo.png
+    - assets/images/cv_template.png
+    - assets/images/share.png
+    - assets/images/lang.png
+    - assets/images/backup.png
+    - assets/images/business.png
+    - assets/images/data-copy.jpg
+    - assets/images/cv/email.png
+    - assets/images/cv/phone.png
+    - assets/images/cv/location.png
+    - assets/images/cv/website.png
