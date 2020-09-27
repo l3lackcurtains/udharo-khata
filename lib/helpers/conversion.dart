@@ -30,7 +30,7 @@ String amountFormat(String lang, double n) {
   return amount;
 }
 
-String doubleWithoutDecimalToInt(double val) {
+String doubleWithoutDecimalToString(double val) {
   num x = val % 1 == 0 ? val.toInt() : val;
   return x.toString();
 }

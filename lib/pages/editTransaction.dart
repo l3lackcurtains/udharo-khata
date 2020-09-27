@@ -151,8 +151,6 @@ class _EditTransactionState extends State<EditTransaction> {
               });
             }
 
-            String lang = Provider.of<AppStateNotifier>(context).appLocale;
-
             return Scaffold(
               backgroundColor: Colors.white,
               key: _scaffoldKey,
