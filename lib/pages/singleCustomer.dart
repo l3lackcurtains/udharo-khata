@@ -322,6 +322,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
   }
 
   Widget getCustomerTransactionsTotalWidget(int cid) {
+    String lang = Provider.of<AppStateNotifier>(context).appLocale;
     return FutureBuilder(
         future: transactionBloc.getCustomerTransactionsTotal(cid),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -336,7 +337,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
               backgroundColor: Colors.teal.shade100,
               label: Row(mainAxisAlignment: MainAxisAlignment.end, children: <
                   Widget>[
-                Text(amountFormat(total.abs()),
+                Text(amountFormat(lang, total.abs()),
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -466,9 +467,10 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                             children: <Widget>[
                                               Row(children: <Widget>[
                                                 Text(
-                                                    amountFormat(transaction
-                                                        .amount
-                                                        .abs()),
+                                                    amountFormat(
+                                                        lang,
+                                                        transaction.amount
+                                                            .abs()),
                                                     style: TextStyle(
                                                         fontWeight:
                                                             FontWeight.bold,

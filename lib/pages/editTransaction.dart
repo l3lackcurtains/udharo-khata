@@ -151,6 +151,8 @@ class _EditTransactionState extends State<EditTransaction> {
               });
             }
 
+            String lang = Provider.of<AppStateNotifier>(context).appLocale;
+
             return Scaffold(
               backgroundColor: Colors.white,
               key: _scaffoldKey,
@@ -275,7 +277,8 @@ class _EditTransactionState extends State<EditTransaction> {
                             },
                           ),
                           TextFormField(
-                            initialValue: amountFormat(argTransaction.amount),
+                            initialValue: doubleWithoutDecimalToString(
+                                argTransaction.amount),
                             decoration: InputDecoration(
                               icon: Icon(Icons.monetization_on),
                               hintText: AppLocalizations.of(context)

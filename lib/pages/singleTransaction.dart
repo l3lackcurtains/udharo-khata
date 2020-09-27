@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
 import 'package:udharokhata/helpers/appLocalizations.dart';
 import 'package:udharokhata/helpers/conversion.dart';
+import 'package:udharokhata/helpers/stateNotifier.dart';
 import 'package:udharokhata/models/customer.dart';
 import 'package:udharokhata/models/transaction.dart';
 import 'package:udharokhata/pages/singleCustomer.dart';
@@ -78,6 +80,8 @@ class _SingleTransactionState extends State<SingleTransaction> {
                   Base64Decoder().convert(transaction.attachment);
             }
 
+            String lang = Provider.of<AppStateNotifier>(context).appLocale;
+
             return Scaffold(
               resizeToAvoidBottomPadding: false,
               appBar: AppBar(
@@ -149,7 +153,7 @@ class _SingleTransactionState extends State<SingleTransaction> {
                                       padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
                                       child: Text(
                                           amountFormat(
-                                              transaction.amount.abs()),
+                                              lang, transaction.amount.abs()),
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 14)))

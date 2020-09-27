@@ -18,6 +18,19 @@ Map<String, String> formatDate(String lang, DateTime date) {
   return {"full": formatted, "day": day, "month": month, "year": year};
 }
 
-String amountFormat(double n) {
-  return "Rs. " + n.toString().replaceAll(RegExp(r"([.]*0)(?!.*\d)"), "");
+String amountFormat(String lang, double n) {
+  num x = n % 1 == 0 ? n.toInt() : n;
+  var currencyFormat = NepaliNumberFormat(
+    symbol: lang == "ne" ? "रु" : "Rs.",
+    language: lang == "ne" ? Language.nepali : Language.english,
+    isMonetory: true,
+  );
+  String amount = currencyFormat.format(x);
+
+  return amount;
+}
+
+String doubleWithoutDecimalToInt(double val) {
+  num x = val % 1 == 0 ? val.toInt() : val;
+  return x.toString();
 }
