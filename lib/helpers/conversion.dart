@@ -1,32 +1,21 @@
-String convertNumberToMonth(int monthNum) {
-  if (monthNum < 1 && monthNum > 12) return "Invalid Month";
-  switch (monthNum) {
-    case 1:
-      return "Janaury";
-    case 2:
-      return "Feburary";
-    case 3:
-      return "March";
-    case 4:
-      return "April";
-    case 5:
-      return "May";
-    case 6:
-      return "June";
-    case 7:
-      return "July";
-    case 8:
-      return "August";
-    case 9:
-      return "September";
-    case 10:
-      return "October";
-    case 11:
-      return "November";
-    case 12:
-      return "December";
+import 'package:intl/intl.dart';
+import 'package:nepali_utils/nepali_utils.dart';
+
+Map<String, String> formatDate(String lang, DateTime date) {
+  if (lang == 'ne') {
+    NepaliUtils(Language.nepali);
+    NepaliDateTime nt = date.toNepaliDateTime();
+    String formatted = nt.format("dd, MMMM yyyy");
+    String day = nt.format("dd");
+    String month = nt.format("MMMM");
+    String year = nt.format("yyyy");
+    return {"full": formatted, "day": day, "month": month, "year": year};
   }
-  return "";
+  String formatted = DateFormat("dd, MMMM yyyy").format(date);
+  String day = DateFormat("dd").format(date);
+  String month = DateFormat("MMM").format(date);
+  String year = DateFormat("yyyy").format(date);
+  return {"full": formatted, "day": day, "month": month, "year": year};
 }
 
 String amountFormat(double n) {

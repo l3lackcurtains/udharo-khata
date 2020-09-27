@@ -5,11 +5,13 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
 import 'package:udharokhata/helpers/appLocalizations.dart';
 import 'package:udharokhata/helpers/conversion.dart';
 import 'package:udharokhata/helpers/generateCustomerTransaction.dart';
+import 'package:udharokhata/helpers/stateNotifier.dart';
 import 'package:udharokhata/main.dart';
 import 'package:udharokhata/models/customer.dart';
 import 'package:udharokhata/models/transaction.dart';
@@ -373,6 +375,10 @@ class _SingleCustomerState extends State<SingleCustomer> {
                       itemCount: snapshot.data.length,
                       itemBuilder: (context, itemIndex) {
                         Transaction transaction = snapshot.data[itemIndex];
+                        String lang =
+                            Provider.of<AppStateNotifier>(context).appLocale;
+                        Map<String, String> dateFromatted =
+                            formatDate(lang, transaction.date);
                         return Column(
                           children: <Widget>[
                             FlatButton(
@@ -388,7 +394,8 @@ class _SingleCustomerState extends State<SingleCustomer> {
                               child: Padding(
                                 padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
                                 child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
                                     Container(
                                       padding: EdgeInsets.fromLTRB(0, 0, 16, 0),
@@ -402,7 +409,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                               MainAxisAlignment.center,
                                           children: <Widget>[
                                             Text(
-                                              "${transaction.date.day}",
+                                              dateFromatted["day"],
                                               style: TextStyle(
                                                 color:
                                                     Colors.deepPurple.shade900,
@@ -411,7 +418,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                               ),
                                             ),
                                             Text(
-                                              "${convertNumberToMonth(transaction.date.month).substring(0, 3)}",
+                                              dateFromatted['month'],
                                               style: TextStyle(
                                                   color: Colors.black87,
                                                   fontSize: 10),

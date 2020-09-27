@@ -5,10 +5,13 @@ import 'dart:typed_data';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:nepali_date_picker/nepali_date_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
 import 'package:udharokhata/helpers/appLocalizations.dart';
 import 'package:udharokhata/helpers/conversion.dart';
+import 'package:udharokhata/helpers/stateNotifier.dart';
 import 'package:udharokhata/models/transaction.dart';
 import 'package:udharokhata/pages/singleTransaction.dart';
 
@@ -41,16 +44,64 @@ class _EditTransactionState extends State<EditTransaction> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-      context: context,
-      initialDate: _date,
-      firstDate: DateTime(2015, 8),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null && picked != _date)
-      setState(() {
-        _date = picked;
-      });
+    String lang =
+        Provider.of<AppStateNotifier>(context, listen: false).appLocale;
+
+    if (lang == 'ne') {
+      NepaliDateTime _nepaliDateTime = await showMaterialDatePicker(
+        context: context,
+        initialDate: _date.toNepaliDateTime(),
+        firstDate: NepaliDateTime(2000),
+        lastDate: NepaliDateTime(2090),
+        initialDatePickerMode: DatePickerMode.day,
+        builder: (BuildContext context, Widget child) {
+          return Theme(
+            data: ThemeData.dark().copyWith(
+              colorScheme: ColorScheme.dark(
+                primary: Theme.of(context).accentColor,
+                onPrimary: Colors.white,
+                surface: Colors.green.shade500,
+                onSurface: Colors.white,
+              ),
+              dialogBackgroundColor: Theme.of(context).primaryColor,
+            ),
+            child: child,
+          );
+        },
+      );
+
+      if (_nepaliDateTime != null) {
+        final DateTime picked = _nepaliDateTime.toDateTime();
+        setState(() {
+          _date = picked.subtract(new Duration(days: 1));
+        });
+      }
+    } else {
+      final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: _date,
+        firstDate: DateTime(2015, 8),
+        lastDate: DateTime(2030, 8),
+        builder: (BuildContext context, Widget child) {
+          return Theme(
+            data: ThemeData.dark().copyWith(
+              colorScheme: ColorScheme.dark(
+                primary: Theme.of(context).accentColor,
+                onPrimary: Colors.white,
+                surface: Colors.green.shade500,
+                onSurface: Colors.white,
+              ),
+              dialogBackgroundColor: Theme.of(context).primaryColor,
+            ),
+            child: child,
+          );
+        },
+      );
+      if (picked != null && picked != _date)
+        setState(() {
+          _date = picked;
+        });
+    }
   }
 
   Future getImageFrom(String from) async {
@@ -86,7 +137,6 @@ class _EditTransactionState extends State<EditTransaction> {
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
             dynamic customers = snapshot.data;
-            print(customers);
             if (_customerId != null) {
               customers.forEach((item) {
                 if (_customerId == item.id) {
@@ -272,8 +322,11 @@ class _EditTransactionState extends State<EditTransaction> {
                                   Icons.calendar_today,
                                   color: Colors.grey.shade600,
                                 ),
-                                label: Text(
-                                    "${_date.day}/${_date.month}/${_date.year}"),
+                                label: Text(formatDate(
+                                    Provider.of<AppStateNotifier>(context,
+                                            listen: false)
+                                        .appLocale,
+                                    _date)['full']),
                                 onPressed: () {
                                   _selectDate(context);
                                 },

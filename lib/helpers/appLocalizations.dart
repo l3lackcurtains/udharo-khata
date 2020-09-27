@@ -15,6 +15,8 @@ class AppLocalizations {
 
   static const AppLocalizationsDelegate delegate = AppLocalizationsDelegate();
 
+  String get appLocale => appLocale;
+
   Map<String, String> _localizedStrings;
 
   Future<bool> load() async {
