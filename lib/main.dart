@@ -18,7 +18,6 @@ import 'helpers/appLocalizations.dart';
 import 'helpers/stateNotifier.dart';
 import 'models/business.dart';
 import 'pages/addBusiness.dart';
-import 'pages/signin.dart';
 import 'services/loadBusinessInfo.dart';
 
 void main() {
@@ -48,7 +47,7 @@ class MyApp extends StatelessWidget {
           accentColor: Color(0xFFe74c3c),
           fontFamily: 'Roboto',
         ),
-        home: SignIn(),
+        home: MyHomePage(),
         locale: Locale(appState.appLocale),
       );
     });

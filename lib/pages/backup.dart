@@ -1,7 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:loading/indicator/ball_beat_indicator.dart';
+import 'package:loading/loading.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:udharokhata/helpers/firebaseBackup.dart';
+import 'package:udharokhata/pages/signin.dart';
 
 class Backup extends StatefulWidget {
   @override
@@ -10,10 +14,31 @@ class Backup extends StatefulWidget {
 
 class _BackupState extends State<Backup> {
   DateTime _lastBackup;
+  bool _loading = true;
+
   @override
   void initState() {
     super.initState();
-    getLastBackupInfo();
+    _goToLoginScreen();
+  }
+
+  void _goToLoginScreen() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+
+    if (await _auth.currentUser() == null) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) {
+            return SignIn();
+          },
+        ),
+      );
+    } else {
+      setState(() {
+        _loading = false;
+      });
+      getLastBackupInfo();
+    }
   }
 
   void getLastBackupInfo() async {
@@ -47,50 +72,60 @@ class _BackupState extends State<Backup> {
         elevation: 0,
         backgroundColor: Colors.grey.shade100,
       ),
-      body: Container(
-        padding: EdgeInsets.all(24),
-        child: Column(
-          children: <Widget>[
-            Image.asset(
-              "assets/images/data-copy.jpg",
-              width: 300,
+      body: _loading
+          ? Container(
+              alignment: Alignment.center,
+              width: MediaQuery.of(context).size.width,
+              height: 280,
+              child: Loading(
+                  indicator: BallBeatIndicator(),
+                  size: 60.0,
+                  color: Theme.of(context).accentColor),
+            )
+          : Container(
+              padding: EdgeInsets.all(24),
+              child: Column(
+                children: <Widget>[
+                  Image.asset(
+                    "assets/images/data-copy.jpg",
+                    width: 300,
+                  ),
+                  Column(
+                    children: <Widget>[
+                      FlatButton.icon(
+                        icon: Icon(Icons.restore),
+                        onPressed: () {
+                          FirebaseBackup().restoreAllData();
+                        },
+                        label: Text("Restore Now"),
+                      ),
+                      SizedBox(
+                        height: 24,
+                      ),
+                      FlatButton.icon(
+                        icon: Icon(Icons.restore),
+                        color: Colors.blue,
+                        onPressed: () {
+                          FirebaseBackup().backupAllData();
+                        },
+                        label: Text("Backup to Firebase"),
+                      ),
+                      SizedBox(
+                        height: 24,
+                      ),
+                      Text("We backup your data every weekend"),
+                      SizedBox(
+                        height: 24,
+                      ),
+                      _lastBackup != null
+                          ? Text(
+                              "Last backup on ${DateFormat('MMM d, yyyy').format(_lastBackup)}")
+                          : Text("No backups")
+                    ],
+                  ),
+                ],
+              ),
             ),
-            Column(
-              children: <Widget>[
-                FlatButton.icon(
-                  icon: Icon(Icons.restore),
-                  onPressed: () {
-                    FirebaseBackup().restoreAllData();
-                  },
-                  label: Text("Restore Now"),
-                ),
-                SizedBox(
-                  height: 24,
-                ),
-                FlatButton.icon(
-                  icon: Icon(Icons.restore),
-                  color: Colors.blue,
-                  onPressed: () {
-                    FirebaseBackup().backupAllData();
-                  },
-                  label: Text("Backup to Firebase"),
-                ),
-                SizedBox(
-                  height: 24,
-                ),
-                Text("We backup your data every weekend"),
-                SizedBox(
-                  height: 24,
-                ),
-                _lastBackup != null
-                    ? Text(
-                        "Last backup on ${DateFormat('MMM d, yyyy').format(_lastBackup)}")
-                    : Text("No backups")
-              ],
-            ),
-          ],
-        ),
-      ),
     );
   }
 

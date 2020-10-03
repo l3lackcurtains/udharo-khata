@@ -1,7 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:udharokhata/helpers/google.dart';
-import 'package:udharokhata/main.dart';
+import 'package:udharokhata/pages/backup.dart';
 
 class SignIn extends StatefulWidget {
   @override
@@ -9,41 +8,29 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
-  bool _loading = true;
   @override
   void initState() {
     super.initState();
-    _handleStartScreen();
-  }
-
-  void _handleStartScreen() async {
-    final FirebaseAuth _auth = FirebaseAuth.instance;
-
-    if (await _auth.currentUser() != null) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) {
-            return MyHomePage();
-          },
-        ),
-      );
-    } else {
-      setState(() {
-        _loading = false;
-      });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) {
-      return Container(
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
     return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text('Sign In',
+            style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+                fontFamily: 'Poppins')),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        elevation: 0,
+        backgroundColor: Colors.grey.shade100,
+      ),
       body: Container(
         color: Colors.white,
         child: Center(
@@ -68,7 +55,7 @@ class _SignInState extends State<SignIn> {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) {
-                return MyHomePage();
+                return Backup();
               },
             ),
           );
