@@ -5,9 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading/indicator/ball_beat_indicator.dart';
+import 'package:loading/loading.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
+import 'package:udharokhata/helpers/appLocalizations.dart';
+import 'package:udharokhata/helpers/constants.dart';
 import 'package:udharokhata/models/UserContact.dart';
 import 'package:udharokhata/models/customer.dart';
 
@@ -139,7 +143,7 @@ class _ImportContactsState extends State<ImportContacts> {
         elevation: 0.0,
         backgroundColor: Colors.transparent,
         title: Text(
-          'Add Company',
+          AppLocalizations.of(context).translate('importContacts'),
           style: TextStyle(color: Colors.black),
         ),
         iconTheme: IconThemeData(
@@ -151,10 +155,20 @@ class _ImportContactsState extends State<ImportContacts> {
           importContacts();
         },
         icon: Icon(Icons.check),
-        label: Text('Import Contacts'),
+        label: Text(AppLocalizations.of(context).translate('importContacts')),
       ),
-      body: !_hasPermission
-          ? Center(child: PlatformCircularProgressIndicator())
+      body: !_hasPermission || contactsList.length == 0
+          ? Center(
+              child: Container(
+                alignment: Alignment.center,
+                width: MediaQuery.of(context).size.width,
+                height: 280,
+                child: Loading(
+                    indicator: BallBeatIndicator(),
+                    size: 60.0,
+                    color: Theme.of(context).accentColor),
+              ),
+            )
           : Container(
               child: Form(
                 key: _formKey,
@@ -165,34 +179,35 @@ class _ImportContactsState extends State<ImportContacts> {
                     itemBuilder: (BuildContext ctx, index) {
                       UserContact contact = contactsList[index];
 
+                      final avatar =
+                          Base64Decoder().convert(base64Encode(contact.avatar));
                       return Container(
                         margin: EdgeInsets.fromLTRB(0, 0, 0, 4),
                         padding: EdgeInsets.all(4),
-                        child: ListTile(
-                          leading: Checkbox(
-                            value: contactsIndexToAdd.contains(index),
-                            onChanged: (bool value) {
-                              setState(() {
-                                if (value &&
-                                    !contactsIndexToAdd.contains(index)) {
-                                  contactsIndexToAdd.add(index);
-                                } else {
-                                  contactsIndexToAdd.remove(index);
-                                }
-                              });
-                            },
-                          ),
-                          title: Row(
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              if (!contactsIndexToAdd.contains(index)) {
+                                contactsIndexToAdd.add(index);
+                              } else {
+                                contactsIndexToAdd.remove(index);
+                              }
+                            });
+                          },
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
+                              Checkbox(
+                                value: contactsIndexToAdd.contains(index),
+                                onChanged: (bool value) {},
+                              ),
+                              SizedBox(width: 16),
                               CircleAvatar(
                                 radius: 24,
                                 child: ClipOval(
                                   child: Container(
-                                    color: Colors.grey,
-                                    child: Image.memory(
-                                        Base64Decoder().convert(
-                                            base64Encode(contact.avatar)),
+                                    color: xDarkBlue,
+                                    child: Image.memory(avatar,
                                         height: 54,
                                         width: 54,
                                         fit: BoxFit.cover),
@@ -209,7 +224,7 @@ class _ImportContactsState extends State<ImportContacts> {
                                   Text(
                                     contact.phone,
                                     style: TextStyle(
-                                        fontSize: 14, color: Colors.grey),
+                                        fontSize: 13, color: Colors.grey),
                                   ),
                                 ],
                               ),

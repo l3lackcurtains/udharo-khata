@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
@@ -36,7 +37,15 @@ class _AddCustomerState extends State<AddCustomer> {
       image = await picker.getImage(source: ImageSource.gallery);
     }
 
-    File rawImage = File(image.path);
+    if (image == null) return;
+
+    ImageProperties properties =
+        await FlutterNativeImage.getImageProperties(image.path);
+    File rawImage = await FlutterNativeImage.compressImage(image.path,
+        quality: 80,
+        targetWidth: 512,
+        targetHeight: (properties.height * 512 / properties.width).round());
+
     // More Validation
     if (rawImage != null && rawImage.lengthSync() > 200000) {
       final snackBar = SnackBar(

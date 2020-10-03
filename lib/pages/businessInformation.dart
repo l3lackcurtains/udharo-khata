@@ -1,10 +1,14 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading/indicator/ball_beat_indicator.dart';
+import 'package:loading/loading.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
@@ -13,6 +17,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:udharokhata/blocs/businessBloc.dart';
 import 'package:udharokhata/database/businessRepo.dart';
 import 'package:udharokhata/helpers/appLocalizations.dart';
+import 'package:udharokhata/helpers/constants.dart';
 import 'package:udharokhata/models/business.dart';
 
 class BusinessInformation extends StatefulWidget {
@@ -29,6 +34,9 @@ class _BusinessInformationState extends State<BusinessInformation> {
   Future<Business> _businessFuture;
   final _businessRepository = BusinessRepository();
   final picker = ImagePicker();
+
+  bool _savingCompany = false;
+
   @override
   void initState() {
     super.initState();
@@ -235,6 +243,11 @@ class _BusinessInformationState extends State<BusinessInformation> {
 
   void updateBusinessInformation() async {
     if (!mounted) return;
+
+    setState(() {
+      _savingCompany = true;
+    });
+
     final formState = _formKey.currentState;
     if (formState.validate()) {
       final getBusinessInfo = await businessBloc.getBusiness(0);
@@ -244,6 +257,12 @@ class _BusinessInformationState extends State<BusinessInformation> {
         await businessBloc.updateBusiness(_businessInfo);
       }
     }
+
+    Timer(Duration(seconds: 1), () {
+      setState(() {
+        _savingCompany = false;
+      });
+    });
   }
 
   Future getImageFrom(String from) async {
@@ -256,7 +275,14 @@ class _BusinessInformationState extends State<BusinessInformation> {
       image = await picker.getImage(source: ImageSource.gallery);
     }
 
-    File rawImage = File(image.path);
+    if (image == null) return;
+
+    ImageProperties properties =
+        await FlutterNativeImage.getImageProperties(image.path);
+    File rawImage = await FlutterNativeImage.compressImage(image.path,
+        quality: 80,
+        targetWidth: 512,
+        targetHeight: (properties.height * 512 / properties.width).round());
 
     if (rawImage != null && rawImage.lengthSync() > 2000000) {
       final snackBar = SnackBar(
@@ -317,17 +343,26 @@ class _BusinessInformationState extends State<BusinessInformation> {
               child: businessCardBox(),
             ),
             Container(
-              color: Colors.white,
               padding: EdgeInsets.all(24),
               child: FutureBuilder<Business>(
                   future: _businessFuture,
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     Business businessItem = Business();
-                    if (snapshot.hasData) {
+                    if (snapshot.hasData && !_savingCompany) {
                       businessItem = snapshot.data;
                       return businessCardForm(businessItem);
                     }
-                    return CircularProgressIndicator();
+                    return Center(
+                      child: Container(
+                        alignment: Alignment.center,
+                        width: MediaQuery.of(context).size.width,
+                        height: 280,
+                        child: Loading(
+                            indicator: BallBeatIndicator(),
+                            size: 60.0,
+                            color: Theme.of(context).accentColor),
+                      ),
+                    );
                   }),
             ),
           ],
@@ -343,11 +378,14 @@ class _BusinessInformationState extends State<BusinessInformation> {
             children: <Widget>[
               Expanded(
                 child: RaisedButton(
+                  color: Theme.of(context).primaryColor,
                   onPressed: () {
                     updateBusinessInformation();
                   },
                   child: Text(
-                      AppLocalizations.of(context).translate('saveCompany')),
+                    AppLocalizations.of(context).translate('saveCompany'),
+                    style: TextStyle(color: xLightWhite),
+                  ),
                 ),
               ),
               SizedBox(
@@ -359,7 +397,9 @@ class _BusinessInformationState extends State<BusinessInformation> {
                     downloadPdf();
                   },
                   child: Text(
-                      AppLocalizations.of(context).translate('downloadCard')),
+                    AppLocalizations.of(context).translate('downloadCard'),
+                    style: TextStyle(color: Theme.of(context).accentColor),
+                  ),
                 ),
               ),
             ],
@@ -399,36 +439,38 @@ class _BusinessInformationState extends State<BusinessInformation> {
                       : SizedBox(height: 30),
                   SizedBox(height: 8),
                   Text(
-                    _businessInfo.companyName ?? "COMPANY NAME",
+                    _businessInfo.companyName ?? "",
                     style: TextStyle(fontSize: 12, color: Color(0xFFF1F1F1)),
                   ),
                   SizedBox(height: 12),
-                  RichText(
-                    text: TextSpan(
-                      text: _businessInfo.name != null
-                          ? _businessInfo.name?.split(" ")[0]
-                          : "",
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Color(0xFFFFFFFF),
-                        fontWeight: FontWeight.bold,
-                      ),
-                      children: <TextSpan>[
-                        TextSpan(
-                            text: _businessInfo.name != null
-                                ? " ${_businessInfo.name.split(" ").length > 1 ? _businessInfo.name?.split(" ")[1] : ""}"
-                                : "",
+                  _businessInfo.name != null
+                      ? RichText(
+                          text: TextSpan(
+                            text: _businessInfo.name?.split(" ")[0],
                             style: TextStyle(
                               fontSize: 18,
                               color: Color(0xFFFFFFFF),
-                              fontWeight: FontWeight.normal,
-                            )),
-                      ],
-                    ),
-                  ),
+                              fontWeight: FontWeight.bold,
+                            ),
+                            children: <TextSpan>[
+                              TextSpan(
+                                  text:
+                                      " ${_businessInfo.name.split(" ").length > 1 ? _businessInfo.name?.split(" ")[1] : ""}",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Color(0xFFFFFFFF),
+                                    fontWeight: FontWeight.normal,
+                                  )),
+                            ],
+                          ),
+                        )
+                      : Container(),
                   SizedBox(height: 8),
-                  Text(_businessInfo.role,
-                      style: TextStyle(fontSize: 12, color: Color(0xFFF1F1F1))),
+                  _businessInfo.role != null
+                      ? Text(_businessInfo.role,
+                          style:
+                              TextStyle(fontSize: 12, color: Color(0xFFF1F1F1)))
+                      : Container()
                 ]),
           ),
           Spacer(),
@@ -436,7 +478,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
             padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              _businessInfo.phone.length > 0
+              _businessInfo.phone != null && _businessInfo.phone.length > 0
                   ? Row(children: [
                       Image.asset("assets/images/cv/phone.png", height: 10),
                       SizedBox(width: 8),
@@ -446,7 +488,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
                     ])
                   : Container(),
               SizedBox(height: 12),
-              _businessInfo.address.length > 0
+              _businessInfo.address != null && _businessInfo.address.length > 0
                   ? Row(children: [
                       Image.asset("assets/images/cv/location.png", height: 10),
                       SizedBox(width: 10),
@@ -456,7 +498,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
                     ])
                   : Container(),
               SizedBox(height: 12),
-              _businessInfo.email.length > 0
+              _businessInfo.email != null && _businessInfo.email.length > 0
                   ? Row(children: [
                       Image.asset("assets/images/cv/email.png", height: 10),
                       SizedBox(width: 8),
@@ -466,7 +508,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
                     ])
                   : Container(),
               SizedBox(height: 12),
-              _businessInfo.website.length > 0
+              _businessInfo.website != null && _businessInfo.website.length > 0
                   ? Row(children: [
                       Image.asset("assets/images/cv/website.png", height: 10),
                       SizedBox(width: 8),

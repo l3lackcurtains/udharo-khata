@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nepali_date_picker/nepali_date_picker.dart';
 import 'package:provider/provider.dart';
@@ -130,7 +131,14 @@ class _AddTransactionState extends State<AddTransaction> {
       image = await picker.getImage(source: ImageSource.gallery);
     }
 
-    File rawImage = File(image.path);
+    if (image == null) return;
+
+    ImageProperties properties =
+        await FlutterNativeImage.getImageProperties(image.path);
+    File rawImage = await FlutterNativeImage.compressImage(image.path,
+        quality: 80,
+        targetWidth: 800,
+        targetHeight: (properties.height * 800 / properties.width).round());
 
     if (rawImage != null && rawImage.lengthSync() > 200000) {
       final snackBar = SnackBar(
