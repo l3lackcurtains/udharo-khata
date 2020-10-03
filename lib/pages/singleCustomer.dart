@@ -166,10 +166,10 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                       : CircleAvatar(
                                           backgroundColor:
                                               Colors.purple.shade500,
-                                          radius: 40,
+                                          radius: 30,
                                           child: Icon(Icons.person,
                                               color: Colors.purple.shade100,
-                                              size: 40.0),
+                                              size: 30.0),
                                         ),
                                 ),
                                 Container(

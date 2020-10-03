@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:udharokhata/helpers/google.dart';
+import 'package:udharokhata/helpers/firebase.dart';
 import 'package:udharokhata/pages/backup.dart';
 
 class SignIn extends StatefulWidget {
@@ -50,8 +50,10 @@ class _SignInState extends State<SignIn> {
   Widget _signInWithGoogleButton() {
     return OutlineButton(
       splashColor: Colors.red,
-      onPressed: () {
-        GoogleClient().signInWithGoogle().whenComplete(() {
+      onPressed: () async {
+        final String user = await FirebaseClient().signInWithGoogle();
+
+        if (user != null) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) {
@@ -59,7 +61,7 @@ class _SignInState extends State<SignIn> {
               },
             ),
           );
-        });
+        }
       },
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
       highlightElevation: 0,

@@ -350,9 +350,29 @@ class _BusinessInformationState extends State<BusinessInformation> {
                     future: _businessFuture,
                     builder: (BuildContext context, AsyncSnapshot snapshot) {
                       Business businessItem = Business();
-                      if (snapshot.hasData && !_savingCompany) {
+                      if (snapshot.hasData) {
                         businessItem = snapshot.data;
-                        return businessCardForm(businessItem);
+                        return Stack(
+                          children: [
+                            Container(child: businessCardForm(businessItem)),
+                            _savingCompany
+                                ? AbsorbPointer(
+                                    absorbing: _savingCompany,
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      height: 280,
+                                      child: Center(
+                                        child: Loading(
+                                            indicator: BallBeatIndicator(),
+                                            size: 60.0,
+                                            color:
+                                                Theme.of(context).accentColor),
+                                      ),
+                                    ),
+                                  )
+                                : Container()
+                          ],
+                        );
                       }
                       return Center(
                         child: Container(

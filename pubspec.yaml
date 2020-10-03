@@ -19,10 +19,12 @@ dependencies:
   image_picker: ^0.6.0+17
   simple_moment: ^1.0.2
   flutter_archive: ^0.1.4
-  firebase_core: ^0.4.0+9
+  firebase_core: ^0.5.0
   firebase_analytics: ^5.0.2
-  firebase_auth: ^0.14.0+5
-  cloud_firestore: ^0.12.9+5
+  firebase_auth: ^0.18.1+1
+  firebase_storage: ^4.0.1
+  cloud_firestore: ^0.14.1+2
+  http: ^0.12.2
   google_sign_in: ^4.4.6
   googleapis: ^0.55.0
   googleapis_auth: ^0.2.11+1

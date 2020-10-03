@@ -1,122 +1,86 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:udharokhata/blocs/businessBloc.dart';
-import 'package:udharokhata/blocs/customerBloc.dart';
-import 'package:udharokhata/blocs/transactionBloc.dart';
-import 'package:udharokhata/models/business.dart';
-import 'package:udharokhata/models/customer.dart';
-import 'package:udharokhata/models/transaction.dart' as TransactionModel;
+import 'dart:async';
+import 'dart:io';
 
-final firestoreInstance = Firestore.instance;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as pathx;
+import 'package:path_provider/path_provider.dart';
 
 class FirebaseBackup {
-  final CustomerBloc customerBloc = CustomerBloc();
-  final TransactionBloc transactionBloc = TransactionBloc();
-  final BusinessBloc businessBloc = BusinessBloc();
+  Future<bool> backupAllData() async {
+    FirebaseApp app = await Firebase.initializeApp();
 
-  void backupAllData() async {
-    var firebaseUser = await FirebaseAuth.instance.currentUser();
-    List<Customer> customersList = await customerBloc.getCustomers();
-    List<TransactionModel.Transaction> transactionsList =
-        await transactionBloc.getTransactions();
-    List<Business> businessInfoList = await businessBloc.getBusinesss();
+    final FirebaseStorage storage = FirebaseStorage(
+        storageBucket: 'gs://udharokhata.appspot.com/', app: app);
 
-    businessInfoList.forEach((businessInfo) {
-      firestoreInstance
-          .collection("udharoKhata")
-          .document(firebaseUser.uid)
-          .collection("business")
-          .document(businessInfo.id.toString())
-          .setData(businessInfo.toDatabaseJson())
-          .then((value) {
-        print("Backed up business Info.");
-      });
-    });
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String dbPath = pathx.join(documentsDirectory.path, 'udharoKhata.db');
+    File file = File(dbPath);
 
-    customersList.forEach((customer) {
-      firestoreInstance
-          .collection("udharoKhata")
-          .document(firebaseUser.uid)
-          .collection("customers")
-          .document(customer.id.toString())
-          .setData(customer.toDatabaseJson())
-          .then((value) {
-        print("Customer backup");
-      });
-    });
+    final FirebaseAuth _auth = FirebaseAuth.instance;
 
-    transactionsList.forEach((transcation) {
-      firestoreInstance
-          .collection("udharoKhata")
-          .document(firebaseUser.uid)
-          .collection("transactions")
-          .document(transcation.id.toString())
-          .setData(transcation.toDatabaseJson())
-          .then((value) {
-        print("Transaction backup");
-      });
-    });
+    final StorageReference ref = storage
+        .ref()
+        .child('udharo-khata-database')
+        .child(_auth.currentUser.uid)
+        .child('udharoKhata.db');
+
+    ref.putFile(
+      file,
+    );
+    await Future.delayed(Duration(seconds: 5));
+    return true;
   }
 
-  void restoreAllData() async {
-    var firebaseUser = await FirebaseAuth.instance.currentUser();
-    List<Customer> customersList = await customerBloc.getCustomers();
-    List<TransactionModel.Transaction> transactionsList =
-        await transactionBloc.getTransactions();
-    List<Business> businessInfoList = await businessBloc.getBusinesss();
-    // Delete all businesses
-    businessInfoList.forEach((business) async {
-      await businessBloc.deleteBusinessById(business.id);
-    });
+  Future<bool> restoreAllData() async {
+    FirebaseApp app = await Firebase.initializeApp();
+    final FirebaseStorage storage = FirebaseStorage(
+        storageBucket: 'gs://udharokhata.appspot.com/', app: app);
 
-    // Delete all customers
-    customersList.forEach((customer) async {
-      await customerBloc.deleteCustomerById(customer.id);
-    });
+    final FirebaseAuth _auth = FirebaseAuth.instance;
 
-    // Delete all transactions
-    transactionsList.forEach((transaction) async {
-      await transactionBloc.deleteTransactionById(transaction.id);
-    });
+    final StorageReference ref = storage
+        .ref()
+        .child('udharo-khata-database')
+        .child(_auth.currentUser.uid)
+        .child('udharoKhata.db');
+    final String url = await ref.getDownloadURL();
+    final http.Response downloadData = await http.get(url);
 
-    firestoreInstance
-        .collection("udharoKhata")
-        .document(firebaseUser.uid)
-        .collection("business")
-        .getDocuments()
-        .then((querySnapshot) {
-      querySnapshot.documents.forEach((result) async {
-        Business business = Business.fromDatabaseJson(result.data);
-        await businessBloc.addBusiness(business);
-      });
-      print("Business restored");
-    });
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String dbPath = pathx.join(documentsDirectory.path, 'udharoKhata.db');
+    File(dbPath)
+      ..createSync(recursive: true)
+      ..writeAsBytesSync(downloadData.bodyBytes);
+    return true;
+  }
 
-    firestoreInstance
-        .collection("udharoKhata")
-        .document(firebaseUser.uid)
-        .collection("customers")
-        .getDocuments()
-        .then((querySnapshot) {
-      querySnapshot.documents.forEach((result) async {
-        Customer customer = Customer.fromDatabaseJson(result.data);
-        await customerBloc.addCustomer(customer);
-      });
-      print("Customers restored");
-    });
+  Future<bool> downloadBackup() async {
+    FirebaseApp app = await Firebase.initializeApp();
 
-    firestoreInstance
-        .collection("udharoKhata")
-        .document(firebaseUser.uid)
-        .collection("transactions")
-        .getDocuments()
-        .then((querySnapshot) {
-      querySnapshot.documents.forEach((result) async {
-        TransactionModel.Transaction transaction =
-            TransactionModel.Transaction.fromDatabaseJson(result.data);
-        await transactionBloc.addTransaction(transaction);
-      });
-      print("Transactions restored");
-    });
+    final FirebaseStorage storage = FirebaseStorage(
+        storageBucket: 'gs://udharokhata.appspot.com/', app: app);
+
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+
+    final StorageReference ref = storage
+        .ref()
+        .child('udharo-khata-database')
+        .child(_auth.currentUser.uid)
+        .child('udharoKhata.db');
+
+    final String url = await ref.getDownloadURL();
+    final http.Response downloadData = await http.get(url);
+
+    final File tempFile = File('/storage/emulated/0/Download/udharoKhata.db');
+    if (tempFile.existsSync()) {
+      await tempFile.delete();
+    }
+    await tempFile.create();
+    await tempFile.writeAsString(downloadData.body);
+
+    return true;
   }
 }
