@@ -152,7 +152,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
                                 Container(
-                                  padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                                  padding: EdgeInsets.fromLTRB(16, 0, 8, 0),
                                   child: customerImage != null
                                       ? CircleAvatar(
                                           radius: 30.0,
@@ -232,7 +232,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
                             ),
                             Spacer(),
                             Container(
-                              padding: EdgeInsets.all(8),
+                              padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -247,11 +247,12 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                       FlatButton.icon(
                                         onPressed: () {},
                                         icon: Icon(Icons.share,
-                                            size: 20.0, color: Colors.green),
+                                            size: 16.0, color: Colors.green),
                                         label: Text(
                                           AppLocalizations.of(context)
                                               .translate('shareText'),
-                                          style: TextStyle(color: xLightWhite),
+                                          style: TextStyle(
+                                              color: xLightWhite, fontSize: 14),
                                         ),
                                       ),
                                       FlatButton.icon(
@@ -259,12 +260,13 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                           generatePdf();
                                         },
                                         icon: Icon(Icons.picture_as_pdf,
-                                            size: 20.0, color: Colors.blue),
+                                            size: 16.0, color: Colors.blue),
                                         label: Text(
                                             AppLocalizations.of(context)
                                                 .translate('exportText'),
-                                            style:
-                                                TextStyle(color: xLightWhite)),
+                                            style: TextStyle(
+                                                color: xLightWhite,
+                                                fontSize: 14)),
                                       )
                                     ],
                                   )
@@ -380,7 +382,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
             return Text(
               amountFormat(lang, total.abs()),
               style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 24,
                   fontWeight: FontWeight.w700,
                   color: ttype == 'payment' ? xPlainTextGreen : xPlainTextRed),
             );

@@ -377,7 +377,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
 
     return Container(
       height: 700,
-      padding: EdgeInsets.fromLTRB(40, 45, 10, 10),
+      padding: EdgeInsets.fromLTRB(40, 45, 30, 10),
       decoration: BoxDecoration(
         image: DecorationImage(
           image: AssetImage("assets/images/cv_template.png"),
