@@ -275,7 +275,23 @@ class _SingleCustomerState extends State<SingleCustomer> {
                         ),
                       ),
                       Expanded(
-                          child: getCustomerTransactions(widget.customerId))
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor),
+                          child: Transform.translate(
+                            offset: Offset(0.0, 10.0),
+                            child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(25.0),
+                                      topLeft: Radius.circular(25.0)),
+                                  color: Colors.white,
+                                ),
+                                child:
+                                    getCustomerTransactions(widget.customerId)),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                   floatingActionButtonLocation:

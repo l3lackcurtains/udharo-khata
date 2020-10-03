@@ -49,96 +49,124 @@ class _SettingsState extends State<Settings> {
               ],
             ),
           ),
-          ListView(
-            shrinkWrap: true,
-            children: <Widget>[
-              InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => BusinessInformation(),
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(color: Theme.of(context).primaryColor),
+              child: Transform.translate(
+                offset: Offset(0.0, 10.0),
+                child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(25.0),
+                          topLeft: Radius.circular(25.0)),
+                      color: Colors.white,
                     ),
-                  );
-                },
-                child: ListTile(
-                  leading: Image.asset(
-                    "assets/images/business.png",
-                    width: 30,
-                    height: 30,
-                    scale: 1.0,
-                  ),
-                  title: Text(
-                      AppLocalizations.of(context).translate('businessInfo')),
-                  subtitle: Text(AppLocalizations.of(context)
-                      .translate('businessInfoMeta')),
-                ),
+                    child: ListView(
+                      padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
+                      shrinkWrap: true,
+                      children: <Widget>[
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BusinessInformation(),
+                              ),
+                            );
+                          },
+                          child: ListTile(
+                            leading: Image.asset(
+                              "assets/images/business.png",
+                              width: 30,
+                              height: 30,
+                              scale: 1.0,
+                            ),
+                            title: Text(AppLocalizations.of(context)
+                                .translate('businessInfo')),
+                            subtitle: Text(AppLocalizations.of(context)
+                                .translate('businessInfoMeta')),
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Backup(),
+                              ),
+                            );
+                          },
+                          child: ListTile(
+                            leading: Image.asset(
+                              "assets/images/backup.png",
+                              width: 30,
+                              height: 30,
+                              scale: 1.0,
+                            ),
+                            title: Text(AppLocalizations.of(context)
+                                .translate('backupInfo')),
+                            subtitle: Text(AppLocalizations.of(context)
+                                .translate('backupInfoMeta')),
+                          ),
+                        ),
+                        ListTile(
+                          leading: Image.asset(
+                            "assets/images/lang.png",
+                            width: 30,
+                            height: 30,
+                            scale: 1.0,
+                          ),
+                          title: Text(AppLocalizations.of(context)
+                              .translate('languageInfo')),
+                          subtitle: Text(AppLocalizations.of(context)
+                              .translate('languageInfoMeta')),
+                          trailing: DropdownButton<String>(
+                            value: Provider.of<AppStateNotifier>(context)
+                                .appLocale,
+                            onChanged: (String newValue) async {
+                              await changeLanguage(context, newValue);
+                            },
+                            items: <String>["en", "ne"]
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Row(
+                                    children: [
+                                      Image.asset(
+                                        "assets/images/$value.png",
+                                        width: 18,
+                                      ),
+                                      SizedBox(width: 8),
+                                      Text(
+                                          value == "en" ? "English" : "नेपाली"),
+                                    ],
+                                  ));
+                            }).toList(),
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            Share.share(
+                                'Check out our blog: https://flutterblog.crumet.com');
+                          },
+                          child: ListTile(
+                            leading: Image.asset(
+                              "assets/images/share.png",
+                              width: 30,
+                              height: 30,
+                              scale: 1.0,
+                            ),
+                            title: Text(AppLocalizations.of(context)
+                                .translate('shareInfo')),
+                            subtitle: Text(AppLocalizations.of(context)
+                                .translate('shareInfoMeta')),
+                          ),
+                        ),
+                      ],
+                    )),
               ),
-              InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Backup(),
-                    ),
-                  );
-                },
-                child: ListTile(
-                  leading: Image.asset(
-                    "assets/images/backup.png",
-                    width: 30,
-                    height: 30,
-                    scale: 1.0,
-                  ),
-                  title: Text(
-                      AppLocalizations.of(context).translate('backupInfo')),
-                  subtitle: Text(
-                      AppLocalizations.of(context).translate('backupInfoMeta')),
-                ),
-              ),
-              ListTile(
-                leading: Image.asset(
-                  "assets/images/lang.png",
-                  width: 30,
-                  height: 30,
-                  scale: 1.0,
-                ),
-                title: Text(
-                    AppLocalizations.of(context).translate('languageInfo')),
-                subtitle: Text(
-                    AppLocalizations.of(context).translate('languageInfoMeta')),
-                trailing: DropdownButton<String>(
-                  value: Provider.of<AppStateNotifier>(context).appLocale,
-                  onChanged: (String newValue) async {
-                    await changeLanguage(context, newValue);
-                  },
-                  items: <String>["en", "ne"]
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                        value: value, child: Text(value));
-                  }).toList(),
-                ),
-              ),
-              InkWell(
-                onTap: () {
-                  Share.share(
-                      'Check out our blog: https://flutterblog.crumet.com');
-                },
-                child: ListTile(
-                  leading: Image.asset(
-                    "assets/images/share.png",
-                    width: 30,
-                    height: 30,
-                    scale: 1.0,
-                  ),
-                  title:
-                      Text(AppLocalizations.of(context).translate('shareInfo')),
-                  subtitle: Text(
-                      AppLocalizations.of(context).translate('shareInfoMeta')),
-                ),
-              ),
-            ],
-          )
+            ),
+          ),
         ],
       ),
     );

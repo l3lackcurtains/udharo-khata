@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:udharokhata/helpers/constants.dart';
 import 'package:udharokhata/helpers/stateNotifier.dart';
 import 'package:udharokhata/pages/customers.dart';
 import 'package:udharokhata/pages/settings.dart';
@@ -174,13 +175,20 @@ class _MyHomePageState extends State<MyHomePage> {
                   return DropdownMenuItem<Business>(
                     value: business,
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                      padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
                       child: Row(
                         children: [
                           business.logo != null
-                              ? Image.memory(
-                                  Base64Decoder().convert(business.logo),
-                                  width: 16,
+                              ? CircleAvatar(
+                                  backgroundColor: xDarkBlue,
+                                  radius: 15,
+                                  child: ClipOval(
+                                    child: Image.memory(
+                                      Base64Decoder().convert(business.logo),
+                                      width: 30,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
                                 )
                               : SizedBox(width: 16),
                           SizedBox(width: 8),

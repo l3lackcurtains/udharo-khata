@@ -77,8 +77,13 @@ class _CustomersState extends State<Customers> {
                       Container(
                         padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
                         child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                           elevation: 6,
-                          child: Padding(
+                          semanticContainer: true,
+                          clipBehavior: Clip.antiAliasWithSaveLayer,
+                          child: Container(
                             padding: EdgeInsets.fromLTRB(16, 4, 16, 4),
                             child: TextField(
                                 controller: _searchInputController,
@@ -108,7 +113,21 @@ class _CustomersState extends State<Customers> {
                   ),
                 ),
                 Expanded(
-                  child: getCustomersList(),
+                  child: Container(
+                    decoration:
+                        BoxDecoration(color: Theme.of(context).primaryColor),
+                    child: Transform.translate(
+                      offset: Offset(0.0, 10.0),
+                      child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(25.0),
+                                topLeft: Radius.circular(25.0)),
+                            color: Colors.white,
+                          ),
+                          child: getCustomersList()),
+                    ),
+                  ),
                 ),
               ],
             ),

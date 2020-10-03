@@ -307,16 +307,13 @@ class _AddTransactionState extends State<AddTransaction> {
                               labelText: AppLocalizations.of(context)
                                   .translate('transactionAmountLabel'),
                             ),
-                            autovalidate: false,
                             validator: (input) {
                               if (input.isEmpty) {
                                 return AppLocalizations.of(context)
-                                    .translate('transactionAmountLabelError');
+                                    .translate('transactionAmountError');
                               }
 
-                              final isDigitsOnly =
-                                  double.tryParse(input) != null;
-                              if (isDigitsOnly == null) {
+                              if (double.tryParse(input) == null) {
                                 return AppLocalizations.of(context)
                                     .translate('transactionAmountErrorNumber');
                               }
