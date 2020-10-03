@@ -45,6 +45,7 @@ dependencies:
   flutter_platform_widgets: ^0.60.2
   nepali_utils: ^2.2.1
   nepali_date_picker: ^4.1.0
+  loading: ^1.0.2
   
 dev_dependencies:
   intl_translation: ^0.17.1

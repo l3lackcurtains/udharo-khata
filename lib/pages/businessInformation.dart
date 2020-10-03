@@ -4,7 +4,6 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -23,9 +22,6 @@ class BusinessInformation extends StatefulWidget {
 
 class _BusinessInformationState extends State<BusinessInformation> {
   final BusinessBloc businessBloc = BusinessBloc();
-
-  String _pathPDF = "";
-  bool _pdfLoaded = false;
 
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -59,34 +55,11 @@ class _BusinessInformationState extends State<BusinessInformation> {
         _businessInfo = businessz;
       });
     }
-
-    setState(() {
-      _pdfLoaded = false;
-    });
-
-    await businessCardMaker();
-
-    final dir = await getExternalStorageDirectory();
-    setState(() {
-      _pathPDF = dir.path + "/business_card.pdf";
-      _pdfLoaded = true;
-    });
   }
 
   void buildPDF() async {
     if (!mounted) return;
-
-    setState(() {
-      _pdfLoaded = false;
-    });
-
     await businessCardMaker();
-    final dir = await getExternalStorageDirectory();
-
-    setState(() {
-      _pathPDF = dir.path + "/business_card.pdf";
-      _pdfLoaded = true;
-    });
   }
 
   Future<void> businessCardMaker() async {
@@ -157,15 +130,15 @@ class _BusinessInformationState extends State<BusinessInformation> {
                           crossAxisAlignment: pw.CrossAxisAlignment.center,
                           children: [
                             businessLogo != null
-                                ? pw.Image(businessLogo, width: 100)
-                                : pw.SizedBox(height: 60),
+                                ? pw.Image(businessLogo, height: 80)
+                                : pw.SizedBox(height: 80),
                             pw.SizedBox(height: 24),
                             pw.Text(
                               _businessInfo.companyName ?? "COMPANY NAME",
                               style: pw.TextStyle(
                                   fontSize: 36, color: semiWhiteColor),
                             ),
-                            pw.SizedBox(height: 36),
+                            pw.SizedBox(height: 32),
                             pw.RichText(
                               text: pw.TextSpan(
                                 text: _businessInfo.name.length > 0
@@ -340,9 +313,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
               alignment: Alignment.center,
               color: Colors.black87,
               height: 230,
-              child: _pdfLoaded
-                  ? PDFView(filePath: _pathPDF, defaultPage: 0)
-                  : CircularProgressIndicator(),
+              child: businessCardBox(),
             ),
             Container(
               color: Colors.white,
@@ -397,6 +368,118 @@ class _BusinessInformationState extends State<BusinessInformation> {
     );
   }
 
+  Widget businessCardBox() {
+    Uint8List businessLogo;
+    if (_businessInfo.logo != null && _businessInfo.logo.length > 0) {
+      businessLogo = Base64Decoder().convert(_businessInfo.logo);
+    }
+
+    return Container(
+      height: 700,
+      padding: EdgeInsets.fromLTRB(40, 45, 10, 10),
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage("assets/images/cv_template.png"),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  businessLogo != null
+                      ? Image.memory(
+                          businessLogo,
+                          height: 25,
+                        )
+                      : SizedBox(height: 30),
+                  SizedBox(height: 8),
+                  Text(
+                    _businessInfo.companyName ?? "COMPANY NAME",
+                    style: TextStyle(fontSize: 12, color: Color(0xFFF1F1F1)),
+                  ),
+                  SizedBox(height: 12),
+                  RichText(
+                    text: TextSpan(
+                      text: _businessInfo.name.length > 0
+                          ? _businessInfo.name.split(" ")[0]
+                          : "",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Color(0xFFFFFFFF),
+                        fontWeight: FontWeight.bold,
+                      ),
+                      children: <TextSpan>[
+                        TextSpan(
+                            text: _businessInfo.name.length > 0
+                                ? " ${_businessInfo.name.split(" ")[1]}"
+                                : "",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Color(0xFFFFFFFF),
+                              fontWeight: FontWeight.normal,
+                            )),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(_businessInfo.role,
+                      style: TextStyle(fontSize: 12, color: Color(0xFFF1F1F1))),
+                ]),
+          ),
+          Spacer(),
+          Container(
+            padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              _businessInfo.phone.length > 0
+                  ? Row(children: [
+                      Image.asset("assets/images/cv/phone.png", height: 10),
+                      SizedBox(width: 8),
+                      Text(_businessInfo.phone,
+                          style: TextStyle(
+                              fontSize: 12, color: Color(0xFFF1F1F1))),
+                    ])
+                  : Container(),
+              SizedBox(height: 12),
+              _businessInfo.address.length > 0
+                  ? Row(children: [
+                      Image.asset("assets/images/cv/location.png", height: 10),
+                      SizedBox(width: 10),
+                      Text(_businessInfo.address,
+                          style: TextStyle(
+                              fontSize: 12, color: Color(0xFFF1F1F1))),
+                    ])
+                  : Container(),
+              SizedBox(height: 12),
+              _businessInfo.email.length > 0
+                  ? Row(children: [
+                      Image.asset("assets/images/cv/email.png", height: 10),
+                      SizedBox(width: 8),
+                      Text(_businessInfo.email,
+                          style: TextStyle(
+                              fontSize: 12, color: Color(0xFFF1F1F1))),
+                    ])
+                  : Container(),
+              SizedBox(height: 12),
+              _businessInfo.website.length > 0
+                  ? Row(children: [
+                      Image.asset("assets/images/cv/website.png", height: 10),
+                      SizedBox(width: 8),
+                      Text(_businessInfo.website,
+                          style: TextStyle(
+                              fontSize: 12, color: Color(0xFFF1F1F1))),
+                    ])
+                  : Container(),
+            ]),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget businessCardForm(Business businessItem) {
     return Form(
         key: _formKey,
@@ -427,11 +510,6 @@ class _BusinessInformationState extends State<BusinessInformation> {
                   }
                 },
               ),
-              onFocusChange: (hasFocus) {
-                if (!hasFocus) {
-                  buildPDF();
-                }
-              },
             ),
             Focus(
               child: TextFormField(
@@ -450,11 +528,6 @@ class _BusinessInformationState extends State<BusinessInformation> {
                   }
                 },
               ),
-              onFocusChange: (hasFocus) {
-                if (!hasFocus) {
-                  buildPDF();
-                }
-              },
             ),
             Focus(
               child: TextFormField(
@@ -473,11 +546,6 @@ class _BusinessInformationState extends State<BusinessInformation> {
                   }
                 },
               ),
-              onFocusChange: (hasFocus) {
-                if (!hasFocus) {
-                  buildPDF();
-                }
-              },
             ),
             Focus(
               child: TextFormField(
@@ -496,11 +564,6 @@ class _BusinessInformationState extends State<BusinessInformation> {
                   }
                 },
               ),
-              onFocusChange: (hasFocus) {
-                if (!hasFocus) {
-                  buildPDF();
-                }
-              },
             ),
             Focus(
               child: TextFormField(
@@ -519,11 +582,6 @@ class _BusinessInformationState extends State<BusinessInformation> {
                   }
                 },
               ),
-              onFocusChange: (hasFocus) {
-                if (!hasFocus) {
-                  buildPDF();
-                }
-              },
             ),
             Focus(
               child: TextFormField(
@@ -542,11 +600,6 @@ class _BusinessInformationState extends State<BusinessInformation> {
                   }
                 },
               ),
-              onFocusChange: (hasFocus) {
-                if (!hasFocus) {
-                  buildPDF();
-                }
-              },
             ),
             Focus(
               child: TextFormField(
@@ -565,11 +618,6 @@ class _BusinessInformationState extends State<BusinessInformation> {
                   }
                 },
               ),
-              onFocusChange: (hasFocus) {
-                if (!hasFocus) {
-                  buildPDF();
-                }
-              },
             ),
           ],
         ) // Build this out in the next steps.
@@ -578,7 +626,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
 
   Widget companyImageWidget() {
     Uint8List companyImage;
-    if (_businessInfo.logo.length > 0) {
+    if (_businessInfo.logo != null && _businessInfo.logo.length > 0) {
       companyImage = Base64Decoder().convert(_businessInfo.logo);
     }
     return Row(

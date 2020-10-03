@@ -3,6 +3,8 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:loading/indicator/ball_beat_indicator.dart';
+import 'package:loading/loading.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -367,7 +369,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
     return FutureBuilder(
         future: transactionBloc.getTransactionsByCustomerId(cid),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.hasData && snapshot.data.length != 0) {
+          if (snapshot.hasData) {
             return Column(
               children: <Widget>[
                 Expanded(
@@ -521,7 +523,20 @@ class _SingleCustomerState extends State<SingleCustomer> {
               ],
             );
           }
-          return Container();
+
+          if (snapshot.hasError) {
+            return Container(
+              child: Text("Unknown Error."),
+            );
+          }
+          return Container(
+              alignment: Alignment.center,
+              width: MediaQuery.of(context).size.width,
+              height: 280,
+              child: Loading(
+                  indicator: BallBeatIndicator(),
+                  size: 60.0,
+                  color: Theme.of(context).accentColor));
         });
   }
 
