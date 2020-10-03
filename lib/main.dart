@@ -43,9 +43,10 @@ class MyApp extends StatelessWidget {
           GlobalWidgetsLocalizations.delegate,
         ],
         theme: ThemeData(
-            primaryColor: Color(0xFF192a56),
-            accentColor: Color(0xFFe74c3c),
-            fontFamily: 'Roboto'),
+          primaryColor: Color(0xFF192a56),
+          accentColor: Color(0xFFe74c3c),
+          fontFamily: 'Roboto',
+        ),
         home: SignIn(),
         locale: Locale(appState.appLocale),
       );

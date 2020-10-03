@@ -32,7 +32,7 @@ class _SettingsState extends State<Settings> {
                   alignment: Alignment.center,
                   padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
                   child: Image(
-                    image: AssetImage('assets/images/google_logo.png'),
+                    image: AssetImage('assets/images/wallet.png'),
                     height: 40,
                     width: 40,
                   ),

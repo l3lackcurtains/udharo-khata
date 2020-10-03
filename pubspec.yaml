@@ -71,6 +71,7 @@ flutter:
     - assets/images/no_image.jpg
     - assets/images/noimage_person.png
     - assets/images/google_logo.png
+    - assets/images/wallet.png
     - assets/images/cv_template.png
     - assets/images/share.png
     - assets/images/lang.png

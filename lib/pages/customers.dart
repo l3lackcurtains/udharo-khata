@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
 import 'package:udharokhata/helpers/appLocalizations.dart';
+import 'package:udharokhata/helpers/constants.dart';
 import 'package:udharokhata/helpers/conversion.dart';
 import 'package:udharokhata/helpers/generateCustomersPdf.dart';
 import 'package:udharokhata/helpers/stateNotifier.dart';
@@ -197,8 +198,9 @@ class _CustomersState extends State<Customers> {
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
-                          color:
-                              ttype == 'payment' ? Colors.black : Colors.red)),
+                          color: ttype == 'payment'
+                              ? xPlainTextGreen
+                              : xPlainTextRed)),
                 ]),
                 Padding(
                   padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
@@ -339,8 +341,9 @@ class _CustomersState extends State<Customers> {
                   style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w700,
-                      color:
-                          ttype == 'payment' ? Color(0xFFE3E3E3) : Colors.red)),
+                      color: ttype == 'payment'
+                          ? xDarkBlueTextGreen
+                          : xDarkBlueTextRed)),
             ]);
           }
 

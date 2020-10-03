@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
 import 'package:udharokhata/helpers/appLocalizations.dart';
+import 'package:udharokhata/helpers/constants.dart';
 import 'package:udharokhata/helpers/conversion.dart';
 import 'package:udharokhata/helpers/generateCustomerTransaction.dart';
 import 'package:udharokhata/helpers/stateNotifier.dart';
@@ -108,16 +109,16 @@ class _SingleCustomerState extends State<SingleCustomer> {
                   resizeToAvoidBottomPadding: true,
                   appBar: AppBar(
                       elevation: 0.0,
-                      backgroundColor: Colors.transparent,
+                      backgroundColor: Theme.of(context).primaryColor,
                       title: null,
                       iconTheme: IconThemeData(
-                        color: Colors.black, //change your color here
+                        color: Colors.white,
                       ),
                       actions: <Widget>[
                         // action button
                         IconButton(
                           icon: Icon(Icons.edit,
-                              size: 20.0, color: Colors.purple),
+                              size: 20.0, color: Colors.purple.shade200),
                           onPressed: () {
                             Navigator.push(
                               context,
@@ -130,8 +131,8 @@ class _SingleCustomerState extends State<SingleCustomer> {
                           },
                         ),
                         IconButton(
-                          icon:
-                              Icon(Icons.delete, size: 20.0, color: Colors.red),
+                          icon: Icon(Icons.delete,
+                              size: 20.0, color: Colors.red.shade200),
                           onPressed: () {
                             _showDeleteDialog(customer);
                           },
@@ -140,111 +141,136 @@ class _SingleCustomerState extends State<SingleCustomer> {
                       ]),
                   body: Column(
                     children: <Widget>[
-                      Padding(
+                      Container(
                         padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
-                              child: customerImage != null
-                                  ? CircleAvatar(
-                                      radius: 40.0,
-                                      child: ClipOval(
-                                          child: Image.memory(customerImage,
-                                              height: 80,
-                                              width: 80,
-                                              fit: BoxFit.cover)),
-                                      backgroundColor: Colors.transparent,
-                                    )
-                                  : CircleAvatar(
-                                      backgroundColor: Colors.purple.shade500,
-                                      radius: 40,
-                                      child: Icon(Icons.person,
-                                          color: Colors.purple.shade100,
-                                          size: 40.0),
-                                    ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(8, 12, 8, 8),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
-                                    child: Text(
-                                      customer.name,
-                                      style: TextStyle(
-                                          color: Colors.black, fontSize: 20),
-                                    ),
-                                  ),
-                                  Row(
+                        height: 140,
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor),
+                        child: Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                Container(
+                                  padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                                  child: customerImage != null
+                                      ? CircleAvatar(
+                                          radius: 30.0,
+                                          child: ClipOval(
+                                              child: Image.memory(customerImage,
+                                                  height: 60,
+                                                  width: 60,
+                                                  fit: BoxFit.cover)),
+                                          backgroundColor: Colors.transparent,
+                                        )
+                                      : CircleAvatar(
+                                          backgroundColor:
+                                              Colors.purple.shade500,
+                                          radius: 40,
+                                          child: Icon(Icons.person,
+                                              color: Colors.purple.shade100,
+                                              size: 40.0),
+                                        ),
+                                ),
+                                Container(
+                                  padding: EdgeInsets.all(8),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: <Widget>[
-                                      Icon(
-                                        Icons.phone,
-                                        color: Colors.brown.shade600,
-                                        size: 16.0,
-                                      ),
-                                      Padding(
+                                      Container(
                                         padding:
-                                            EdgeInsets.fromLTRB(8, 4, 4, 4),
-                                        child: Text(customer.phone),
+                                            EdgeInsets.fromLTRB(0, 0, 0, 4),
+                                        child: Text(
+                                          customer.name,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16),
+                                        ),
                                       ),
+                                      Row(
+                                        children: <Widget>[
+                                          Icon(
+                                            Icons.phone,
+                                            color: xLightWhite,
+                                            size: 12.0,
+                                          ),
+                                          Container(
+                                            padding:
+                                                EdgeInsets.fromLTRB(8, 4, 4, 4),
+                                            child: Text(
+                                              customer.phone,
+                                              style: TextStyle(
+                                                color: xLightWhite,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      customer.address != null &&
+                                              customer.address.length > 0
+                                          ? Row(
+                                              children: <Widget>[
+                                                Icon(
+                                                  Icons.location_on,
+                                                  color: Colors.brown.shade600,
+                                                  size: 16.0,
+                                                ),
+                                                Container(
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      8, 4, 4, 4),
+                                                  child: Text(customer.address),
+                                                ),
+                                              ],
+                                            )
+                                          : Container()
                                     ],
                                   ),
-                                  customer.address != null &&
-                                          customer.address.length > 0
-                                      ? Row(
-                                          children: <Widget>[
-                                            Icon(
-                                              Icons.location_on,
-                                              color: Colors.brown.shade600,
-                                              size: 16.0,
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.fromLTRB(
-                                                  8, 4, 4, 4),
-                                              child: Text(customer.address),
-                                            ),
-                                          ],
-                                        )
-                                      : Container()
+                                ),
+                              ],
+                            ),
+                            Spacer(),
+                            Container(
+                              padding: EdgeInsets.all(8),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    alignment: Alignment.centerLeft,
+                                    child: getCustomerTransactionsTotalWidget(
+                                        widget.customerId),
+                                  ),
+                                  Row(
+                                    children: [
+                                      FlatButton.icon(
+                                        onPressed: () {},
+                                        icon: Icon(Icons.share,
+                                            size: 20.0, color: Colors.green),
+                                        label: Text(
+                                          AppLocalizations.of(context)
+                                              .translate('shareText'),
+                                          style: TextStyle(color: xLightWhite),
+                                        ),
+                                      ),
+                                      FlatButton.icon(
+                                        onPressed: () {
+                                          generatePdf();
+                                        },
+                                        icon: Icon(Icons.picture_as_pdf,
+                                            size: 20.0, color: Colors.blue),
+                                        label: Text(
+                                            AppLocalizations.of(context)
+                                                .translate('exportText'),
+                                            style:
+                                                TextStyle(color: xLightWhite)),
+                                      )
+                                    ],
+                                  )
                                 ],
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              alignment: Alignment.centerLeft,
-                              child: getCustomerTransactionsTotalWidget(
-                                  widget.customerId),
-                            ),
-                            Row(
-                              children: [
-                                FlatButton.icon(
-                                  onPressed: () {},
-                                  icon: Icon(Icons.share,
-                                      size: 20.0, color: Colors.green),
-                                  label: Text(AppLocalizations.of(context)
-                                      .translate('shareText')),
-                                ),
-                                FlatButton.icon(
-                                  onPressed: () {
-                                    generatePdf();
-                                  },
-                                  icon: Icon(Icons.picture_as_pdf,
-                                      size: 20.0, color: Colors.blue),
-                                  label: Text(AppLocalizations.of(context)
-                                      .translate('exportText')),
-                                )
-                              ],
-                            )
                           ],
                         ),
                       ),
@@ -264,7 +290,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
                               Icons.arrow_upward,
                               size: 18,
                             ),
-                            backgroundColor: Colors.red.shade800,
+                            backgroundColor: xPlainTextRed,
                             onPressed: () {
                               Navigator.push(
                                 context,
@@ -286,7 +312,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
                               Icons.arrow_downward,
                               size: 18,
                             ),
-                            backgroundColor: Colors.green.shade800,
+                            backgroundColor: xPlainTextGreen,
                             onPressed: () {
                               Navigator.push(
                                 context,
@@ -335,29 +361,12 @@ class _SingleCustomerState extends State<SingleCustomer> {
               ttype = "credit";
             }
             if (total == 0) return Container();
-            return Chip(
-              backgroundColor: Colors.teal.shade100,
-              label: Row(mainAxisAlignment: MainAxisAlignment.end, children: <
-                  Widget>[
-                Text(amountFormat(lang, total.abs()),
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: ttype == 'payment' ? Colors.black : Colors.red)),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(4, 6, 4, 2),
-                  child: Text(
-                    ttype == "credit"
-                        ? AppLocalizations.of(context).translate('given')
-                        : AppLocalizations.of(context).translate('received'),
-                    style: TextStyle(
-                        color: Colors.black38,
-                        fontSize: 12,
-                        letterSpacing: 0.3,
-                        fontWeight: FontWeight.w800),
-                  ),
-                )
-              ]),
+            return Text(
+              amountFormat(lang, total.abs()),
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: ttype == 'payment' ? xPlainTextGreen : xPlainTextRed),
             );
           }
 
@@ -394,7 +403,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                   ),
                                 );
                               },
-                              child: Padding(
+                              child: Container(
                                 padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -477,13 +486,13 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                                         fontWeight:
                                                             FontWeight.bold,
                                                         fontSize: 16,
-                                                        color:
-                                                            transaction.ttype ==
-                                                                    'payment'
-                                                                ? Colors.black
-                                                                : Colors.red)),
+                                                        color: transaction
+                                                                    .ttype ==
+                                                                'payment'
+                                                            ? xPlainTextGreen
+                                                            : xPlainTextRed)),
                                               ]),
-                                              Padding(
+                                              Container(
                                                 padding: EdgeInsets.fromLTRB(
                                                     0, 4, 0, 0),
                                                 child: Text(
