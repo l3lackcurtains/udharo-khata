@@ -34,12 +34,16 @@ class _BackupState extends State<Backup> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Khata',
+        title: const Text('Backup',
             style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
                 fontSize: 24,
                 fontFamily: 'Poppins')),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         elevation: 0,
         backgroundColor: Colors.grey.shade100,
       ),
@@ -48,7 +52,7 @@ class _BackupState extends State<Backup> {
         child: Column(
           children: <Widget>[
             Image.asset(
-              "images/data-copy.jpg",
+              "assets/images/data-copy.jpg",
               width: 300,
             ),
             Column(

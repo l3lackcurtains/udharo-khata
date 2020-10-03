@@ -35,9 +35,28 @@ class _AddCustomerState extends State<AddCustomer> {
     } else {
       image = await picker.getImage(source: ImageSource.gallery);
     }
-    if (image != null) {
+
+    File rawImage = File(image.path);
+    // More Validation
+    if (rawImage != null && rawImage.lengthSync() > 200000) {
+      final snackBar = SnackBar(
+          content: Row(children: <Widget>[
+        Icon(
+          Icons.warning,
+          color: Colors.redAccent,
+        ),
+        Padding(
+            padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+            child:
+                Text(AppLocalizations.of(context).translate('imageSizeError')))
+      ]));
+      _scaffoldKey.currentState.showSnackBar(snackBar);
+      return;
+    }
+
+    if (rawImage != null) {
       setState(() {
-        _image = File(image.path);
+        _image = rawImage;
       });
     }
   }
@@ -217,23 +236,6 @@ class _AddCustomerState extends State<AddCustomer> {
     if (formState.validate()) {
       formState.save();
 
-      // More Validation
-      if (_image != null && _image.lengthSync() > 2000000) {
-        final snackBar = SnackBar(
-            content: Row(children: <Widget>[
-          Icon(
-            Icons.warning,
-            color: Colors.redAccent,
-          ),
-          Padding(
-              padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
-              child: Text(
-                  AppLocalizations.of(context).translate('imageSizeError')))
-        ]));
-        _scaffoldKey.currentState.showSnackBar(snackBar);
-        return;
-      }
-
       customer.name = _name;
       customer.phone = _phone;
       customer.address = _address;
@@ -245,7 +247,6 @@ class _AddCustomerState extends State<AddCustomer> {
 
       customer.businessId = selectedBusinessId;
 
-      // check image and its size (1MB)
       if (_image != null) {
         String base64Image = base64Encode(_image.readAsBytesSync());
         customer.image = base64Image;

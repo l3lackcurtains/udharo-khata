@@ -29,20 +29,37 @@ class _AddBusinessState extends State<AddBusiness> {
 
   Business _business = Business();
 
-  Future getImageFromGallery() async {
-    var image = await picker.getImage(source: ImageSource.gallery);
+  Future getImageFrom(String from) async {
+    var image;
+    if (from == 'camera') {
+      image = await picker.getImage(source: ImageSource.camera);
+    } else {
+      image = await picker.getImage(source: ImageSource.gallery);
+    }
 
-    setState(() {
-      _logo = File(image.path);
-    });
-  }
+    File rawImage = File(image.path);
 
-  Future getImageFromCamera() async {
-    var image = await picker.getImage(source: ImageSource.camera);
+    if (rawImage != null && rawImage.lengthSync() > 200000) {
+      final snackBar = SnackBar(
+          content: Row(children: <Widget>[
+        Icon(
+          Icons.warning,
+          color: Colors.redAccent,
+        ),
+        Padding(
+            padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+            child:
+                Text(AppLocalizations.of(context).translate('imageSizeError')))
+      ]));
+      _scaffoldKey.currentState.showSnackBar(snackBar);
+      return;
+    }
 
-    setState(() {
-      _logo = File(image.path);
-    });
+    if (rawImage != null) {
+      setState(() {
+        _logo = rawImage;
+      });
+    }
   }
 
   @override
@@ -165,7 +182,7 @@ class _AddBusinessState extends State<AddBusiness> {
                       .translate('uploadFromCamera'))),
               onPressed: () {
                 Navigator.of(context).pop();
-                getImageFromCamera();
+                getImageFrom('camera');
               },
             ),
             SimpleDialogOption(
@@ -175,7 +192,7 @@ class _AddBusinessState extends State<AddBusiness> {
                       .translate('uploadFromGallery'))),
               onPressed: () {
                 Navigator.of(context).pop();
-                getImageFromGallery();
+                getImageFrom('gallery');
               },
             ),
           ],

@@ -111,9 +111,28 @@ class _EditTransactionState extends State<EditTransaction> {
     } else {
       image = await picker.getImage(source: ImageSource.gallery);
     }
-    if (image != null) {
+
+    File rawImage = File(image.path);
+
+    if (rawImage != null && rawImage.lengthSync() > 200000) {
+      final snackBar = SnackBar(
+          content: Row(children: <Widget>[
+        Icon(
+          Icons.warning,
+          color: Colors.redAccent,
+        ),
+        Padding(
+            padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+            child:
+                Text(AppLocalizations.of(context).translate('imageSizeError')))
+      ]));
+      _scaffoldKey.currentState.showSnackBar(snackBar);
+      return;
+    }
+
+    if (rawImage != null) {
       setState(() {
-        _attachment = File(image.path);
+        _attachment = rawImage;
       });
     }
   }

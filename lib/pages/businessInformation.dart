@@ -36,6 +36,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
   }
 
   void downloadPdf() async {
+    await buildPDF();
     final dir = await getExternalStorageDirectory();
     final file = File(dir.path + "/business_card.pdf");
     OpenFile.open(file.path);
@@ -57,7 +58,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
     }
   }
 
-  void buildPDF() async {
+  Future<void> buildPDF() async {
     if (!mounted) return;
     await businessCardMaker();
   }
@@ -141,7 +142,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
                             pw.SizedBox(height: 32),
                             pw.RichText(
                               text: pw.TextSpan(
-                                text: _businessInfo.name.length > 0
+                                text: _businessInfo.name != null
                                     ? _businessInfo.name.split(" ")[0]
                                     : "",
                                 style: pw.TextStyle(
@@ -151,8 +152,8 @@ class _BusinessInformationState extends State<BusinessInformation> {
                                 ),
                                 children: <pw.TextSpan>[
                                   pw.TextSpan(
-                                      text: _businessInfo.name.length > 0
-                                          ? " ${_businessInfo.name.split(" ")[1]}"
+                                      text: _businessInfo.name != null
+                                          ? " ${_businessInfo.name.split(" ").length > 1 ? _businessInfo.name.split(" ")[1] : ""}"
                                           : "",
                                       style: pw.TextStyle(
                                         fontSize: 54,
@@ -386,6 +387,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
       child: Row(
         children: [
           Container(
+            width: 130,
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -403,8 +405,8 @@ class _BusinessInformationState extends State<BusinessInformation> {
                   SizedBox(height: 12),
                   RichText(
                     text: TextSpan(
-                      text: _businessInfo.name.length > 0
-                          ? _businessInfo.name.split(" ")[0]
+                      text: _businessInfo.name != null
+                          ? _businessInfo.name?.split(" ")[0]
                           : "",
                       style: TextStyle(
                         fontSize: 18,
@@ -413,8 +415,8 @@ class _BusinessInformationState extends State<BusinessInformation> {
                       ),
                       children: <TextSpan>[
                         TextSpan(
-                            text: _businessInfo.name.length > 0
-                                ? " ${_businessInfo.name.split(" ")[1]}"
+                            text: _businessInfo.name != null
+                                ? " ${_businessInfo.name.split(" ").length > 1 ? _businessInfo.name?.split(" ")[1] : ""}"
                                 : "",
                             style: TextStyle(
                               fontSize: 18,
