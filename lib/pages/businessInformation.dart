@@ -333,40 +333,43 @@ class _BusinessInformationState extends State<BusinessInformation> {
         elevation: 0,
         backgroundColor: Colors.grey.shade100,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              alignment: Alignment.center,
-              color: Colors.black87,
-              height: 230,
-              child: businessCardBox(),
+      body: Column(
+        children: [
+          Container(
+            alignment: Alignment.center,
+            color: Colors.black87,
+            height: 230,
+            child: businessCardBox(),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              physics: AlwaysScrollableScrollPhysics(),
+              child: Container(
+                padding: EdgeInsets.all(24),
+                child: FutureBuilder<Business>(
+                    future: _businessFuture,
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      Business businessItem = Business();
+                      if (snapshot.hasData && !_savingCompany) {
+                        businessItem = snapshot.data;
+                        return businessCardForm(businessItem);
+                      }
+                      return Center(
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: MediaQuery.of(context).size.width,
+                          height: 280,
+                          child: Loading(
+                              indicator: BallBeatIndicator(),
+                              size: 60.0,
+                              color: Theme.of(context).accentColor),
+                        ),
+                      );
+                    }),
+              ),
             ),
-            Container(
-              padding: EdgeInsets.all(24),
-              child: FutureBuilder<Business>(
-                  future: _businessFuture,
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    Business businessItem = Business();
-                    if (snapshot.hasData && !_savingCompany) {
-                      businessItem = snapshot.data;
-                      return businessCardForm(businessItem);
-                    }
-                    return Center(
-                      child: Container(
-                        alignment: Alignment.center,
-                        width: MediaQuery.of(context).size.width,
-                        height: 280,
-                        child: Loading(
-                            indicator: BallBeatIndicator(),
-                            size: 60.0,
-                            color: Theme.of(context).accentColor),
-                      ),
-                    );
-                  }),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
       bottomNavigationBar: BottomAppBar(
         child: Container(
