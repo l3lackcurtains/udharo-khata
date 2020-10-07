@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:udharokhata/blocs/businessBloc.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
@@ -26,6 +26,9 @@ Future<Uint8List> generateCustomerTransactionPdf(int customerId) async {
       await transactionBloc.getCustomerTransactionsTotal(customerId);
 
   Business businessInfo = Business();
+
+  final prefs = await SharedPreferences.getInstance();
+  String currency = prefs.getString("currency");
 
   businessInfo.id = 0;
   businessInfo.name = "";
@@ -50,6 +53,8 @@ Future<Uint8List> generateCustomerTransactionPdf(int customerId) async {
     total: transactionTotal,
     baseColor: PdfColors.teal,
     accentColor: PdfColors.blueGrey900,
+    currency: currency,
+    redColor: PdfColors.red700,
   );
 
   return await invoice.buildPdf(pageFormat);
@@ -64,6 +69,8 @@ class Invoice {
     this.total,
     this.baseColor,
     this.accentColor,
+    this.currency,
+    this.redColor,
   });
 
   final List<Transaction> transactions;
@@ -73,6 +80,8 @@ class Invoice {
   final double total;
   final PdfColor baseColor;
   final PdfColor accentColor;
+  final PdfColor redColor;
+  final String currency;
 
   static const _darkColor = PdfColors.blueGrey800;
   static const _lightColor = PdfColors.white;
@@ -83,19 +92,13 @@ class Invoice {
   PdfColor get _accentTextColor =>
       baseColor.luminance < 0.5 ? _lightColor : _darkColor;
 
-  double get _total => total;
-
-  double get _grandTotal => _total;
+  double get _grandTotal => total;
 
   PdfImage _logo;
 
   Future<Uint8List> buildPdf(PdfPageFormat pageFormat) async {
     // Create a PDF document.
     final doc = pw.Document();
-
-    final font1 = await rootBundle.load('assets/fonts/Poppins/Poppins-Regular.ttf');
-    final font2 = await rootBundle.load('assets/fonts/Poppins/Poppins-Regular.ttf');
-    final font3 = await rootBundle.load('assets/fonts/Poppins/Poppins-Regular.ttf');
 
     if (businessInfo.logo.length > 0) {
       Uint8List logo = Base64Decoder().convert(businessInfo.logo);
@@ -110,9 +113,6 @@ class Invoice {
       pw.MultiPage(
         pageTheme: _buildTheme(
           pageFormat,
-          font1 != null ? pw.Font.ttf(font1) : null,
-          font2 != null ? pw.Font.ttf(font2) : null,
-          font3 != null ? pw.Font.ttf(font3) : null,
         ),
         header: _buildHeader,
         footer: _buildFooter,
@@ -222,15 +222,9 @@ class Invoice {
     );
   }
 
-  pw.PageTheme _buildTheme(
-      PdfPageFormat pageFormat, pw.Font base, pw.Font bold, pw.Font italic) {
+  pw.PageTheme _buildTheme(PdfPageFormat pageFormat) {
     return pw.PageTheme(
       pageFormat: pageFormat,
-      theme: pw.ThemeData.withFont(
-        base: base,
-        bold: bold,
-        italic: italic,
-      ),
       buildBackground: (context) => pw.FullPage(
         ignoreMargins: true,
         child: pw.Stack(
@@ -282,15 +276,14 @@ class Invoice {
       children: [
         pw.Expanded(
           child: pw.Container(
-            margin: pw.EdgeInsets.symmetric(horizontal: 20),
             height: 70,
             child: pw.FittedBox(
               child: pw.Text(
                 'Total: ${_formatCurrency(_grandTotal)}',
                 style: pw.TextStyle(
-                  color: baseColor,
-                  fontStyle: pw.FontStyle.italic,
-                ),
+                    color: _grandTotal.isNegative ? redColor : baseColor,
+                    fontWeight: pw.FontWeight.bold,
+                    fontSize: 14),
               ),
             ),
           ),
@@ -390,7 +383,12 @@ class Invoice {
                   mainAxisAlignment: pw.MainAxisAlignment.end,
                   children: [
                     pw.Text('Total: '),
-                    pw.Text(_formatCurrency(_grandTotal)),
+                    pw.Text(
+                      _formatCurrency(_grandTotal),
+                      style: pw.TextStyle(
+                        color: _grandTotal.isNegative ? redColor : baseColor,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -417,8 +415,8 @@ class Invoice {
         borderRadius: 2,
         color: baseColor,
       ),
-      headerHeight: 25,
-      cellHeight: 40,
+      headerHeight: 30,
+      cellHeight: 30,
       cellAlignments: {
         0: pw.Alignment.centerLeft,
         1: pw.Alignment.centerLeft,
@@ -464,13 +462,17 @@ class Invoice {
       ),
     );
   }
-}
 
-String _formatCurrency(double amount) {
-  return '${amount.toStringAsFixed(2)}\$';
-}
+  String _formatCurrency(double amount) {
+    String neg = "";
+    if (amount.isNegative) {
+      neg = "-";
+    }
+    return neg + " " + currency + ' ${amount.abs().toStringAsFixed(2)}';
+  }
 
-String _formatDate(DateTime date) {
-  final format = DateFormat.yMd('en_US');
-  return format.format(date);
+  String _formatDate(DateTime date) {
+    final format = DateFormat.yMd('en_US');
+    return format.format(date);
+  }
 }

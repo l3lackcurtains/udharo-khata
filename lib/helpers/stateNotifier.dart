@@ -8,6 +8,8 @@ class AppStateNotifier extends ChangeNotifier {
   bool isDarkMode = false;
   int selectedBusiness = 0;
   String appLocale = "en";
+  String currency = "Rs";
+  String calendar = "en";
 
   void updateLocale(String locale) {
     this.appLocale = locale;
@@ -16,6 +18,16 @@ class AppStateNotifier extends ChangeNotifier {
 
   void updateSelectedBusiness(int bid) {
     this.selectedBusiness = bid;
+    notifyListeners();
+  }
+
+  void updateCurrency(String currency) {
+    this.currency = currency;
+    notifyListeners();
+  }
+
+  void updateCalendar(String calendar) {
+    this.calendar = calendar;
     notifyListeners();
   }
 }
@@ -46,4 +58,20 @@ Future<Null> changeSelectedBusiness(BuildContext context, int id) async {
   await prefs.setInt(key, id);
   Provider.of<AppStateNotifier>(context, listen: false)
       .updateSelectedBusiness(id);
+}
+
+Future<Null> changeCurrency(BuildContext context, String currency) async {
+  final prefs = await SharedPreferences.getInstance();
+  final key = 'currency';
+  await prefs.setString(key, currency);
+  Provider.of<AppStateNotifier>(context, listen: false)
+      .updateCurrency(currency);
+}
+
+Future<Null> changeCalendar(BuildContext context, String calendar) async {
+  final prefs = await SharedPreferences.getInstance();
+  final key = 'calendar';
+  await prefs.setString(key, calendar);
+  Provider.of<AppStateNotifier>(context, listen: false)
+      .updateCalendar(calendar);
 }

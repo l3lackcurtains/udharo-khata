@@ -248,7 +248,7 @@ class _AddBusinessState extends State<AddBusiness> {
 
       List<Business> businessesList = await _businessBloc.getBusinesss();
       _business.id = businessesList.length;
-
+      if (_business.id > 5) return;
       await _businessBloc.addBusiness(_business);
       changeSelectedBusiness(context, _business.id);
       Navigator.of(context).pop();

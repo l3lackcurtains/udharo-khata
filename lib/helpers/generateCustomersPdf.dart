@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:udharokhata/blocs/businessBloc.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
@@ -34,6 +34,9 @@ Future<Uint8List> generateCustomerPdf() async {
     customers.add(customer);
   });
 
+  final prefs = await SharedPreferences.getInstance();
+  String currency = prefs.getString("currency");
+
   Business businessInfo = Business();
 
   businessInfo.id = 0;
@@ -56,6 +59,8 @@ Future<Uint8List> generateCustomerPdf() async {
     businessInfo: businessInfo,
     baseColor: PdfColors.teal,
     accentColor: PdfColors.purple800,
+    currency: currency,
+    redColor: PdfColors.red700,
   );
 
   return await invoice.buildPdf(pageFormat);
@@ -67,12 +72,16 @@ class CustomersList {
     this.businessInfo,
     this.baseColor,
     this.accentColor,
+    this.currency,
+    this.redColor,
   });
 
   final List<Map<String, dynamic>> customers;
   final Business businessInfo;
   final PdfColor baseColor;
   final PdfColor accentColor;
+  final PdfColor redColor;
+  final String currency;
 
   static const _darkColor = PdfColors.blueGrey800;
   static const _lightColor = PdfColors.white;
@@ -92,12 +101,7 @@ class CustomersList {
   PdfImage _logo;
 
   Future<Uint8List> buildPdf(PdfPageFormat pageFormat) async {
-    // Create a PDF document.
     final doc = pw.Document();
-
-    final font1 = await rootBundle.load('assets/fonts/Poppins/Poppins-Regular.ttf');
-    final font2 = await rootBundle.load('assets/fonts/Poppins/Poppins-Regular.ttf');
-    final font3 = await rootBundle.load('assets/fonts/Poppins/Poppins-Regular.ttf');
 
     if (businessInfo.logo.length > 0) {
       Uint8List logo = Base64Decoder().convert(businessInfo.logo);
@@ -106,15 +110,11 @@ class CustomersList {
         bytes: logo,
       );
     }
-
     // Add page to the PDF
     doc.addPage(
       pw.MultiPage(
         pageTheme: _buildTheme(
           pageFormat,
-          font1 != null ? pw.Font.ttf(font1) : null,
-          font2 != null ? pw.Font.ttf(font2) : null,
-          font3 != null ? pw.Font.ttf(font3) : null,
         ),
         header: _buildHeader,
         footer: _buildFooter,
@@ -223,15 +223,9 @@ class CustomersList {
     );
   }
 
-  pw.PageTheme _buildTheme(
-      PdfPageFormat pageFormat, pw.Font base, pw.Font bold, pw.Font italic) {
+  pw.PageTheme _buildTheme(PdfPageFormat pageFormat) {
     return pw.PageTheme(
       pageFormat: pageFormat,
-      theme: pw.ThemeData.withFont(
-        base: base,
-        bold: bold,
-        italic: italic,
-      ),
       buildBackground: (context) => pw.FullPage(
         ignoreMargins: true,
         child: pw.Stack(
@@ -283,14 +277,13 @@ class CustomersList {
       children: [
         pw.Expanded(
           child: pw.Container(
-            margin: pw.EdgeInsets.symmetric(horizontal: 20),
             height: 70,
             child: pw.FittedBox(
               child: pw.Text(
-                'Total: ${_formatCurrency(_grandTotal)}',
+                '${_formatCurrency(_grandTotal)}',
                 style: pw.TextStyle(
-                  color: baseColor,
-                  fontStyle: pw.FontStyle.italic,
+                  color: _grandTotal.isNegative ? redColor : baseColor,
+                  fontWeight: pw.FontWeight.bold,
                 ),
               ),
             ),
@@ -318,7 +311,7 @@ class CustomersList {
                         ),
                       ),
                       pw.TextSpan(
-                        text: businessInfo.address,
+                        text: businessInfo.address ?? "",
                         style: pw.TextStyle(
                           fontWeight: pw.FontWeight.normal,
                           fontSize: 10,
@@ -390,7 +383,12 @@ class CustomersList {
                     mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     children: [
                       pw.Text('Total:'),
-                      pw.Text(_formatCurrency(_grandTotal)),
+                      pw.Text(
+                        _formatCurrency(_grandTotal),
+                        style: pw.TextStyle(
+                          color: _grandTotal.isNegative ? redColor : baseColor,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -409,31 +407,31 @@ class CustomersList {
       border: null,
       cellAlignment: pw.Alignment.centerLeft,
       headerDecoration: pw.BoxDecoration(
-        borderRadius: 2,
+        borderRadius: 1,
         color: baseColor,
       ),
-      headerHeight: 25,
-      cellHeight: 40,
+      headerHeight: 30,
+      cellHeight: 30,
       cellAlignments: {
         0: pw.Alignment.centerLeft,
-        1: pw.Alignment.center,
-        2: pw.Alignment.center,
-        3: pw.Alignment.center,
-        4: pw.Alignment.center,
+        1: pw.Alignment.centerLeft,
+        2: pw.Alignment.centerLeft,
+        3: pw.Alignment.centerLeft,
+        4: pw.Alignment.centerLeft,
       },
       headerStyle: pw.TextStyle(
         color: _baseTextColor,
         fontSize: 10,
         fontWeight: pw.FontWeight.bold,
       ),
-      cellStyle: const pw.TextStyle(
+      cellStyle: pw.TextStyle(
         color: _darkColor,
         fontSize: 10,
       ),
       rowDecoration: pw.BoxDecoration(
         border: pw.BoxBorder(
           bottom: true,
-          color: accentColor,
+          color: baseColor,
           width: .5,
         ),
       ),
@@ -448,20 +446,24 @@ class CustomersList {
             customers[row]['id'].toString(),
             customers[row]['name'],
             customers[row]['phone'],
-            customers[row]['address'],
+            customers[row]['address'] ?? "",
             _formatCurrency(customers[row]['amount'])
           ];
         },
       ),
     );
   }
-}
 
-String _formatCurrency(double amount) {
-  return '${amount.toStringAsFixed(2)}\$';
-}
+  String _formatCurrency(double amount) {
+    String neg = "";
+    if (amount.isNegative) {
+      neg = "-";
+    }
+    return neg + " " + currency + ' ${amount.abs().toStringAsFixed(2)}';
+  }
 
-String _formatDate(DateTime date) {
-  final format = DateFormat.yMd('en_US');
-  return format.format(date);
+  String _formatDate(DateTime date) {
+    final format = DateFormat.yMd('en_US');
+    return format.format(date);
+  }
 }

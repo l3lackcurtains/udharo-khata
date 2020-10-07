@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import 'package:udharokhata/helpers/appLocalizations.dart';
+import 'package:udharokhata/helpers/constants.dart';
 import 'package:udharokhata/helpers/stateNotifier.dart';
 import 'package:udharokhata/pages/backup.dart';
 import 'package:udharokhata/pages/businessInformation.dart';
@@ -12,6 +13,9 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
+  final _formKey = GlobalKey<FormState>();
+  String _currency = "Rs";
+
   @override
   void initState() {
     super.initState();
@@ -79,7 +83,6 @@ class _SettingsState extends State<Settings> {
                               "assets/images/business.png",
                               width: 30,
                               height: 30,
-                              scale: 1.0,
                             ),
                             title: Text(AppLocalizations.of(context)
                                 .translate('businessInfo')),
@@ -101,7 +104,6 @@ class _SettingsState extends State<Settings> {
                               "assets/images/backup.png",
                               width: 30,
                               height: 30,
-                              scale: 1.0,
                             ),
                             title: Text(AppLocalizations.of(context)
                                 .translate('backupInfo')),
@@ -114,7 +116,6 @@ class _SettingsState extends State<Settings> {
                             "assets/images/lang.png",
                             width: 30,
                             height: 30,
-                            scale: 1.0,
                           ),
                           title: Text(AppLocalizations.of(context)
                               .translate('languageInfo')),
@@ -144,6 +145,59 @@ class _SettingsState extends State<Settings> {
                             }).toList(),
                           ),
                         ),
+                        ListTile(
+                          leading: Image.asset(
+                            "assets/images/calendar.png",
+                            width: 30,
+                            height: 30,
+                          ),
+                          title: Text("Change Calendar"),
+                          subtitle: Text("Change Calendar type"),
+                          trailing: DropdownButton<String>(
+                            value:
+                                Provider.of<AppStateNotifier>(context).calendar,
+                            onChanged: (String newValue) async {
+                              await changeCalendar(context, newValue);
+                            },
+                            items: <String>["en", "ne"]
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                          value == "en" ? "English" : "Nepali"),
+                                    ],
+                                  ));
+                            }).toList(),
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            showBottomSheet(
+                              context: context,
+                              builder: (context) => StatefulBuilder(builder:
+                                  (BuildContext context, StateSetter setState) {
+                                return Transform.translate(
+                                  offset: Offset(0.0, 80.0),
+                                  child: contactForm(context),
+                                );
+                              }),
+                            );
+                          },
+                          child: ListTile(
+                            leading: Image.asset(
+                              "assets/images/currency.png",
+                              width: 30,
+                              height: 30,
+                            ),
+                            title: Text("Change Currency"),
+                            subtitle: Text("Set the currency you use"),
+                            trailing: Text(
+                                Provider.of<AppStateNotifier>(context)
+                                    .currency),
+                          ),
+                        ),
                         InkWell(
                           onTap: () {
                             Share.share(
@@ -154,7 +208,6 @@ class _SettingsState extends State<Settings> {
                               "assets/images/share.png",
                               width: 30,
                               height: 30,
-                              scale: 1.0,
                             ),
                             title: Text(AppLocalizations.of(context)
                                 .translate('shareInfo')),
@@ -168,6 +221,60 @@ class _SettingsState extends State<Settings> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget contactForm(BuildContext context) {
+    _currency = Provider.of<AppStateNotifier>(context).currency;
+    return Container(
+      height: 350,
+      padding: EdgeInsets.all(36),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+          color: Colors.blueGrey.shade100),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'Set Currency',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            ),
+            TextFormField(
+              textAlign: TextAlign.left,
+              initialValue: _currency,
+              decoration: InputDecoration(hintText: 'Currency'),
+              onSaved: (String val) {
+                _currency = val;
+              },
+              validator: (value) {
+                if (value.isEmpty) {
+                  return 'Currency empty';
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: 16.0),
+            RaisedButton(
+              color: xDarkBlue,
+              child: Text(
+                'Change',
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () async {
+                if (_formKey.currentState.validate()) {
+                  _formKey.currentState.save();
+                  await changeCurrency(context, _currency);
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

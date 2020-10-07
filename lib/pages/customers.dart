@@ -198,7 +198,6 @@ class _CustomersState extends State<Customers> {
   }
 
   Widget getCustomerTransactionsTotalWidget(int cid) {
-    String lang = Provider.of<AppStateNotifier>(context).appLocale;
     return FutureBuilder(
         future: transactionBloc.getCustomerTransactionsTotal(cid),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -213,7 +212,7 @@ class _CustomersState extends State<Customers> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 Row(children: <Widget>[
-                  Text(amountFormat(lang, total.abs()),
+                  Text(amountFormat(context, total.abs()),
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -343,7 +342,6 @@ class _CustomersState extends State<Customers> {
   Widget getBusinessTransactionsTotalWidget() {
     int bid = Provider.of<AppStateNotifier>(context).selectedBusiness;
     if (bid == null) return Container();
-    String lang = Provider.of<AppStateNotifier>(context).appLocale;
     return FutureBuilder(
         future: transactionBloc.getBusinessTransactionsTotal(bid),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -356,7 +354,7 @@ class _CustomersState extends State<Customers> {
             }
 
             return Row(children: <Widget>[
-              Text(amountFormat(lang, total.abs()),
+              Text(amountFormat(context, total.abs()),
                   style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w700,

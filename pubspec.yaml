@@ -80,6 +80,8 @@ flutter:
     - assets/images/cv_template.png
     - assets/images/share.png
     - assets/images/lang.png
+    - assets/images/calendar.png
+    - assets/images/currency.png
     - assets/images/backup.png
     - assets/images/business.png
     - assets/images/data-copy.jpg

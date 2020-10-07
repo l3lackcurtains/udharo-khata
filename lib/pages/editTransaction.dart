@@ -348,11 +348,7 @@ class _EditTransactionState extends State<EditTransaction> {
                                   Icons.calendar_today,
                                   color: Colors.grey.shade600,
                                 ),
-                                label: Text(formatDate(
-                                    Provider.of<AppStateNotifier>(context,
-                                            listen: false)
-                                        .appLocale,
-                                    _date)['full']),
+                                label: Text(formatDate(context, _date)['full']),
                                 onPressed: () {
                                   _selectDate(context);
                                 },

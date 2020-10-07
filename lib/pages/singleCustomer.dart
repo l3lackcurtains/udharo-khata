@@ -7,14 +7,12 @@ import 'package:loading/indicator/ball_beat_indicator.dart';
 import 'package:loading/loading.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:provider/provider.dart';
 import 'package:udharokhata/blocs/customerBloc.dart';
 import 'package:udharokhata/blocs/transactionBloc.dart';
 import 'package:udharokhata/helpers/appLocalizations.dart';
 import 'package:udharokhata/helpers/constants.dart';
 import 'package:udharokhata/helpers/conversion.dart';
 import 'package:udharokhata/helpers/generateCustomerTransaction.dart';
-import 'package:udharokhata/helpers/stateNotifier.dart';
 import 'package:udharokhata/main.dart';
 import 'package:udharokhata/models/customer.dart';
 import 'package:udharokhata/models/transaction.dart';
@@ -368,7 +366,6 @@ class _SingleCustomerState extends State<SingleCustomer> {
   }
 
   Widget getCustomerTransactionsTotalWidget(int cid) {
-    String lang = Provider.of<AppStateNotifier>(context).appLocale;
     return FutureBuilder(
         future: transactionBloc.getCustomerTransactionsTotal(cid),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -380,7 +377,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
             }
             if (total == 0) return Container();
             return Text(
-              amountFormat(lang, total.abs()),
+              amountFormat(context, total.abs()),
               style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w700,
@@ -405,10 +402,8 @@ class _SingleCustomerState extends State<SingleCustomer> {
                       itemCount: snapshot.data.length,
                       itemBuilder: (context, itemIndex) {
                         Transaction transaction = snapshot.data[itemIndex];
-                        String lang =
-                            Provider.of<AppStateNotifier>(context).appLocale;
                         Map<String, String> dateFromatted =
-                            formatDate(lang, transaction.date);
+                            formatDate(context, transaction.date);
                         return Column(
                           children: <Widget>[
                             FlatButton(
@@ -497,7 +492,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                               Row(children: <Widget>[
                                                 Text(
                                                     amountFormat(
-                                                        lang,
+                                                        context,
                                                         transaction.amount
                                                             .abs()),
                                                     style: TextStyle(

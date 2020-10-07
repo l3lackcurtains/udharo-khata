@@ -174,7 +174,7 @@ class _EditCustomerState extends State<EditCustomer> {
       children: <Widget>[
         Center(
           child: _image == null
-              ? customerImage == null
+              ? image == ""
                   ? Image(
                       image: AssetImage('assets/images/noimage_person.png'),
                       width: 60,
