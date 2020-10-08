@@ -151,8 +151,10 @@ class _SettingsState extends State<Settings> {
                             width: 30,
                             height: 30,
                           ),
-                          title: Text("Change Calendar"),
-                          subtitle: Text("Change Calendar type"),
+                          title: Text(AppLocalizations.of(context)
+                              .translate('changeCalendar')),
+                          subtitle: Text(AppLocalizations.of(context)
+                              .translate('changeCalendarMeta')),
                           trailing: DropdownButton<String>(
                             value:
                                 Provider.of<AppStateNotifier>(context).calendar,
@@ -191,8 +193,10 @@ class _SettingsState extends State<Settings> {
                               width: 30,
                               height: 30,
                             ),
-                            title: Text("Change Currency"),
-                            subtitle: Text("Set the currency you use"),
+                            title: Text(AppLocalizations.of(context)
+                                .translate('changeCurrency')),
+                            subtitle: Text(AppLocalizations.of(context)
+                                .translate('changeCurrencyMeta')),
                             trailing: Text(
                                 Provider.of<AppStateNotifier>(context)
                                     .currency),
@@ -241,19 +245,19 @@ class _SettingsState extends State<Settings> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'Set Currency',
+              AppLocalizations.of(context).translate('changeCurrency'),
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             TextFormField(
               textAlign: TextAlign.left,
               initialValue: _currency,
-              decoration: InputDecoration(hintText: 'Currency'),
               onSaved: (String val) {
                 _currency = val;
               },
               validator: (value) {
                 if (value.isEmpty) {
-                  return 'Currency empty';
+                  return AppLocalizations.of(context)
+                      .translate('currencyError');
                 }
                 return null;
               },
@@ -262,7 +266,7 @@ class _SettingsState extends State<Settings> {
             RaisedButton(
               color: xDarkBlue,
               child: Text(
-                'Change',
+                AppLocalizations.of(context).translate('updateCurrency'),
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () async {

@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:loading/indicator/ball_beat_indicator.dart';
 import 'package:loading/loading.dart';
+import 'package:udharokhata/helpers/appLocalizations.dart';
 import 'package:udharokhata/helpers/constants.dart';
 import 'package:udharokhata/helpers/firebaseBackup.dart';
 import 'package:udharokhata/pages/signin.dart';
@@ -58,7 +59,7 @@ class _BackupState extends State<Backup> {
       key: _scaffoldKey,
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Backup',
+        title: Text(AppLocalizations.of(context).translate('backupInfo'),
             style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
@@ -94,7 +95,8 @@ class _BackupState extends State<Backup> {
                         if (restored) {
                           _scaffoldKey.currentState.showSnackBar(SnackBar(
                             content: Text(
-                              "Backup restored.",
+                              AppLocalizations.of(context)
+                                  .translate('backupRestored'),
                             ),
                           ));
                         }
@@ -103,7 +105,8 @@ class _BackupState extends State<Backup> {
                           _absorbing = false;
                         });
                       },
-                      label: Text("Restore Now"),
+                      label: Text(
+                          AppLocalizations.of(context).translate('restoreNow')),
                     ),
                     SizedBox(
                       height: 8,
@@ -123,7 +126,8 @@ class _BackupState extends State<Backup> {
                         if (res) {
                           _scaffoldKey.currentState.showSnackBar(SnackBar(
                             content: Text(
-                              "Backup Successful",
+                              AppLocalizations.of(context)
+                                  .translate('backupDone'),
                             ),
                           ));
                         }
@@ -133,14 +137,14 @@ class _BackupState extends State<Backup> {
                         });
                       },
                       label: Text(
-                        "Backup to the cloud",
+                        AppLocalizations.of(context)
+                            .translate('backupToTheCloud'),
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
                     SizedBox(
                       height: 24,
                     ),
-                    Text("We backup your data every weekend"),
                   ],
                 ),
               ],

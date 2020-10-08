@@ -71,6 +71,15 @@
   "companyEmailLabel": "Company Email",
   "companyEmailLabelMeta": "Insert Company Email",
   "companyWebsiteLabel": "Company Website",
-  "companyWebsiteLabelMeta": "Insert Company Website"
-
+  "companyWebsiteLabelMeta": "Insert Company Website",
+  "changeCalendar": "Change Calendar",
+  "changeCalendarMeta": "Choose calendar you want to use",
+  "changeCurrency": "Change currency",
+  "changeCurrencyMeta": "Set your preferred currency",
+  "restoreNow": "Restore Now",
+  "backupToTheCloud": "Backup to the cloud",
+  "updateCurrency": "Update Currency",
+  "currencyError": "Currency empty",
+  "backupRestored": "Backup restored successfully",
+  "backupDone": "Backup successfully done"
 }

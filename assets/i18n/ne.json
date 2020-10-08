@@ -71,5 +71,15 @@
   "companyEmailLabel": "कम्पनीको ईमेल",
   "companyEmailLabelMeta": "कृपया कम्पनीको ईमेल नम्बर टाइप गर्नुहोस्",
   "companyWebsiteLabel": "कम्पनीको वेबसाइट",
-  "companyWebsiteLabelMeta": "कृपया कम्पनीको वेबसाइट नम्बर टाइप गर्नुहोस्"
+  "companyWebsiteLabelMeta": "कृपया कम्पनीको वेबसाइट नम्बर टाइप गर्नुहोस्",
+  "changeCalendar": "क्यालेन्डर परिवर्तन गर्नुहोस्",
+  "changeCalendarMeta": "तपाईले चाहानुभएको क्यालेन्डर छनौट गर्नुहोस्",
+  "changeCurrency": "मुद्रा परिवर्तन गर्नुहोस्",
+  "changeCurrencyMeta": "आफ्नो मुद्रा प्रयोग गर्नुहोस्",
+  "restoreNow": "पुनर्स्थापना गर्नुहोस्",
+  "backupToTheCloud": "क्लाउडमा ब्याकअप गर्नुहोस्",
+  "updateCurrency": "मुद्रा अपडेट गर्नुहोस्",
+  "currencyError": "मुद्रा खाली छ",
+  "backupRestored": "ब्याकअप सफलतापूर्वक पुनःस्थापना गरियो",
+  "backupDone": "ब्याकअप सफलतापूर्वक सम्पन्न भयो"
 }
