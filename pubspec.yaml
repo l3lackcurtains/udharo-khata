@@ -48,7 +48,7 @@ dependencies:
   nepali_utils: ^2.2.1
   nepali_date_picker: ^4.1.0
   loading: ^1.0.2
-  flutter_native_image: ^0.0.5
+  flutter_native_image: ^0.0.5+3
   flutter_launcher_icons: ^0.8.1
   
 dev_dependencies:
