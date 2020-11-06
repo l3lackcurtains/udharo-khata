@@ -311,7 +311,6 @@ class _EditTransactionState extends State<EditTransaction> {
                               labelText: AppLocalizations.of(context)
                                   .translate('transactionAmountLabel'),
                             ),
-                            autovalidate: false,
                             validator: (input) {
                               if (input.isEmpty) {
                                 return AppLocalizations.of(context)
@@ -336,7 +335,6 @@ class _EditTransactionState extends State<EditTransaction> {
                               labelText: AppLocalizations.of(context)
                                   .translate('transactionCommentLabel'),
                             ),
-                            autovalidate: false,
                             maxLines: 3,
                             onSaved: (input) => _comment = input,
                           ),

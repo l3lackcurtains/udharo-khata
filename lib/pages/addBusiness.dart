@@ -127,7 +127,6 @@ class _AddBusinessState extends State<AddBusiness> {
                       labelText: AppLocalizations.of(context)
                           .translate('companyNameLabel'),
                     ),
-                    autovalidate: false,
                     validator: (input) {
                       if (input.isEmpty) {
                         return AppLocalizations.of(context)

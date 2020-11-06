@@ -49,11 +49,18 @@ dependencies:
   nepali_date_picker: ^4.1.0
   loading: ^1.0.2
   flutter_native_image: ^0.0.5
+  flutter_launcher_icons: ^0.8.1
   
 dev_dependencies:
   intl_translation: ^0.17.1
   flutter_test:
     sdk: flutter
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/logo-512.png"
+
 flutter:
   uses-material-design: true
   fonts:
@@ -74,7 +81,7 @@ flutter:
     - assets/images/no_image.jpg
     - assets/images/noimage_person.png
     - assets/images/google_logo.png
-    - assets/images/wallet.png
+    - assets/images/logo-long.png
     - assets/images/en.png
     - assets/images/ne.png
     - assets/images/cv_template.png

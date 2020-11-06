@@ -503,7 +503,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               _businessInfo.phone != null && _businessInfo.phone.length > 0
                   ? Row(children: [
-                      Image.asset("assets/images/cv/phone.png", height: 10),
+                      Image(image: AssetImage("assets/images/cv/phone.png"), height: 10),
                       SizedBox(width: 8),
                       Text(_businessInfo.phone,
                           style: TextStyle(
@@ -513,7 +513,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
               SizedBox(height: 12),
               _businessInfo.address != null && _businessInfo.address.length > 0
                   ? Row(children: [
-                      Image.asset("assets/images/cv/location.png", height: 10),
+                      Image(image: AssetImage("assets/images/cv/location.png"), height: 10),
                       SizedBox(width: 10),
                       Text(_businessInfo.address,
                           style: TextStyle(
@@ -523,7 +523,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
               SizedBox(height: 12),
               _businessInfo.email != null && _businessInfo.email.length > 0
                   ? Row(children: [
-                      Image.asset("assets/images/cv/email.png", height: 10),
+                      Image(image: AssetImage("assets/images/cv/email.png"), height: 10),
                       SizedBox(width: 8),
                       Text(_businessInfo.email,
                           style: TextStyle(
@@ -533,7 +533,7 @@ class _BusinessInformationState extends State<BusinessInformation> {
               SizedBox(height: 12),
               _businessInfo.website != null && _businessInfo.website.length > 0
                   ? Row(children: [
-                      Image.asset("assets/images/cv/website.png", height: 10),
+                      Image(image: AssetImage("assets/images/cv/website.png"), height: 10),
                       SizedBox(width: 8),
                       Text(_businessInfo.website,
                           style: TextStyle(

@@ -36,9 +36,8 @@ class _SettingsState extends State<Settings> {
                   alignment: Alignment.center,
                   padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
                   child: Image(
-                    image: AssetImage('assets/images/wallet.png'),
-                    height: 40,
-                    width: 40,
+                    image: AssetImage('assets/images/logo-long.png'),
+                    width: 130,
                   ),
                 ),
                 Container(
@@ -79,8 +78,9 @@ class _SettingsState extends State<Settings> {
                             );
                           },
                           child: ListTile(
-                            leading: Image.asset(
-                              "assets/images/business.png",
+                            leading: Image(
+                              image: AssetImage(
+                              "assets/images/business.png"),
                               width: 30,
                               height: 30,
                             ),
@@ -100,8 +100,8 @@ class _SettingsState extends State<Settings> {
                             );
                           },
                           child: ListTile(
-                            leading: Image.asset(
-                              "assets/images/backup.png",
+                            leading: Image(image: AssetImage(
+                              "assets/images/backup.png"),
                               width: 30,
                               height: 30,
                             ),
@@ -112,8 +112,9 @@ class _SettingsState extends State<Settings> {
                           ),
                         ),
                         ListTile(
-                          leading: Image.asset(
-                            "assets/images/lang.png",
+                          leading: Image(
+                            image: AssetImage(
+                            "assets/images/lang.png"),
                             width: 30,
                             height: 30,
                           ),
@@ -133,8 +134,9 @@ class _SettingsState extends State<Settings> {
                                   value: value,
                                   child: Row(
                                     children: [
-                                      Image.asset(
-                                        "assets/images/$value.png",
+                                      Image(
+                                        image: AssetImage(
+                                        "assets/images/$value.png"),
                                         width: 18,
                                       ),
                                       SizedBox(width: 8),
@@ -146,8 +148,8 @@ class _SettingsState extends State<Settings> {
                           ),
                         ),
                         ListTile(
-                          leading: Image.asset(
-                            "assets/images/calendar.png",
+                          leading: Image(image: AssetImage(
+                            "assets/images/calendar.png"),
                             width: 30,
                             height: 30,
                           ),
@@ -188,8 +190,8 @@ class _SettingsState extends State<Settings> {
                             );
                           },
                           child: ListTile(
-                            leading: Image.asset(
-                              "assets/images/currency.png",
+                            leading: Image(image: AssetImage(
+                              "assets/images/currency.png"),
                               width: 30,
                               height: 30,
                             ),
@@ -208,8 +210,9 @@ class _SettingsState extends State<Settings> {
                                 'Check out our blog: https://flutterblog.crumet.com');
                           },
                           child: ListTile(
-                            leading: Image.asset(
-                              "assets/images/share.png",
+                            leading: Image(
+                              image: AssetImage(
+                              "assets/images/share.png"),
                               width: 30,
                               height: 30,
                             ),

@@ -137,12 +137,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context).translate('title'),
-            style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-                fontFamily: 'Poppins')),
+        title: Image(
+                    image: AssetImage('assets/images/logo-long.png'),
+                    width: 100,
+                  ),
         elevation: 0,
         backgroundColor: Theme.of(context).primaryColor,
         actions: [
@@ -177,7 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
                       child: Row(
                         children: [
-                          business.logo != null
+                          business.logo != ""
                               ? CircleAvatar(
                                   backgroundColor: xDarkBlue,
                                   radius: 15,
@@ -238,11 +236,10 @@ class _MyHomePageState extends State<MyHomePage> {
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
                 icon: Icon(Icons.people),
-                title:
-                    Text(AppLocalizations.of(context).translate('customers'))),
+                label: AppLocalizations.of(context).translate('customers')),
             BottomNavigationBarItem(
                 icon: Icon(Icons.menu),
-                title: Text(AppLocalizations.of(context).translate('more'))),
+                label: AppLocalizations.of(context).translate('more')),
           ],
           currentIndex: _selectedIndex,
           fixedColor: Colors.deepPurple,

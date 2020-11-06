@@ -339,7 +339,6 @@ class _AddTransactionState extends State<AddTransaction> {
                               labelText: AppLocalizations.of(context)
                                   .translate('transactionCommentLabel'),
                             ),
-                            autovalidate: false,
                             maxLines: 3,
                             onSaved: (input) => _comment = input,
                           ),

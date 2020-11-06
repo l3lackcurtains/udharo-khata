@@ -112,7 +112,6 @@ class _EditCustomerState extends State<EditCustomer> {
                       labelText: AppLocalizations.of(context)
                           .translate('customerNameLabel'),
                     ),
-                    autovalidate: false,
                     validator: (input) {
                       if (input.isEmpty) {
                         return AppLocalizations.of(context)
@@ -131,7 +130,6 @@ class _EditCustomerState extends State<EditCustomer> {
                       labelText: AppLocalizations.of(context)
                           .translate('customerPhoneLabel'),
                     ),
-                    autovalidate: false,
                     validator: (input) {
                       if (input.isEmpty) {
                         return AppLocalizations.of(context)
@@ -150,7 +148,6 @@ class _EditCustomerState extends State<EditCustomer> {
                       labelText: AppLocalizations.of(context)
                           .translate('customerAddressLabel'),
                     ),
-                    autovalidate: false,
                     validator: null,
                     onSaved: (input) => _address = input,
                   ),

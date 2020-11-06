@@ -78,8 +78,8 @@ class _BackupState extends State<Backup> {
             padding: EdgeInsets.all(24),
             child: Column(
               children: <Widget>[
-                Image.asset(
-                  "assets/images/data-copy.jpg",
+                Image(
+                  image: AssetImage("assets/images/data-copy.jpg"),
                   width: 300,
                 ),
                 Column(
