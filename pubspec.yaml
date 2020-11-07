@@ -64,16 +64,15 @@ flutter_icons:
 flutter:
   uses-material-design: true
   fonts:
-    - family: Poppins
-      fonts:
-        - asset: assets/fonts/Poppins/Poppins-Regular.ttf
-        - asset: assets/fonts/Poppins/Poppins-Bold.ttf
-          weight: 700
-
     - family: Quicksand
       fonts:
         - asset: assets/fonts/Quicksand/Quicksand-Regular.ttf
         - asset: assets/fonts/Quicksand/Quicksand-Bold.ttf
+          weight: 700
+    - family: Soleil
+      fonts:
+        - asset: assets/fonts/Soleil/Soleil-Regular.otf
+        - asset: assets/fonts/Soleil/Soleil-Bold.otf
           weight: 700
   assets:
     - assets/i18n/en.json

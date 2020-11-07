@@ -18,12 +18,7 @@ class _SignInState extends State<SignIn> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Sign In',
-            style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-                fontFamily: 'Poppins')),
+        title: Text('Sign In', style: Theme.of(context).textTheme.headline1),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.of(context).pop(),

@@ -46,6 +46,17 @@ class MyApp extends StatelessWidget {
           primaryColor: Color(0xFF192a56),
           accentColor: Color(0xFFe74c3c),
           fontFamily: 'Roboto',
+          textTheme: TextTheme(
+            headline1: TextStyle(
+              fontSize: 18,
+              color: Colors.black,
+              height: 1.2,
+              fontWeight: FontWeight.w700,
+              fontFamily: "Quicksand",
+            ),
+          ),
+          backgroundColor: Colors.white,
+          scaffoldBackgroundColor: Colors.white,
         ),
         home: MyHomePage(),
         locale: Locale(appState.appLocale),
@@ -101,7 +112,6 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _businesses = businesses;
       _selectedBusiness = selectedBusiness;
-      
     });
 
     Future.delayed(const Duration(milliseconds: 500), () {
@@ -192,6 +202,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       child: Image.memory(
                                         Base64Decoder().convert(business.logo),
                                         width: 30,
+                                        height: 30,
                                         fit: BoxFit.cover,
                                       ),
                                     ),
