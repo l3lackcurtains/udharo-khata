@@ -153,11 +153,11 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                   padding: EdgeInsets.fromLTRB(16, 0, 8, 0),
                                   child: customerImage != null
                                       ? CircleAvatar(
-                                          radius: 30.0,
+                                          radius: 36.0,
                                           child: ClipOval(
                                               child: Image.memory(customerImage,
-                                                  height: 60,
-                                                  width: 60,
+                                                  height: 80,
+                                                  width: 80,
                                                   fit: BoxFit.cover)),
                                           backgroundColor: Colors.transparent,
                                         )
@@ -171,7 +171,7 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                         ),
                                 ),
                                 Container(
-                                  padding: EdgeInsets.all(8),
+                                  padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -212,13 +212,19 @@ class _SingleCustomerState extends State<SingleCustomer> {
                                               children: <Widget>[
                                                 Icon(
                                                   Icons.location_on,
-                                                  color: Colors.brown.shade600,
-                                                  size: 16.0,
+                                                  color: xLightWhite,
+                                                  size: 12.0,
                                                 ),
                                                 Container(
                                                   padding: EdgeInsets.fromLTRB(
                                                       8, 4, 4, 4),
-                                                  child: Text(customer.address),
+                                                  child: Text(
+                                                    customer.address,
+                                                    style: TextStyle(
+                                                      color: xLightWhite,
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
                                                 ),
                                               ],
                                             )

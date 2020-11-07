@@ -1,7 +1,7 @@
 name: udharokhata
 description: A new Flutter project.
 
-version: 1.0.0+1
+version: 1.0.1+1
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -17,8 +17,6 @@ dependencies:
   path_provider: ^1.6.8
   autocomplete_textfield: ^1.7.3
   image_picker: ^0.6.0+17
-  simple_moment: ^1.0.2
-  flutter_archive: ^0.1.4
   firebase_core: ^0.5.0
   firebase_analytics: ^5.0.2
   firebase_auth: ^0.18.1+1
@@ -26,17 +24,12 @@ dependencies:
   cloud_firestore: ^0.14.1+2
   http: ^0.12.2
   google_sign_in: ^4.4.6
-  googleapis: ^0.55.0
-  googleapis_auth: ^0.2.11+1
-  flutter_secure_storage: ^3.3.3
   path: ^1.6.4
   url_launcher: ^5.4.7
-  archive: ^2.0.13
   pdf: ^1.8.1
   intl: ^0.16.1
   open_file: ^3.0.1
   share: ^0.6.5
-  flutter_pdfview: ^1.0.3+3
   cron: ^0.2.3
   background_fetch: ^0.5.1
   shared_preferences: ^0.5.10

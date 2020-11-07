@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
     return Consumer<AppStateNotifier>(builder: (context, appState, child) {
       return MaterialApp(
         title: 'Khata',
+        debugShowCheckedModeBanner: false,
         supportedLocales: AppLocalizations.delegate.supportedLocales,
         localizationsDelegates: [
           AppLocalizations.delegate,
