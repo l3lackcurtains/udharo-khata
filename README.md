@@ -28,11 +28,11 @@
 
 ## 📱 Screenshots
 
-|                                                       |                                                       |                                                       |
-| ----------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------- |
-| ![alt text](resources/splash.png "Splash")            | ![alt text](resources/screenshot1.png "Screenshot 1") | ![alt text](resources/screenshot2.png "Screenshot 2") |
-| ![alt text](resources/screenshot3.png "Screenshot 3") | ![alt text](resources/screenshot4.png "Screenshot 4") | ![alt text](resources/screenshot5.png "Screenshot 5") |
-| ![alt text](resources/screenshot6.png "Screenshot 6") |                                                       |                                                       |
+|                                                         |                                                         |                                                         |
+| ------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------- |
+| ![screenshot](resources/splash.png "Splash")            | ![screenshot](resources/screenshot1.png "Screenshot 1") | ![screenshot](resources/screenshot2.png "Screenshot 2") |
+| ![screenshot](resources/screenshot3.png "Screenshot 3") | ![screenshot](resources/screenshot4.png "Screenshot 4") | ![screenshot](resources/screenshot5.png "Screenshot 5") |
+| ![screenshot](resources/screenshot6.png "Screenshot 6") |                                                         |                                                         |
 
 ## 🙌 Want to Contribute?
 
