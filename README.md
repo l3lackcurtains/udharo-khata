@@ -30,9 +30,9 @@
 
 |                                                       |                                                       |                                                       |
 | ----------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------- |
-| ![alt text](resources/splash.png "Splash")            | ![alt text](resources/Screenshot1.png "Screenshot 1") | ![alt text](resources/Screenshot2.png "Screenshot 2") |
-| ![alt text](resources/Screenshot3.png "Screenshot 3") | ![alt text](resources/Screenshot4.png "Screenshot 4") | ![alt text](resources/Screenshot5.png "Screenshot 5") |
-| ![alt text](resources/Screenshot6.png "Screenshot 6") |                                                       |                                                       |
+| ![alt text](resources/splash.png "Splash")            | ![alt text](resources/screenshot1.png "Screenshot 1") | ![alt text](resources/screenshot2.png "Screenshot 2") |
+| ![alt text](resources/screenshot3.png "Screenshot 3") | ![alt text](resources/screenshot4.png "Screenshot 4") | ![alt text](resources/screenshot5.png "Screenshot 5") |
+| ![alt text](resources/screenshot6.png "Screenshot 6") |                                                       |                                                       |
 
 ## 🙌 Want to Contribute?
 
