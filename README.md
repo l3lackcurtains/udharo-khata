@@ -1,16 +1,47 @@
-# udharokhata
+<div align="center">
+  <img src="resources/logo.png" alt="Daily Logo" width="250">
+  <h1>Udharo Khata</h1>
+  <strong>Udharo khata is a debit and credit management app for small-size shops and businesses.</strong>
+</div>
+<br>
+<div align="center">
+<a href="https://play.google.com/store/apps/details?id=com.udharo.khata">
+<img src="resources/google-play-badge.png" alt="Daily Logo" width="180">
+</a>
+</div>
 
-A new Flutter project.
+## 🎁 Features
 
-## Getting Started
+- Manage Credits (Udharo) in your business.
+- Built for local shopkeepers and small businesses.
+- Generate your business card, download, and share.
+- Export all transactions report in pdf.
+- Export transactions report by customers in pdf.
+- Manage multiple businesses.
+- Use a custom currency
+- Multi calendar support (English and Nepali)
+- Multilanguage support (English and Nepali)
+- Backup your data in google drive
+- Restore your data from google drive
+- Import customers from your contact
+- and so on.
 
-This project is a starting point for a Flutter application.
+## 📱 Screenshots
 
-A few resources to get you started if this is your first Flutter project:
+|                                                       |                                                       |                                                       |
+| ----------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------- |
+| ![alt text](resources/splash.png "Splash")            | ![alt text](resources/Screenshot1.png "Screenshot 1") | ![alt text](resources/Screenshot2.png "Screenshot 2") |
+| ![alt text](resources/Screenshot3.png "Screenshot 3") | ![alt text](resources/Screenshot4.png "Screenshot 4") | ![alt text](resources/Screenshot5.png "Screenshot 5") |
+| ![alt text](resources/Screenshot6.png "Screenshot 6") |                                                       |                                                       |
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## 🙌 Want to Contribute?
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+We are open to all kinds of contributions. If you want to:
+
+- 🤔 Suggest a feature
+- 🐛 Report an issue
+- 👨‍💻 Contribute to the code
+
+## 📑 LICENCE
+
+Released under the [MIT](./LICENSE) License.<br>
